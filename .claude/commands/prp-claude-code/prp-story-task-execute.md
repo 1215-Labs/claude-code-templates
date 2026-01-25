@@ -1,5 +1,15 @@
 ---
-description: "Execute a Story PRP with focused task implementation"
+name: prp-story-task-execute
+description: Execute a Story PRP with focused task implementation
+argument-hint: <story-prp-file>
+user-invocable: true
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Write
+  - Bash(*)
+  - Task
 ---
 
 # Execute Story PRP

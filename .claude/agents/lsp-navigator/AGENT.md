@@ -2,8 +2,9 @@
 name: lsp-navigator
 description: Navigate and understand unfamiliar code using LSP capabilities including go-to-definition, find-references, and hover.
 model: haiku
+color: pink
 category: analysis
-allowed-tools:
+tools:
   - Read
   - Glob
   - Grep

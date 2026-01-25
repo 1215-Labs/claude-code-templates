@@ -2,8 +2,9 @@
 name: type-checker
 description: Verify type safety before merge/deploy using LSP hover and find-references.
 model: haiku
+color: slate
 category: quality
-allowed-tools:
+tools:
   - Read
   - Glob
   - Grep

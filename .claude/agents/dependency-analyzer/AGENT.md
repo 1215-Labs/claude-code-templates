@@ -2,6 +2,7 @@
 name: dependency-analyzer
 description: Map dependencies and coupling between modules using LSP find-references and go-to-definition.
 model: haiku
+color: violet
 category: analysis
 tools:
   - Read

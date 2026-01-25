@@ -1,3 +1,18 @@
+---
+name: prp-claude-code-create
+description: Create comprehensive PRP for Claude Code with deep research
+argument-hint: <feature-description>
+user-invocable: true
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - WebSearch
+  - WebFetch
+  - Write
+  - Task
+---
+
 # Create BASE PRP
 
 ## Feature: $ARGUMENTS

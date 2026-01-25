@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-01-24] fix: Fix remaining issues from .claude folder audit (334406e)
 [2026-01-24] fix: Fix critical issues found in .claude folder audit (fa1c5a8)
 [2025-01-24] add: Add automatic changelog tracking with git hook (2b72602)
 [2025-01-24] add: Add README explaining repository purpose (dea5c18)

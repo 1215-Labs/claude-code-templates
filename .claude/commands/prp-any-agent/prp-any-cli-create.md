@@ -1,3 +1,18 @@
+---
+name: prp-any-cli-create
+description: Create PRP for any CLI agent with thorough research
+argument-hint: <feature-file>
+user-invocable: true
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - WebSearch
+  - WebFetch
+  - Write
+  - Task
+---
+
 # Create PRP
 
 ## Feature file: $ARGUMENTS

@@ -1,7 +1,8 @@
 ---
 name: technical-researcher
 model: sonnet
-color: magenta
+color: indigo
+category: research
 tools:
   - Read
   - WebFetch

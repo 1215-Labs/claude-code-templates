@@ -1,7 +1,8 @@
 ---
 name: mcp-backend-engineer
 model: sonnet
-color: blue
+color: purple
+category: infrastructure
 tools:
   - Read
   - Write

@@ -30,6 +30,7 @@ description: |
   </example>
 model: sonnet
 color: magenta
+category: research
 tools:
   - Read
   - WebFetch

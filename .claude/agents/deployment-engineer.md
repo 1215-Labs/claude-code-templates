@@ -1,7 +1,8 @@
 ---
 name: deployment-engineer
 model: sonnet
-color: cyan
+color: orange
+category: infrastructure
 tools:
   - Read
   - Write

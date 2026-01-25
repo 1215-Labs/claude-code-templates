@@ -1,5 +1,16 @@
 ---
-description: "Convert user story/task into executable PRP with deep codebase analysis"
+name: prp-story-task-create
+description: Convert user story/task into executable PRP with deep codebase analysis
+argument-hint: <story-or-task-description>
+user-invocable: true
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - WebSearch
+  - WebFetch
+  - Write
+  - Task
 ---
 
 # Create Story PRP from User Story/Task

@@ -1,3 +1,17 @@
+---
+name: prp-any-cli-execute
+description: Execute PRP with any CLI agent
+argument-hint: <prp-file>
+user-invocable: true
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Write
+  - Bash(*)
+  - Task
+---
+
 # Execute BASE PRP
 
 Implement a feature using using the PRP file.

@@ -1,3 +1,17 @@
+---
+name: prp-claude-code-execute
+description: Execute PRP with Claude Code for one-pass implementation
+argument-hint: <prp-file>
+user-invocable: true
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Write
+  - Bash(*)
+  - Task
+---
+
 # Execute BASE PRP
 
 ## PRP File: $ARGUMENTS
