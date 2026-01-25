@@ -1,0 +1,51 @@
+{
+  "description": "LSP-aware hooks for code quality validation",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/lsp-reference-checker.py",
+            "timeout": 30000
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/lsp-type-validator.py",
+            "timeout": 60000
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/session-init.py",
+            "timeout": 10000
+          }
+        ],
+        "once": true
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Before stopping, verify the task is complete: all requested changes made, no pending todos, and code compiles without errors. If incomplete, explain what remains."
+          }
+        ]
+      }
+    ]
+  }
+}
