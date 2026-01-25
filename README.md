@@ -101,12 +101,34 @@ git commit -m "Update claude-code submodule to <version>"
 
 Then run `/sync-reference` to identify any templates needing updates.
 
+## Change Tracking
+
+All changes are automatically logged in [CHANGELOG.md](CHANGELOG.md). A git post-commit hook appends each commit to the log with:
+- Date
+- Category (extracted from commit message)
+- Commit message
+- Short hash
+
+### Setup (for contributors)
+
+Install the git hooks after cloning:
+
+```bash
+./git-hooks/install.sh
+```
+
+This enables automatic changelog updates on each commit.
+
 ## Repository Structure
 
 ```
 claude-code-templates/
 ├── README.md              # This file
+├── CHANGELOG.md           # Auto-updated change log
 ├── claude-code/           # Official Claude Code (submodule)
+├── git-hooks/             # Git hooks (install with install.sh)
+│   ├── post-commit        # Auto-updates CHANGELOG.md
+│   └── install.sh         # Hook installer
 └── .claude/
     ├── CLAUDE.md          # Configuration overview
     ├── REGISTRY.md        # Component catalog
@@ -114,7 +136,7 @@ claude-code-templates/
     ├── agents/            # Sub-agent definitions
     ├── commands/          # Slash commands
     ├── skills/            # Reusable expertise
-    ├── hooks/             # Automated checks
+    ├── hooks/             # Claude Code hooks (automated checks)
     ├── workflows/         # Multi-step processes
     └── rules/             # Development rules
 ```

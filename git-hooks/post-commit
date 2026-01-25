@@ -1,0 +1,61 @@
+#!/bin/bash
+#
+# Git post-commit hook: Automatically appends commit info to CHANGELOG.md
+#
+# Format: [YYYY-MM-DD] category: message (short-hash)
+#
+# Categories are extracted from commit message prefixes:
+#   "Add foo" -> add
+#   "Fix bar" -> fix
+#   "Update baz" -> update
+#   "feat: something" -> feat
+#   etc.
+
+CHANGELOG="CHANGELOG.md"
+
+# Skip if CHANGELOG doesn't exist
+if [ ! -f "$CHANGELOG" ]; then
+    exit 0
+fi
+
+# Skip if this commit modifies CHANGELOG (prevent recursion)
+if git diff-tree --no-commit-id --name-only -r HEAD | grep -q "^CHANGELOG.md$"; then
+    exit 0
+fi
+
+# Get commit info
+DATE=$(date +%Y-%m-%d)
+HASH=$(git rev-parse --short HEAD)
+MESSAGE=$(git log -1 --pretty=%s)
+
+# Extract category from commit message
+# Handles: "Category: msg", "category: msg", "Category msg", "category(scope): msg"
+CATEGORY=$(echo "$MESSAGE" | sed -E 's/^([a-zA-Z]+)(\([^)]*\))?[:\!]?\s.*/\L\1/' | head -c 20)
+
+# If no clear category, use first word lowercase
+if [ "$CATEGORY" = "$MESSAGE" ] || [ -z "$CATEGORY" ]; then
+    CATEGORY=$(echo "$MESSAGE" | awk '{print tolower($1)}')
+fi
+
+# Create log entry
+ENTRY="[${DATE}] ${CATEGORY}: ${MESSAGE} (${HASH})"
+
+# Find the "## Log" section and append after it
+# Using temp file for cross-platform compatibility
+TEMP_FILE=$(mktemp)
+awk -v entry="$ENTRY" '
+    /^## Log/ {
+        print;
+        getline;
+        print;
+        print entry;
+        next
+    }
+    { print }
+' "$CHANGELOG" > "$TEMP_FILE"
+
+mv "$TEMP_FILE" "$CHANGELOG"
+
+# Stage and amend the commit to include changelog update
+git add "$CHANGELOG"
+git commit --amend --no-edit --no-verify
