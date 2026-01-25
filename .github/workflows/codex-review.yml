@@ -11,6 +11,12 @@ jobs:
     if: |
       contains(github.event.comment.body, '@codex-review') &&
       contains(fromJSON((startsWith(vars.AI_WORKFLOW_AUTHORIZED_USERS_JSON, '[') && vars.AI_WORKFLOW_AUTHORIZED_USERS_JSON) || '[]'), github.event.comment.user.login)
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      actions: read
+      id-token: write
     uses: 1215-Labs/.github/.github/workflows/reusable-codex-review.yml@main
     with:
       issue_number: ${{ github.event.issue.number || github.event.pull_request.number }}
