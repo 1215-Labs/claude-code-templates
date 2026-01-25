@@ -23,7 +23,9 @@ jobs:
       comment_user: ${{ github.event.comment.user.login }}
       repository: ${{ github.repository }}
       event_name: ${{ github.event_name }}
-    secrets: inherit
+    secrets:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      WORKFLOW_SYNC_PAT: ${{ secrets.WORKFLOW_SYNC_PAT }}
 
   unauthorized:
     if: |
