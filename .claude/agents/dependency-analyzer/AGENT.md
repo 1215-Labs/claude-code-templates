@@ -3,7 +3,7 @@ name: dependency-analyzer
 description: Map dependencies and coupling between modules using LSP find-references and go-to-definition.
 model: haiku
 category: analysis
-allowed-tools:
+tools:
   - Read
   - Glob
   - Grep

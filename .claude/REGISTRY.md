@@ -51,6 +51,11 @@ Central index of all .claude components for quick discovery.
 | Command | `/rca` | Error investigation |
 | Hook | `lsp-reference-checker` | Reference impact warning |
 
+### Session Management
+| Type | Component | Purpose |
+|------|-----------|---------|
+| Hook | `session-init` | Initialize session context |
+
 ### Onboarding
 | Type | Component | Purpose |
 |------|-----------|---------|
@@ -93,15 +98,25 @@ Multi-step workflows for complex tasks:
 | [code-quality](workflows/code-quality.md) | `/code-review` | Pre-merge validation |
 | [new-developer](workflows/new-developer.md) | `/onboarding` | Onboarding progression |
 
+### PRP (Prompt Request Protocol)
+| Type | Component | Purpose |
+|------|-----------|---------|
+| Command | `/prp-any-cli-create` | Create PRP for any CLI agent |
+| Command | `/prp-any-cli-execute` | Execute PRP with any CLI agent |
+| Command | `/prp-claude-code-create` | Create PRP for Claude Code |
+| Command | `/prp-claude-code-execute` | Execute PRP with Claude Code |
+| Command | `/prp-story-task-create` | Create PRP from user story/task |
+| Command | `/prp-story-task-execute` | Execute story-based PRP |
+
 ## Component Counts
 
 | Type | Count | Location |
 |------|-------|----------|
-| Agents | 12 | `.claude/agents/` |
-| Commands | 10 | `.claude/commands/workflow/` |
-| Skills | 12 | `.claude/skills/` |
+| Agents | 13 | `.claude/agents/` |
+| Commands | 16 | `.claude/commands/` |
+| Skills | 11 | `.claude/skills/` |
 | Rules | 1 | `.claude/rules/` |
-| Hooks | 2 | `.claude/hooks/` |
+| Hooks | 3 | `.claude/hooks/` |
 | Workflows | 4 | `.claude/workflows/` |
 
 ## Cross-Reference Map
