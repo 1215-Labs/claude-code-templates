@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-01-24] ci: ci: add Claude AI review and fix workflows (b4dd7fb)
 [2026-01-24] add: Add parallel subagents to code-review, onboarding, and ui-review commands (93790d6)
 [2026-01-24] fix: Fix remaining issues from .claude folder audit (334406e)
 [2026-01-24] fix: Fix critical issues found in .claude folder audit (fa1c5a8)
