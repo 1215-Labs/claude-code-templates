@@ -1,6 +1,6 @@
 ---
 name: ui-review
-description: Analyze UI components for consistency, patterns, and styling
+description: Analyze UI components for consistency, patterns, and styling using parallel subagents
 argument-hint: <component path or directory>
 user-invocable: true
 thinking: auto
@@ -10,11 +10,14 @@ allowed-tools:
   - Glob
   - Write
   - Bash(*)
+  - Task
 ---
 
 # UI Consistency Review
 
 **Review scope**: $ARGUMENTS
+
+I'll perform a comprehensive UI review using parallel subagents to preserve context, then synthesize findings into an actionable improvement report.
 
 ## Step 1: Find UI Standards
 
@@ -32,15 +35,9 @@ Read the standards file - this is the single source of truth for all rules, patt
 
 ### If No Standards File
 
-Infer standards from existing components:
-1. Identify the most mature/complete components
-2. Extract patterns for:
-   - Styling approach (CSS modules, Tailwind, styled-components)
-   - Component structure
-   - Accessibility patterns
-   - State management
+Note this for later recommendation. Standards will be inferred from existing components.
 
-## Step 2: Find Files to Review
+## Step 2: Identify Files to Review
 
 Glob all component files in the provided path:
 - `**/*.tsx` for React TypeScript
@@ -48,68 +45,104 @@ Glob all component files in the provided path:
 - `**/*.vue` for Vue
 - `**/*.svelte` for Svelte
 
-## Step 3: Run Automated Scans
+## Phase 1: Parallel Analysis (Use Subagents)
 
-Based on the UI framework detected:
+**IMPORTANT**: Launch these as PARALLEL subagents (single message, multiple Task tool calls) to preserve main agent context for synthesis.
 
-### For Tailwind CSS Projects
+### Subagent 1: Component Structure Analyzer
+Use the **Explore subagent** with "thorough" thoroughness to:
+- Review component hierarchy and organization
+- Check for proper component composition patterns
+- Identify prop drilling vs context usage
+- Verify separation of concerns (logic vs presentation)
+- Look for component reusability opportunities
+- Check for consistent naming conventions
 
-Check for:
-- Dynamic class names that won't be detected by Tailwind
-- Hardcoded colors instead of design tokens
+Return: Component structure issues, hierarchy concerns, reusability opportunities.
+
+### Subagent 2: Accessibility Checker
+Use the **Explore subagent** with "thorough" thoroughness to check WCAG compliance:
+- Keyboard navigation support (tab order, focus management)
+- ARIA attributes usage and correctness
+- Screen reader support (alt text, labels)
+- Focus indicators (visible focus states)
+- Color contrast considerations (if design tokens used)
+- Semantic HTML usage (heading hierarchy, landmarks)
+- Form accessibility (labels, error announcements)
+
+Return: Accessibility violations with severity, file:line references, remediation guidance.
+
+### Subagent 3: Performance Analyzer
+Use the **Explore subagent** with "medium" thoroughness to:
+- Identify unnecessary re-renders
+- Check for missing memoization opportunities (React.memo, useMemo, useCallback)
+- Look for expensive computations in render paths
+- Identify large bundle imports that could be code-split
+- Check for proper lazy loading of heavy components
+- Look for list virtualization needs
+- Identify image optimization opportunities
+
+Return: Performance concerns with impact assessment, optimization recommendations.
+
+### Subagent 4: Styling Consistency Checker
+Use the **Explore subagent** with "thorough" thoroughness to:
+- Identify styling approach (CSS modules, Tailwind, styled-components)
+- Check for design token usage vs hardcoded values
+- Verify spacing consistency (margins, padding)
+- Check color usage against design system
+- Look for responsive design patterns
+- Identify dark mode support (if applicable)
+- Check for style duplication that should be abstracted
+
+**For Tailwind CSS Projects specifically:**
+- Dynamic class names that won't be detected
 - Missing responsive variants
 - Missing dark mode variants
 
-### For All React Projects
+Return: Styling inconsistencies, design system violations, abstraction opportunities.
 
-Check for:
-- Accessibility: keyboard support, ARIA attributes, focus management
-- TypeScript: proper prop types, no `any`
-- Component patterns: consistent structure, proper hooks usage
+### Subagent 5: UX Pattern Analyzer
+Use the **Explore subagent** with "medium" thoroughness to:
+- Review navigation patterns and consistency
+- Check interaction feedback (loading states, hover states)
+- Verify error state handling and messaging
+- Look for empty state implementations
+- Check loading state patterns
+- Identify missing edge case handling
+- Verify form validation UX
+- Check for consistent action patterns (buttons, links)
 
-### General Checks
+Return: UX gaps, missing states, interaction inconsistencies.
 
-- Native HTML elements that should use design system components
-- Inconsistent spacing or sizing
-- Missing error/loading states
-- Unconstrained scroll containers
+Wait for all subagents to complete before proceeding.
 
-## Step 4: Deep Analysis
+## Phase 2: Synthesize Findings
 
-For each file, analyze:
+Consolidate subagent findings into:
+1. **Structure Issues**: Component hierarchy and organization problems
+2. **Accessibility Violations**: WCAG compliance issues by severity
+3. **Performance Concerns**: Optimization opportunities
+4. **Styling Issues**: Design system deviations
+5. **UX Gaps**: Missing states and interaction problems
 
-### 1. Styling Consistency
+## Phase 3: Cross-Cutting Analysis (Main Agent)
 
-- Are design tokens/variables used?
-- Is spacing consistent with project standards?
-- Are colors from the design system?
+With main context preserved, identify:
 
-### 2. Component Patterns
+### Patterns to Extract
+- Common patterns that should become shared components
+- Repeated styling that should become design tokens
+- Duplicate logic that should be custom hooks
 
-- Does the component follow project conventions?
-- Are props properly typed?
-- Is state management consistent with other components?
+### TypeScript Quality
+- Proper type definitions for props
+- No `any` types in UI code
+- Props interfaces defined and exported
 
-### 3. Accessibility
+### Framework-Specific Issues
+Based on detected framework (React/Vue/Svelte), check for framework-specific best practices and anti-patterns.
 
-- Keyboard navigation
-- Screen reader support
-- Focus indicators
-- ARIA attributes where needed
-
-### 4. TypeScript Quality
-
-- Proper type definitions
-- No `any` types
-- Props interface defined
-
-### 5. Functional Correctness
-
-- Does the UI actually work?
-- Are edge cases handled?
-- Error and loading states present?
-
-## Step 5: Generate Report
+## Phase 4: Generate Report
 
 Save to `ui-review-[feature].md` with:
 
@@ -119,24 +152,26 @@ Save to `ui-review-[feature].md` with:
 **Date**: [Today's date]
 **Scope**: [What was reviewed]
 **Files Analyzed**: [Count]
+**Standards Reference**: [UI_STANDARDS.md or "Inferred from codebase"]
 
 ## Summary
 
 **Overall Score**: [A-F or percentage]
-- Styling Consistency: [Score]
+- Component Structure: [Score]
 - Accessibility: [Score]
-- TypeScript Quality: [Score]
-- Pattern Adherence: [Score]
+- Performance: [Score]
+- Styling Consistency: [Score]
+- UX Patterns: [Score]
 
 ## Issues Found
 
 ### Critical Issues
 
-[Issues that break functionality or accessibility]
+[Issues that break functionality or accessibility - primarily from Subagent 2]
 
 ### High Priority
 
-[Significant inconsistencies or violations]
+[Significant inconsistencies or violations - from all subagents]
 
 ### Medium Priority
 
@@ -159,22 +194,42 @@ Save to `ui-review-[feature].md` with:
 **Good Patterns**:
 - [What's done well]
 
+## Accessibility Report
+
+[Detailed findings from Subagent 2 - grouped by WCAG criterion]
+
+## Performance Recommendations
+
+[Findings from Subagent 3 - prioritized by impact]
+
+## Styling Audit
+
+[Findings from Subagent 4 - categorized by type]
+
+## UX Improvements
+
+[Findings from Subagent 5 - prioritized by user impact]
+
 ## Recommendations
 
 ### Immediate Actions
 
-[What should be fixed now]
+[What should be fixed now - critical and high priority items]
 
 ### Future Improvements
 
-[What to address later]
+[What to address later - medium and low priority items]
+
+### Suggested Abstractions
+
+[Components or patterns that should be extracted]
 
 ## Standards Reference
 
 [Reference to UI_STANDARDS.md sections or inferred patterns]
 ```
 
-## Step 6: Optional - Create Fix Plan
+## Step 5: Optional - Create Fix Plan
 
 If significant violations found, suggest using a planning command to create a fix plan:
 - Reference the review report

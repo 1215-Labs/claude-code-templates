@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Perform comprehensive code review and save report to `code-review.md`
+description: Perform comprehensive code review using parallel subagents and save report to `code-review.md`
 argument-hint: <PR number, branch name, file path, or leave empty for staged changes>
 user-invocable: true
 thinking: auto
@@ -10,68 +10,100 @@ allowed-tools:
   - Grep
   - Glob
   - Write
+  - Task
 ---
 
 # Code Review
 
 **Review scope**: $ARGUMENTS
 
-I'll perform a comprehensive code review and generate a report saved to the root of this directory as `code-review[n].md`. Check if other reviews exist before creating the file and increment n as needed.
+I'll perform a comprehensive code review using parallel subagents to preserve context, then synthesize findings into a report saved to `code-review[n].md`.
 
-## Step 1: Discover Project Context
+## Step 1: Determine Review Scope
 
-Read CLAUDE.md to understand:
-- Project name and purpose (use for report header)
-- Tech stack and conventions
-- Testing patterns and commands
-- Anti-patterns to watch for
-
-If CLAUDE.md doesn't exist, detect from:
-- `package.json` + `tsconfig.json` (TypeScript/JavaScript)
-- `pyproject.toml` or `setup.py` (Python)
-- `Cargo.toml` (Rust)
-- `go.mod` (Go)
-
-Store the project name and tech stack for use in the review.
-
-## Step 2: Determine Review Scope
-
-Determine what needs reviewing:
+First, determine what needs reviewing:
 - If no arguments: Review staged changes (`git diff --staged`)
 - If PR number: Review pull request (`gh pr view`)
 - If branch name: Compare with main (`git diff main...branch`)
 - If file path: Review specific files
 - If directory: Review all changes in that area
 
-## Step 3: Review Focus
+## Phase 1: Parallel Analysis (Use Subagents)
 
-### Code Quality Checks (Dynamic by Tech Stack)
+**IMPORTANT**: Launch these as PARALLEL subagents (single message, multiple Task tool calls) to preserve main agent context for synthesis.
 
-**For TypeScript/JavaScript projects:**
-- TypeScript types properly defined, avoid `any`
-- React patterns (if applicable): hooks, error boundaries, component structure
-- API error handling that shows actual error messages
-- Console.error for debugging, not hidden errors
+### Subagent 1: Changes Analyzer
+Use the **Explore subagent** with "medium" thoroughness to:
+- Identify all modified files and their scope
+- Summarize what problem is being solved
+- Map which areas of the codebase are affected
+- Check if changes touch critical paths (auth, payments, data)
 
-**For Python projects:**
-- Type hints on all functions
-- Proper exception handling with context
-- No print statements (use logging)
-- Async/await used correctly
+Return: Change summary, affected areas, risk assessment.
 
-**For Rust projects:**
-- Proper Result/Option handling
-- Avoid excessive unwrap() calls
-- Appropriate error types and propagation
+### Subagent 2: Pattern Checker
+Use the **Explore subagent** with "thorough" thoroughness to:
+- Read CLAUDE.md for project conventions and anti-patterns
+- Compare changes against documented patterns
+- Check consistency with existing codebase style
+- Identify deviations from established patterns
 
-**For Go projects:**
-- Proper error checking (no ignored errors)
-- Idiomatic Go patterns
-- Appropriate defer usage
+**Check for tech-stack specific issues:**
+- **TypeScript/JavaScript**: Proper types (no `any`), hooks usage, error handling
+- **Python**: Type hints, exception handling, no print statements
+- **Rust**: Result/Option handling, minimal unwrap() calls
+- **Go**: Proper error checking, idiomatic patterns
 
-### Error Handling Philosophy (for beta/alpha projects)
+Return: Pattern violations, convention issues, style inconsistencies.
 
-If CLAUDE.md indicates this is beta/alpha software, apply these principles:
+### Subagent 3: Security Scanner
+Use the **Explore subagent** with "thorough" thoroughness to check for OWASP vulnerabilities:
+- SQL injection vulnerabilities
+- XSS attack vectors
+- Input validation gaps
+- Hardcoded secrets or API keys
+- Authentication/authorization issues
+- CORS misconfigurations
+- Command injection risks
+
+Return: Security issues found with severity ratings and file:line references.
+
+### Subagent 4: Test Coverage Analyzer
+Use the **Explore subagent** with "medium" thoroughness to:
+- Verify tests exist for new functionality
+- Check if error paths are tested
+- Identify untested edge cases
+- Look for catch-all exception handlers hiding issues
+- Verify test assertions are meaningful
+
+Return: Coverage gaps, missing tests, testing quality issues.
+
+Wait for all subagents to complete before proceeding.
+
+## Phase 2: Synthesize Findings
+
+Consolidate subagent findings into:
+1. **Change Summary**: What changed and why
+2. **Quality Issues**: Pattern and convention violations
+3. **Security Concerns**: Vulnerabilities requiring attention
+4. **Test Gaps**: Missing or inadequate test coverage
+5. **Priority Rankings**: Critical > Important > Suggestions
+
+## Phase 3: Architecture & Performance Check (Main Agent)
+
+With main context preserved, perform final analysis:
+
+### Architecture Review
+- Do changes follow project structure from CLAUDE.md?
+- Are dependencies appropriate?
+- Is there unnecessary coupling?
+
+### Performance Considerations
+- Any N+1 queries or inefficient algorithms?
+- Unnecessary re-renders (React)?
+- Memory leaks or resource management issues?
+
+### Error Handling Philosophy
 
 **Where errors should fail fast:**
 - Service initialization failures
@@ -81,46 +113,14 @@ If CLAUDE.md indicates this is beta/alpha software, apply these principles:
 - Data validation errors
 
 **Where to complete but log clearly:**
-- Background tasks (process what you can, report failures)
+- Background tasks
 - Batch operations
 - Optional features
 - External API calls (retry, then fail with clear message)
 
-### Security Considerations
+## Phase 4: Generate Report
 
-Check for:
-- Input validation
-- SQL injection vulnerabilities
-- No hardcoded secrets or API keys
-- Authentication issues
-- CORS configuration
-
-### Architecture & Patterns
-
-Ensure code follows patterns from CLAUDE.md:
-- Check "## Conventions" section for required patterns
-- Check "## Anti-Patterns" section for things to avoid
-- Verify consistency with existing codebase patterns
-
-### Testing
-
-Verify:
-- Tests exist for new functionality
-- Error paths are tested
-- No catch-all exception handlers hiding issues
-
-## Review Process
-
-1. **Understand the changes** - What problem is being solved?
-2. **Check functionality** - Does it do what it's supposed to?
-3. **Review code quality** - Is it maintainable and follows standards?
-4. **Consider performance** - Any N+1 queries or inefficient algorithms?
-5. **Verify tests** - Are changes properly tested?
-6. **Check documentation** - Are complex parts documented?
-
-## Report Format
-
-Generate a `code-review.md` with:
+Check if other reviews exist and increment filename as needed. Generate `code-review.md` with:
 
 ```markdown
 # Code Review
@@ -154,7 +154,7 @@ Generate a `code-review.md` with:
 
 ## Security Review
 
-[Any security concerns or confirmations]
+[Any security concerns or confirmations - from Subagent 3]
 
 ## Performance Considerations
 
@@ -163,7 +163,11 @@ Generate a `code-review.md` with:
 ## Test Coverage
 
 - Current coverage: [if available]
-- Missing tests for: [list areas]
+- Missing tests for: [list areas - from Subagent 4]
+
+## Pattern Compliance
+
+[How well changes follow project conventions - from Subagent 2]
 
 ## Recommendations
 
@@ -186,9 +190,6 @@ gh pr view $PR_NUMBER --json files
 - Python: `ruff check`, `mypy src/`
 - Rust: `cargo clippy`
 - Go: `go vet ./...`
-
-**Run tests (adapt based on project):**
-- Check CLAUDE.md "## Testing" section for project-specific commands
 
 ## Related Commands
 

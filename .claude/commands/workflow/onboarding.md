@@ -13,41 +13,55 @@ allowed-tools:
   - Grep
   - Bash(git *)
   - Task
+  - AskUserQuestion
 ---
 
 # Developer Onboarding
 
-You are helping a new developer get up and running with this project! Your goal is to provide them with a personalized onboarding experience.
+You are helping a new developer get up and running with this project! Your goal is to provide them with a personalized onboarding experience using parallel subagents to preserve context.
 
-## Step 1: Discover Project Context
+## Phase 1: Parallel Discovery (Use Subagents)
 
-### Read Core Documentation
+**IMPORTANT**: Launch these as PARALLEL subagents (single message, multiple Task tool calls) to preserve main agent context for synthesis.
 
-1. **Read CLAUDE.md** for development guidelines and patterns:
-   - `## Overview` - Project purpose and description
-   - `## Project Structure` - Directory layout
-   - `## Where to Look` - Task-to-location mapping
-   - `## Conventions` - Coding patterns to follow
-   - `## Anti-Patterns` - Things to avoid
-   - `## Testing` - How to run tests
+### Subagent 1: Architecture Explorer
+Use the **Explore subagent** with "thorough" thoroughness to:
+- Map the complete project directory structure
+- Identify key entry points (main files, index files, app files)
+- Detect tech stack from config files:
+  - `package.json` + `tsconfig.json` (TypeScript/JavaScript/Node.js)
+  - `pyproject.toml` or `setup.py` (Python)
+  - `Cargo.toml` (Rust)
+  - `go.mod` (Go)
+  - `docker-compose.yml` (Multi-service architecture)
+- Map how different parts of the codebase connect
+- Identify the most important directories for development
 
-2. **Read README.md** for:
-   - Project overview and goals
-   - Setup instructions
-   - Prerequisites
+Return: Project structure map, tech stack summary, architecture diagram (text).
 
-### Detect Tech Stack
+### Subagent 2: Convention Analyzer
+Use the **Explore subagent** with "medium" thoroughness to:
+- Read CLAUDE.md for:
+  - `## Overview` - Project purpose and description
+  - `## Project Structure` - Directory layout
+  - `## Where to Look` - Task-to-location mapping
+  - `## Conventions` - Coding patterns to follow
+  - `## Anti-Patterns` - Things to avoid
+  - `## Testing` - How to run tests
+- Read README.md for:
+  - Project overview and goals
+  - Setup instructions
+  - Prerequisites
+- Identify naming conventions from existing code
+- Extract coding patterns and style requirements
 
-If CLAUDE.md doesn't fully describe the tech stack, detect from:
-- `package.json` + `tsconfig.json` (TypeScript/JavaScript/Node.js)
-- `pyproject.toml` or `setup.py` (Python)
-- `Cargo.toml` (Rust)
-- `go.mod` (Go)
-- `docker-compose.yml` (Multi-service architecture)
+Return: Convention summary, setup instructions, key patterns to follow.
 
-## Step 2: Provide Project Overview
+Wait for both subagents to complete before proceeding.
 
-Based on what you discovered, explain to the new developer:
+## Phase 2: Synthesize Overview
+
+With main context preserved, synthesize subagent findings into a clear overview:
 
 ### What is this project?
 
@@ -55,28 +69,25 @@ _[One paragraph summary based on README.md and CLAUDE.md]_
 
 ### Architecture Overview
 
-_[Explain how different parts connect based on CLAUDE.md structure or exploration]_
+_[Explain how different parts connect based on Architecture Explorer findings]_
 
 ### Tech Stack
 
-_[List main technologies based on detection]_
+_[List main technologies detected by Architecture Explorer]_
 
-## Step 3: Getting Started
+### Getting Started
 
-Guide the user through setup based on README.md:
-
+Based on Convention Analyzer findings:
 1. **Prerequisites** they need installed
 2. **Installation steps** from README.md
 3. **How to run** the project locally
 4. **How to verify** everything works
 
-## Step 4: Decision Time - Focus Area
+## Phase 3: Choose Focus Area
 
-Ask the user which area they'd like to explore:
+Ask the user which area they'd like to explore deeper.
 
-"Which area of the codebase would you like to explore first?"
-
-**Generate options dynamically based on project structure:**
+**Generate options dynamically based on Architecture Explorer findings:**
 
 Look at the directory structure and offer relevant options:
 - If `src/components/` or `app/` exists: "Frontend/UI"
@@ -85,62 +96,54 @@ Look at the directory structure and offer relevant options:
 - If `docs/` exists: "Documentation"
 - Use CLAUDE.md "## Where to Look" section to identify other areas
 
-Wait for the user to choose before proceeding.
+Use AskUserQuestion to let them choose.
 
-## Step 5: Deep Dive into Chosen Area
+## Phase 4: Deep Dive (Focused Subagent)
 
-Based on the user's choice:
+After user selects their area of interest, launch a **single focused subagent**:
 
-### 5.1 Explore the Area
+### Focused Area Explorer
+Use the **Explore subagent** with "very thorough" thoroughness to:
+- Explore the chosen area in depth
+- Read key files to understand patterns and structure
+- Identify conventions specific to this area
+- Find contribution opportunities:
+  - TODO or FIXME comments
+  - Missing error handling or validation
+  - Areas with minimal test coverage
+  - Documentation gaps
+  - Hardcoded values that should be configurable
 
-1. Use CLAUDE.md "## Where to Look" if it lists files for this area
-2. Otherwise, explore the relevant directory with glob patterns
-3. Read key files to understand patterns and structure
+Return: Detailed area analysis, key files, patterns, contribution opportunities.
 
-### 5.2 Identify Patterns and Conventions
+## Phase 5: Generate Personalized Report (Main Agent)
 
-From CLAUDE.md and code inspection:
-- What patterns are used in this area?
-- What conventions must be followed?
-- What anti-patterns should be avoided?
-
-### 5.3 Find Contribution Opportunities
-
-Look for:
-- TODO or FIXME comments in the code
-- Missing error handling or validation
-- Areas with minimal test coverage
-- Documentation gaps
-- Hardcoded values that should be configurable
-
-## Step 6: Generate Report
-
-Provide the user with a structured report:
+Synthesize all findings into a personalized onboarding report:
 
 ### Area Overview
 
-_[Architecture explanation and how it connects to other parts]_
+_[Architecture explanation for their chosen area and how it connects to other parts]_
 
 ### Key Files Walkthrough
 
-_[Purpose of main files and their relationships]_
+_[Purpose of main files and their relationships in the chosen area]_
 
 ### Development Patterns
 
 Based on CLAUDE.md conventions:
-- Key patterns they should know
+- Key patterns they should know for this area
 - Testing approach for this area
 - Common gotchas
 
 ### Suggested First Contribution
 
-_[A specific, small improvement with:]_
+_[A specific, small improvement from Phase 4 findings:]_
 - Exact file location
 - Current behavior vs improved behavior
 - Step-by-step implementation guide
 - Testing instructions
 
-### What to Include
+### What to Include in Their Work
 
 1. **Key patterns from CLAUDE.md** they should follow
 2. **Specific contribution suggestion** with file references
