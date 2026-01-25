@@ -1,0 +1,17 @@
+name: Python CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  ci:
+    uses: 1215-Labs/.github/.github/workflows/reusable-ci.yml@main
+    with:
+      language: python
+      python-version: '3.11'
+      run-tests: false  # No test suite yet
+      run-lint: true
+    secrets: inherit
