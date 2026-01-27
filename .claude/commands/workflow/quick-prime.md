@@ -1,8 +1,17 @@
 ---
 name: quick-prime
-description: Quick context priming - reads essential files and provides project overview
+description: |
+  Quick context priming - reads essential files and provides project overview
+
+  Usage: /quick-prime
+
+  Use for: Fast project context when starting a session
+  See also: /deep-prime (detailed area analysis), /onboarding (interactive intro)
 argument-hint: none
 user-invocable: true
+related:
+  commands: [/deep-prime, /onboarding, /prime]
+  agents: [codebase-analyst]
 allowed-tools:
   - Read
   - Glob

@@ -1,8 +1,24 @@
 ---
 name: code-review
-description: Perform comprehensive code review using parallel subagents and save report to `code-review.md`
-argument-hint: <PR number, branch name, file path, or leave empty for staged changes>
+description: |
+  Perform comprehensive code review using parallel subagents and save report to `code-review.md`
+
+  Usage: /code-review [scope]
+
+  Examples:
+  /code-review                      # Review staged changes
+  /code-review 123                  # Review PR #123
+  /code-review feature/auth         # Review branch vs main
+  /code-review src/components/      # Review directory
+
+  Use for: Pre-merge validation, security review, pattern compliance
+  See also: /rca (for debugging), /deep-prime (for understanding code first)
+argument-hint: "[PR#|branch|path] or empty"
 user-invocable: true
+related:
+  agents: [code-reviewer, type-checker, test-automator]
+  skills: [lsp-type-safety-check, lsp-symbol-navigation]
+  workflows: [code-quality]
 thinking: auto
 allowed-tools:
   - Bash(*)

@@ -1,8 +1,25 @@
 ---
 name: rca
-description: Generate Root Cause Analysis report using parallel diagnostic subagents
-argument-hint: <issue description or error message>
+description: |
+  Generate Root Cause Analysis report using parallel diagnostic subagents
+
+  Usage: /rca "<issue description or error message>"
+
+  Examples:
+  /rca "Login endpoint returning 500 errors"
+  /rca "Memory usage growing unbounded after 24h"
+  /rca "Tests passing locally but failing in CI"
+  /rca "Service not starting after deployment"
+
+  Best for: Production issues, system-wide problems, mysterious failures
+  Use instead: /deep-prime when investigating a specific code area
+  Use instead: /code-review for code quality issues in PRs
+argument-hint: "<error or issue description>"
 user-invocable: true
+related:
+  agents: [debugger, dependency-analyzer]
+  skills: [lsp-dependency-analysis]
+  workflows: [bug-investigation]
 thinking: auto
 allowed-tools:
   - Bash(*)
