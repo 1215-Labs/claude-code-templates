@@ -29,6 +29,7 @@ description: |
   </commentary>
   </example>
 model: sonnet
+# Model rationale: Pattern analysis requires nuanced understanding - sonnet handles complex codebase reasoning
 color: blue
 tools:
   - Read
@@ -37,10 +38,10 @@ tools:
   - Bash(git *)
 category: analysis
 related:
-  agents: [context-manager, lsp-navigator, dependency-analyzer]
+  agents: [context-manager, lsp-navigator, dependency-analyzer, debugger]
   commands: [/deep-prime, /quick-prime]
   skills: [lsp-symbol-navigation, lsp-dependency-analysis]
-  workflows: [feature-development]
+  workflows: [feature-development, bug-investigation]
 ---
 
 You are a specialized codebase analysis agent focused on discovering patterns, conventions, and implementation approaches.

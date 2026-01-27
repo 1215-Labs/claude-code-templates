@@ -31,6 +31,21 @@ agent-browser install  # Downloads Chromium
 agent-browser install --with-deps
 ```
 
+## When to Use
+
+- **Testing your own sites** - no Cloudflare blocking, full control
+- **Public website scraping** - data extraction from accessible sites
+- **Form automation** - filling and submitting forms
+- **Screenshot documentation** - capturing page states
+- **Accessibility auditing** - snapshot reveals a11y tree issues
+
+## When NOT to Use
+
+- **Cloudflare-protected sites** - will be blocked (use Playwright MCP instead)
+- **Sites requiring login persistence** - no session management between runs
+- **Multi-tab complex workflows** - use Playwright MCP for advanced scenarios
+- **Existing authenticated sessions** - can't attach to running browser
+
 ## Core Workflow
 
 The recommended workflow for AI agents uses **snapshot-based navigation**:

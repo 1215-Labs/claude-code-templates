@@ -15,7 +15,22 @@ related:
 
 # Purpose
 
-Fork a terminal session to a new terminal window. Using one agentic coding tools or raw cli commands.
+Fork a terminal session to a new terminal window using agentic coding tools or raw CLI commands.
+
+## When to Use
+
+- **Independent parallel tasks** - run a separate agent on a different task
+- **Long-running operations** - start a process without blocking current session
+- **Multi-model work** - use Gemini or Codex for specific tasks
+- **Isolated environments** - fresh terminal for specific work
+
+## When NOT to Use
+
+- **Dependent operations** - if task B needs task A's output, use single session
+- **Simple commands** - just run them directly, no need to fork
+- **State sharing needed** - forked terminals don't share context automatically
+- **Every command** - forking has startup overhead, use judiciously
+
 Follow the `Instructions`, execute the `Workflow`, based on the `Cookbook`.
 
 ## Variables
