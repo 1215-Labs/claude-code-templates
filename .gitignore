@@ -1,0 +1,19 @@
+# Local settings (user-specific paths)
+.claude/settings.local.json
+.claude/settings.json
+
+# Temporary files
+gemini.txt
+*.tmp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
