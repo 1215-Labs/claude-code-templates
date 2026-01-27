@@ -231,13 +231,42 @@ When to use each tool:
 
 | Scenario | Recommended Tool |
 |----------|------------------|
+| **Testing your own sites** | **agent-browser** (ideal) |
 | Public sites, scraping, forms | agent-browser |
 | Cloudflare-protected sites | Playwright MCP |
 | Sites requiring login | Playwright MCP (attach to authenticated session) |
 | Quick screenshots/data extraction | agent-browser |
 | Complex multi-tab workflows | Playwright MCP |
 
-**Bottom line:** Use agent-browser for simple automation on public sites. Use Playwright MCP when you hit Cloudflare or need authenticated sessions.
+**Bottom line:** Use agent-browser for simple automation on public sites and testing your own apps. Use Playwright MCP when you hit Cloudflare or need authenticated sessions.
+
+### Ideal Use Case: Validating Your Own Sites
+
+agent-browser is perfect for testing sites you build because:
+- No Cloudflare blocking (you control the site)
+- Snapshot output verifies element accessibility and semantics
+- Quick form validation, navigation testing, screenshot capture
+- Accessibility tree from `snapshot` helps catch a11y issues - missing refs/roles indicate problems
+
+```bash
+# Test a local dev site
+agent-browser open "http://localhost:3000"
+agent-browser wait --load networkidle
+agent-browser snapshot  # Verify page structure
+
+# Test form submission
+agent-browser fill @e5 "test@example.com"
+agent-browser click @e8
+agent-browser wait --text "Success"
+agent-browser screenshot form-success.png
+
+# Verify mobile responsive
+agent-browser set device "iPhone 14"
+agent-browser open "http://localhost:3000"
+agent-browser screenshot mobile-view.png
+
+agent-browser close
+```
 
 ## Troubleshooting
 
