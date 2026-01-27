@@ -1,8 +1,21 @@
 ---
 name: prp-story-task-execute
-description: Execute a Story PRP with focused task implementation
+description: |
+  Execute a Story PRP with focused task implementation
+
+  Usage: /prp-story-task-execute "PRPs/story_password-reset.md"
+
+  Examples:
+  /prp-story-task-execute "PRPs/story_dark-mode-toggle.md"
+  /prp-story-task-execute "PRPs/story_file-upload-fix.md"
+  /prp-story-task-execute "PRPs/story_stripe-api-refactor.md"
+
+  Use for: Executing PRPs created by /prp-story-task-create
+  See also: /prp-claude-code-execute (for base PRPs)
 argument-hint: <story-prp-file>
 user-invocable: true
+related:
+  commands: [/prp-story-task-create, /prp-claude-code-execute]
 allowed-tools:
   - Read
   - Glob

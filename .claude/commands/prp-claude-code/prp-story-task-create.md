@@ -1,8 +1,21 @@
 ---
 name: prp-story-task-create
-description: Convert user story/task into executable PRP with deep codebase analysis
+description: |
+  Convert user story/task into executable PRP with deep codebase analysis
+
+  Usage: /prp-story-task-create "As a user, I want to reset my password via email"
+
+  Examples:
+  /prp-story-task-create "Add dark mode toggle to settings page"
+  /prp-story-task-create "Fix bug where users can't upload files > 5MB"
+  /prp-story-task-create "Refactor payment service to use new Stripe API"
+
+  Use for: User stories, bug fixes, targeted tasks with clear scope
+  See also: /prp-claude-code-create (for complex features needing external research)
 argument-hint: <story-or-task-description>
 user-invocable: true
+related:
+  commands: [/prp-story-task-execute, /prp-claude-code-create]
 allowed-tools:
   - Read
   - Glob

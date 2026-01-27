@@ -1,8 +1,21 @@
 ---
 name: prp-any-cli-create
-description: Create PRP for any CLI agent with thorough research
+description: |
+  Create PRP for any CLI agent with thorough research
+
+  Usage: /prp-any-cli-create "features/new-api-endpoint.md"
+
+  Examples:
+  /prp-any-cli-create "features/graphql-schema.md"
+  /prp-any-cli-create "features/caching-layer.md"
+  /prp-any-cli-create "features/logging-system.md"
+
+  Use for: PRPs targeting Codex, Gemini CLI, or other agentic tools
+  See also: /prp-claude-code-create (optimized for Claude Code)
 argument-hint: <feature-file>
 user-invocable: true
+related:
+  commands: [/prp-any-cli-execute, /prp-claude-code-create]
 allowed-tools:
   - Read
   - Glob

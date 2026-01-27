@@ -1,8 +1,21 @@
 ---
 name: prp-any-cli-execute
-description: Execute PRP with any CLI agent
+description: |
+  Execute PRP with any CLI agent
+
+  Usage: /prp-any-cli-execute "PRPs/graphql-schema.md"
+
+  Examples:
+  /prp-any-cli-execute "PRPs/caching-layer.md"
+  /prp-any-cli-execute "PRPs/logging-system.md"
+  /prp-any-cli-execute "PRPs/feature-flags.md"
+
+  Use for: Running PRPs with Codex, Gemini CLI, or any agentic tool
+  See also: /prp-claude-code-execute (optimized for Claude Code)
 argument-hint: <prp-file>
 user-invocable: true
+related:
+  commands: [/prp-any-cli-create, /prp-claude-code-execute]
 allowed-tools:
   - Read
   - Glob

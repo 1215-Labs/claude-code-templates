@@ -1,8 +1,21 @@
 ---
 name: prp-claude-code-execute
-description: Execute PRP with Claude Code for one-pass implementation
+description: |
+  Execute PRP with Claude Code for one-pass implementation
+
+  Usage: /prp-claude-code-execute "PRPs/add-authentication.md"
+
+  Examples:
+  /prp-claude-code-execute "PRPs/oauth2-login.md"
+  /prp-claude-code-execute "PRPs/rate-limiting.md"
+  /prp-claude-code-execute "PRPs/websocket-support.md"
+
+  Use for: Implementing PRPs created by /prp-claude-code-create
+  See also: /prp-story-task-execute (for story PRPs)
 argument-hint: <prp-file>
 user-invocable: true
+related:
+  commands: [/prp-claude-code-create, /prp-story-task-execute]
 allowed-tools:
   - Read
   - Glob

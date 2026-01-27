@@ -1,8 +1,21 @@
 ---
 name: prp-claude-code-create
-description: Create comprehensive PRP for Claude Code with deep research
+description: |
+  Create comprehensive PRP for Claude Code with deep research
+
+  Usage: /prp-claude-code-create "Add user authentication with JWT"
+
+  Examples:
+  /prp-claude-code-create "Add OAuth2 login with Google provider"
+  /prp-claude-code-create "Implement rate limiting for API endpoints"
+  /prp-claude-code-create "Add WebSocket support for real-time updates"
+
+  Use for: Complex features requiring deep codebase research and external docs
+  See also: /prp-story-task-create (simpler task-focused PRPs)
 argument-hint: <feature-description>
 user-invocable: true
+related:
+  commands: [/prp-claude-code-execute, /prp-story-task-create]
 allowed-tools:
   - Read
   - Glob
