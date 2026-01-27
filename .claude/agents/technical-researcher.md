@@ -1,6 +1,7 @@
 ---
 name: technical-researcher
 model: sonnet
+# Model rationale: Deep technical research requires synthesizing complex information from multiple sources
 color: indigo
 category: research
 tools:

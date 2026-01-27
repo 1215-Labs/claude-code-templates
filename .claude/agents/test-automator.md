@@ -1,6 +1,7 @@
 ---
 name: test-automator
 model: sonnet
+# Model rationale: Test design requires understanding code behavior and reasoning about edge cases
 color: green
 tools:
   - Read

@@ -1,6 +1,7 @@
 ---
 name: debugger
 model: sonnet
+# Model rationale: Root cause analysis requires deep reasoning about code behavior and error patterns
 color: yellow
 tools:
   - Read

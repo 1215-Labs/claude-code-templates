@@ -1,6 +1,7 @@
 ---
 name: mcp-backend-engineer
 model: sonnet
+# Model rationale: MCP protocol compliance requires precision; architectural decisions need careful analysis
 color: purple
 category: infrastructure
 tools:

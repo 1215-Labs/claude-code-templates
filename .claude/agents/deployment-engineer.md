@@ -1,6 +1,7 @@
 ---
 name: deployment-engineer
 model: sonnet
+# Model rationale: Infrastructure decisions require careful analysis of trade-offs and security implications
 color: orange
 category: infrastructure
 tools:

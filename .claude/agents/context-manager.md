@@ -1,6 +1,7 @@
 ---
 name: context-manager
 model: sonnet
+# Model rationale: Context synthesis and prioritization requires nuanced judgment about relevance
 color: cyan
 tools:
   - Read

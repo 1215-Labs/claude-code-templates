@@ -29,6 +29,7 @@ description: |
   </commentary>
   </example>
 model: sonnet
+# Model rationale: Research synthesis requires evaluating source quality and extracting actionable patterns
 color: magenta
 category: research
 tools:
