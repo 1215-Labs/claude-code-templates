@@ -17,6 +17,7 @@ Central index of all .claude components for quick discovery.
 | Find patterns | `codebase-analyst` agent |
 | Create tests | `test-automator` agent |
 | Browser automation | `agent-browser` skill |
+| Fork terminal | `fork-terminal` skill |
 | n8n workflows | n8n-* skills |
 
 ## By Category
@@ -76,10 +77,11 @@ Central index of all .claude components for quick discovery.
 | Skill | `n8n-workflow-patterns` | Workflow architecture |
 | Agent | `n8n-mcp-tester` | n8n MCP testing |
 
-### Browser Automation
+### Browser & Terminal Automation
 | Type | Component | Purpose |
 |------|-----------|---------|
 | Skill | `agent-browser` | Vercel agent-browser CLI for headless automation |
+| Skill | `fork-terminal` | Fork terminal to new window with Claude/Codex/Gemini |
 
 ### Research
 | Type | Component | Purpose |
@@ -118,8 +120,8 @@ Multi-step workflows for complex tasks:
 
 | Type | Count | Location |
 |------|-------|----------|
-| Agents | 13 | `.claude/agents/` |
-| Commands | 16 | `.claude/commands/` |
+| Agents | 10 | `.claude/agents/` |
+| Commands | 17 | `.claude/commands/` |
 | Skills | 12 | `.claude/skills/` |
 | Rules | 1 | `.claude/rules/` |
 | Hooks | 3 | `.claude/hooks/` |
@@ -127,12 +129,96 @@ Multi-step workflows for complex tasks:
 
 ## Cross-Reference Map
 
-```
-codebase-analyst ←→ /deep-prime ←→ lsp-navigator
-       ↓                              ↓
-code-reviewer ←→ /code-review ←→ type-checker
-       ↓                              ↓
-test-automator ←----------------→ lsp-type-validator
+### Visual Overview
 
-debugger ←→ /rca ←→ lsp-reference-checker
 ```
+                    ANALYSIS & CONTEXT
+                    ==================
+    /onboarding ──→ /quick-prime ──→ /deep-prime
+         │              │                 │
+         ↓              ↓                 ↓
+    context-manager ←─→ codebase-analyst ←─→ lsp-symbol-navigation
+                              │
+                              ↓
+                    CODE QUALITY & REVIEW
+                    =====================
+    /code-review ←──────────→ code-reviewer
+         │                         │
+         ↓                         ↓
+    /ui-review              test-automator ←─→ lsp-type-safety-check
+                                   │
+                                   ↓
+                    DEBUGGING & TESTING
+                    ===================
+    /rca ←─────────────────→ debugger
+         │                      │
+         ↓                      ↓
+    dependency-analyzer ←─→ lsp-dependency-analysis
+```
+
+### Component Relationships Table
+
+| Component | Related Agents | Related Commands | Related Skills |
+|-----------|---------------|------------------|----------------|
+| **Agents** |
+| `codebase-analyst` | context-manager, debugger | /deep-prime, /quick-prime | lsp-symbol-navigation, lsp-dependency-analysis |
+| `code-reviewer` | test-automator, codebase-analyst | /code-review, /ui-review | lsp-type-safety-check |
+| `context-manager` | codebase-analyst | /deep-prime, /onboarding | — |
+| `debugger` | codebase-analyst, dependency-analyzer | /rca | lsp-dependency-analysis |
+| `deployment-engineer` | — | — | — |
+| `library-researcher` | technical-researcher | — | — |
+| `mcp-backend-engineer` | — | — | — |
+| `n8n-mcp-tester` | — | — | n8n-* skills |
+| `technical-researcher` | library-researcher | — | — |
+| `test-automator` | code-reviewer, debugger | /code-review | — |
+| **Skills** |
+| `agent-browser` | — | — | fork-terminal |
+| `fork-terminal` | context-manager | — | agent-browser |
+| `lsp-symbol-navigation` | codebase-analyst | /deep-prime | lsp-dependency-analysis, lsp-type-safety-check |
+| `lsp-type-safety-check` | code-reviewer | /code-review | lsp-symbol-navigation |
+| `lsp-dependency-analysis` | debugger, dependency-analyzer | /rca | lsp-symbol-navigation |
+| `n8n-*` (7 skills) | n8n-mcp-tester | — | (inter-related) |
+
+### n8n Skills Relationships
+
+```
+n8n-workflow-patterns ──→ Choose architecture
+         │
+         ↓
+n8n-node-configuration ──→ Configure nodes
+         │
+         ├──→ n8n-code-javascript (complex logic)
+         ├──→ n8n-code-python (stdlib needs)
+         └──→ n8n-expression-syntax (dynamic fields)
+         │
+         ↓
+n8n-mcp-tools-expert ──→ Use MCP tools
+         │
+         ↓
+n8n-validation-expert ──→ Fix validation errors
+```
+
+### PRP Command Relationships
+
+```
+/prp-story-task-create ──→ /prp-story-task-execute
+         │                          │
+         │  (simpler tasks)         │
+         ↓                          ↓
+/prp-claude-code-create ──→ /prp-claude-code-execute
+         │                          │
+         │  (Claude Code)           │
+         ↓                          ↓
+/prp-any-cli-create ────→ /prp-any-cli-execute
+                    (Codex/Gemini/other)
+```
+
+### Workflow Entry Points
+
+| Starting Point | Leads To | Use When |
+|----------------|----------|----------|
+| `/onboarding` | feature-development, new-developer | New to project |
+| `/quick-prime` | Any implementation task | Quick context refresh |
+| `/deep-prime` | feature-development | Deep dive before coding |
+| `/code-review` | code-quality | Pre-merge validation |
+| `/rca` | bug-investigation | Debugging issues |
