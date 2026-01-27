@@ -198,6 +198,47 @@ For complete command documentation:
 Working automation examples:
 - **`examples/common-workflows.sh`** - Common automation patterns
 
+## agent-browser vs Playwright MCP
+
+When to use each tool:
+
+### agent-browser Advantages
+
+- **AI-optimized output** - `snapshot` returns an accessibility tree with refs (`@e1`, `@e2`) designed for LLM comprehension
+- **Simpler mental model** - snapshot → interact → snapshot loop
+- **Fast** - Rust CLI with minimal overhead
+- **Semantic navigation** - refs avoid brittle CSS selectors
+
+### agent-browser Disadvantages
+
+- **Cloudflare blocks it** - Can't automate many SaaS sites
+- **No session persistence** - Cookies/auth don't carry between runs
+- **Headless only** - Can't attach to your existing browser
+
+### Playwright MCP Advantages
+
+- **Can use existing browser sessions** - Attach to your authenticated Chrome/Firefox
+- **Bypasses Cloudflare** - If you're already logged in manually
+- **Full Playwright power** - Network interception, multiple contexts, traces
+- **Session persistence** - Can maintain auth state
+
+### Playwright MCP Disadvantages
+
+- **Verbose output** - Not optimized for LLM token efficiency
+- **More complex** - Full browser automation API
+
+### Decision Guide
+
+| Scenario | Recommended Tool |
+|----------|------------------|
+| Public sites, scraping, forms | agent-browser |
+| Cloudflare-protected sites | Playwright MCP |
+| Sites requiring login | Playwright MCP (attach to authenticated session) |
+| Quick screenshots/data extraction | agent-browser |
+| Complex multi-tab workflows | Playwright MCP |
+
+**Bottom line:** Use agent-browser for simple automation on public sites. Use Playwright MCP when you hit Cloudflare or need authenticated sessions.
+
 ## Troubleshooting
 
 **Element not found**: Run `snapshot` to see current page state and verify ref exists.
