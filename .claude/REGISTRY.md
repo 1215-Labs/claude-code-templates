@@ -16,6 +16,7 @@ Central index of all .claude components for quick discovery.
 | Map dependencies | `dependency-analyzer` agent |
 | Find patterns | `codebase-analyst` agent |
 | Create tests | `test-automator` agent |
+| Browser automation | `agent-browser` skill |
 | n8n workflows | n8n-* skills |
 
 ## By Category
@@ -75,6 +76,11 @@ Central index of all .claude components for quick discovery.
 | Skill | `n8n-workflow-patterns` | Workflow architecture |
 | Agent | `n8n-mcp-tester` | n8n MCP testing |
 
+### Browser Automation
+| Type | Component | Purpose |
+|------|-----------|---------|
+| Skill | `agent-browser` | Vercel agent-browser CLI for headless automation |
+
 ### Research
 | Type | Component | Purpose |
 |------|-----------|---------|
@@ -114,7 +120,7 @@ Multi-step workflows for complex tasks:
 |------|-------|----------|
 | Agents | 13 | `.claude/agents/` |
 | Commands | 16 | `.claude/commands/` |
-| Skills | 11 | `.claude/skills/` |
+| Skills | 12 | `.claude/skills/` |
 | Rules | 1 | `.claude/rules/` |
 | Hooks | 3 | `.claude/hooks/` |
 | Workflows | 4 | `.claude/workflows/` |
