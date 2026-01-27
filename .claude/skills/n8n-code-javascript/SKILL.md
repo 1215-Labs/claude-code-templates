@@ -13,6 +13,23 @@ related:
 
 Expert guidance for writing JavaScript code in n8n Code nodes.
 
+## When to Use
+
+- **Complex data transformations** - aggregation, filtering, reshaping
+- **Custom business logic** - calculations, conditional processing
+- **API response parsing** - extracting/transforming nested data
+- **Need `$helpers.httpRequest()`** - in-node HTTP calls
+- **Need Luxon DateTime** - complex date manipulation
+
+## When NOT to Use
+
+- **Simple field mapping** - use **Set** node instead
+- **Basic filtering** - use **Filter** node instead
+- **Simple conditionals** - use **IF/Switch** nodes instead
+- **HTTP requests only** - use **HTTP Request** node instead
+- **Need external libraries** (pandas, numpy) - not supported in n8n
+- **Expression in field** - use `{{$json.field}}` syntax, not Code node
+
 ## Essential Rules
 
 | Rule | Details |

@@ -15,6 +15,21 @@ Expert guidance for writing Python code in n8n Code nodes.
 
 > **Recommendation**: Use JavaScript for 95% of cases. Python only when you need specific stdlib functions or prefer Python syntax.
 
+## When to Use
+
+- **Need `statistics` module** - mean, median, stdev calculations
+- **Prefer list comprehensions** - Pythonic data processing
+- **Regex-heavy operations** - Python's `re` module
+- **Team knows Python better** - familiar syntax preference
+
+## When NOT to Use
+
+- **95% of cases** - JavaScript has better n8n integration
+- **Need HTTP requests** - use `$helpers.httpRequest()` (JavaScript only)
+- **Need DateTime/Luxon** - JavaScript only
+- **Need external libraries** (requests, pandas, numpy) - not available
+- **Performance-critical** - JavaScript executes faster in n8n
+
 ## Essential Rules
 
 | Rule | Details |

@@ -15,6 +15,22 @@ related:
 
 Master guide for using n8n-mcp MCP server tools to build workflows.
 
+## When to Use
+
+- **Building n8n workflows programmatically** - create/update via MCP
+- **Need to search nodes** - find nodes by keyword or capability
+- **Validating configurations** - check before deployment
+- **Deploying templates** - use pre-built workflow templates
+- **Any n8n automation task** - this is the primary MCP interface
+
+## When NOT to Use
+
+- **Writing Code node logic** - use `n8n-code-javascript` or `n8n-code-python`
+- **Expression syntax help** - use `n8n-expression-syntax`
+- **Understanding node fields** - use `n8n-node-configuration` first
+- **Choosing workflow architecture** - use `n8n-workflow-patterns` first
+- **n8n not configured** - verify N8N_API_URL and N8N_API_KEY are set
+
 ## Quick Reference
 
 | Tool | Use When | Speed |

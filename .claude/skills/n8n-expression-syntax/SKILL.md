@@ -13,6 +13,21 @@ related:
 
 Expert guide for writing correct n8n expressions in workflows.
 
+## When to Use
+
+- **Dynamic field values** - insert data from previous nodes
+- **String interpolation in URLs** - `https://api.example.com/{{$json.id}}`
+- **Conditional text** - ternary expressions in text fields
+- **Date formatting** - `{{$now.toFormat('yyyy-MM-dd')}}`
+- **Cross-node references** - `{{$node["Other Node"].json.field}}`
+
+## When NOT to Use
+
+- **Code nodes** - use direct JavaScript: `$json.field` (no `{{ }}`)
+- **Webhook paths** - static paths only, no expressions
+- **Credential fields** - use n8n credential system
+- **Complex logic** - use Code node for multi-step operations
+
 ## Expression Format
 
 All dynamic content uses **double curly braces**: `{{expression}}`

@@ -13,6 +13,20 @@ related:
 
 Expert guidance for operation-aware node configuration with property dependencies.
 
+## When to Use
+
+- **Configuring any n8n node** - understand required fields per operation
+- **HTTP Request nodes** - method-dependent property requirements
+- **Resource/Operation nodes** (Slack, Sheets) - operation-aware field discovery
+- **Validation errors from missing fields** - understand property dependencies
+
+## When NOT to Use
+
+- **Choosing workflow architecture** - use `n8n-workflow-patterns` first
+- **Writing Code node logic** - use `n8n-code-javascript` or `n8n-code-python`
+- **Expression syntax in fields** - use `n8n-expression-syntax`
+- **Using MCP tools directly** - use `n8n-mcp-tools-expert` for tool selection
+
 ## Core Concepts
 
 ### 1. Operation-Aware Configuration

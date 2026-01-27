@@ -13,6 +13,20 @@ related:
 
 Proven architectural patterns for building n8n workflows.
 
+## When to Use
+
+- **Starting a new workflow** - choose appropriate pattern before building
+- **Unclear structure** - use pattern table to match use case to architecture
+- **Planning phase** - understand building blocks and data flow options
+- **Teaching n8n** - patterns provide clear mental models
+
+## When NOT to Use
+
+- **Modifying existing workflow** - use `n8n-node-configuration` for node changes
+- **Writing Code node logic** - use `n8n-code-javascript` or `n8n-code-python`
+- **Expression syntax issues** - use `n8n-expression-syntax` for `{{}}` problems
+- **Validation errors** - use `n8n-validation-expert` for error interpretation
+
 ## The 5 Core Patterns
 
 | Pattern | Use When | Structure |

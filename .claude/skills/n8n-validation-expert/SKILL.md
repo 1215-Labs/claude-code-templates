@@ -13,6 +13,21 @@ related:
 
 Expert guide for interpreting and fixing n8n validation errors.
 
+## When to Use
+
+- **Validation errors** - interpret and fix `validate_node` or `validate_workflow` errors
+- **Pre-deployment checks** - validate before activating workflows
+- **Understanding error severity** - know when errors block vs warn
+- **Choosing validation profile** - match profile to use case
+
+## When NOT to Use
+
+- **Building new workflows** - use `n8n-workflow-patterns` for architecture
+- **Configuring nodes** - use `n8n-node-configuration` for field requirements
+- **Expression errors** - use `n8n-expression-syntax` for `{{}}` issues
+- **Code node errors** - use `n8n-code-javascript` for syntax issues
+- **No validation errors** - skill is for interpreting validation output
+
 ## Validation Philosophy
 
 **Validation is iterative** - expect 2-3 cycles:
