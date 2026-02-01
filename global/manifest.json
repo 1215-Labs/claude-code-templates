@@ -1,0 +1,63 @@
+{
+  "version": "1.0.0",
+  "scope": "global",
+  "description": "Core Claude Code components installed to ~/.claude/",
+  "components": {
+    "commands": [
+      {
+        "name": "workflow",
+        "type": "directory",
+        "path": "commands/workflow",
+        "description": "Workflow automation commands (prime, code-review, rca, etc.)"
+      },
+      {
+        "name": "prp-claude-code",
+        "type": "directory",
+        "path": "commands/prp-claude-code",
+        "description": "PRP creation and execution for Claude Code"
+      },
+      {
+        "name": "prp-any-agent",
+        "type": "directory",
+        "path": "commands/prp-any-agent",
+        "description": "PRP creation and execution for any CLI agent"
+      },
+      {
+        "name": "dev",
+        "type": "directory",
+        "path": "commands/dev",
+        "description": "Component development commands (new-component, validate, etc.)"
+      }
+    ],
+    "agents": [
+      {"name": "codebase-analyst", "path": "agents/codebase-analyst.md"},
+      {"name": "code-reviewer", "path": "agents/code-reviewer.md"},
+      {"name": "context-manager", "path": "agents/context-manager.md"},
+      {"name": "debugger", "path": "agents/debugger.md"},
+      {"name": "dependency-analyzer", "path": "agents/dependency-analyzer", "type": "directory"},
+      {"name": "deployment-engineer", "path": "agents/deployment-engineer.md"},
+      {"name": "library-researcher", "path": "agents/library-researcher.md"},
+      {"name": "lsp-navigator", "path": "agents/lsp-navigator", "type": "directory"},
+      {"name": "mcp-backend-engineer", "path": "agents/mcp-backend-engineer.md"},
+      {"name": "n8n-mcp-tester", "path": "agents/n8n-mcp-tester.md"},
+      {"name": "technical-researcher", "path": "agents/technical-researcher.md"},
+      {"name": "test-automator", "path": "agents/test-automator.md"},
+      {"name": "type-checker", "path": "agents/type-checker", "type": "directory"}
+    ],
+    "skills": [
+      {"name": "agent-browser", "path": "skills/agent-browser", "description": "Headless browser automation with Vercel agent-browser"},
+      {"name": "fork-terminal", "path": "skills/fork-terminal", "description": "Fork terminal to new window with various CLI tools"},
+      {"name": "lsp-dependency-analysis", "path": "skills/lsp-dependency-analysis", "description": "Map module dependencies using LSP"},
+      {"name": "lsp-symbol-navigation", "path": "skills/lsp-symbol-navigation", "description": "Navigate symbols using LSP"},
+      {"name": "lsp-type-safety-check", "path": "skills/lsp-type-safety-check", "description": "Verify type safety using LSP"},
+      {"name": "component-development", "path": "skills/component-development", "description": "Meta-skill for building Claude Code components"},
+      {"name": "multi-model-orchestration", "path": "skills/multi-model-orchestration", "description": "Orchestrate tasks across Gemini/Codex via forked terminals"}
+    ],
+    "workflows": [
+      {"name": "bug-investigation", "path": "workflows/bug-investigation.md"},
+      {"name": "code-quality", "path": "workflows/code-quality.md"},
+      {"name": "feature-development", "path": "workflows/feature-development.md"},
+      {"name": "new-developer", "path": "workflows/new-developer.md"}
+    ]
+  }
+}
