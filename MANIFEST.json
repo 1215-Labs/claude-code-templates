@@ -1,0 +1,422 @@
+{
+  "$schema": "./schemas/manifest.schema.json",
+  "version": "2.0.0",
+  "description": "Single source of truth for ALL Claude Code components in this repository",
+  "metadata": {
+    "lastUpdated": "2025-02-01",
+    "maintainer": "1215-Labs"
+  },
+  "deploymentLevels": {
+    "global": "Installed to ~/.claude/ via symlinks, available to all projects on device",
+    "template": "Copied to projects via deploy-template.sh, project-specific configurations",
+    "staging": "Work-in-progress, not yet promoted to global or template",
+    "experiment": "Exploratory ideas, may never be promoted",
+    "deprecated": "Scheduled for removal, kept for reference"
+  },
+  "statusLevels": {
+    "production": "Stable, tested, recommended for use",
+    "beta": "Functional but may have rough edges",
+    "alpha": "Early development, expect breaking changes",
+    "experiment": "Proof of concept, not for production use",
+    "deprecated": "No longer maintained, will be removed"
+  },
+  "components": {
+    "skills": [
+      {
+        "name": "agent-browser",
+        "path": "global/skills/agent-browser",
+        "deployment": "global",
+        "status": "production",
+        "description": "Headless browser automation with Playwright"
+      },
+      {
+        "name": "component-development",
+        "path": "global/skills/component-development",
+        "deployment": "global",
+        "status": "production",
+        "description": "Meta-skill for building Claude Code components"
+      },
+      {
+        "name": "fork-terminal",
+        "path": "global/skills/fork-terminal",
+        "deployment": "global",
+        "status": "production",
+        "description": "Fork terminal to new window with various CLI tools"
+      },
+      {
+        "name": "lsp-dependency-analysis",
+        "path": "global/skills/lsp-dependency-analysis",
+        "deployment": "global",
+        "status": "production",
+        "description": "Map module dependencies using LSP"
+      },
+      {
+        "name": "lsp-symbol-navigation",
+        "path": "global/skills/lsp-symbol-navigation",
+        "deployment": "global",
+        "status": "production",
+        "description": "Navigate symbols using LSP"
+      },
+      {
+        "name": "lsp-type-safety-check",
+        "path": "global/skills/lsp-type-safety-check",
+        "deployment": "global",
+        "status": "production",
+        "description": "Verify type safety using LSP"
+      },
+      {
+        "name": "multi-model-orchestration",
+        "path": "global/skills/multi-model-orchestration",
+        "deployment": "global",
+        "status": "production",
+        "description": "Orchestrate tasks across Gemini/Codex via forked terminals"
+      },
+      {
+        "name": "n8n-code-javascript",
+        "path": "templates/n8n/skills/n8n-code-javascript",
+        "deployment": "template",
+        "template": "n8n",
+        "status": "production",
+        "description": "JavaScript patterns for n8n Code nodes"
+      },
+      {
+        "name": "n8n-code-python",
+        "path": "templates/n8n/skills/n8n-code-python",
+        "deployment": "template",
+        "template": "n8n",
+        "status": "production",
+        "description": "Python patterns for n8n Code nodes"
+      },
+      {
+        "name": "n8n-expression-syntax",
+        "path": "templates/n8n/skills/n8n-expression-syntax",
+        "deployment": "template",
+        "template": "n8n",
+        "status": "production",
+        "description": "n8n expression syntax and variables"
+      },
+      {
+        "name": "n8n-mcp-tools-expert",
+        "path": "templates/n8n/skills/n8n-mcp-tools-expert",
+        "deployment": "template",
+        "template": "n8n",
+        "status": "production",
+        "description": "Expert use of n8n MCP tools"
+      },
+      {
+        "name": "n8n-node-configuration",
+        "path": "templates/n8n/skills/n8n-node-configuration",
+        "deployment": "template",
+        "template": "n8n",
+        "status": "production",
+        "description": "Configure n8n nodes with operation-aware properties"
+      },
+      {
+        "name": "n8n-validation-expert",
+        "path": "templates/n8n/skills/n8n-validation-expert",
+        "deployment": "template",
+        "template": "n8n",
+        "status": "production",
+        "description": "Interpret n8n validation errors and warnings"
+      },
+      {
+        "name": "n8n-workflow-patterns",
+        "path": "templates/n8n/skills/n8n-workflow-patterns",
+        "deployment": "template",
+        "template": "n8n",
+        "status": "production",
+        "description": "Architectural patterns for n8n workflows"
+      }
+    ],
+    "agents": [
+      {
+        "name": "codebase-analyst",
+        "path": "global/agents/codebase-analyst.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Deep codebase pattern analysis and convention discovery"
+      },
+      {
+        "name": "code-reviewer",
+        "path": "global/agents/code-reviewer.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Review code for quality, security, and maintainability"
+      },
+      {
+        "name": "context-manager",
+        "path": "global/agents/context-manager.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Manage context across agents and long-running tasks"
+      },
+      {
+        "name": "debugger",
+        "path": "global/agents/debugger.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Root cause analysis for errors and failures"
+      },
+      {
+        "name": "dependency-analyzer",
+        "path": "global/agents/dependency-analyzer",
+        "type": "directory",
+        "deployment": "global",
+        "status": "production",
+        "description": "Map dependencies using LSP find-references"
+      },
+      {
+        "name": "deployment-engineer",
+        "path": "global/agents/deployment-engineer.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "CI/CD pipelines, containerization, cloud deployments"
+      },
+      {
+        "name": "library-researcher",
+        "path": "global/agents/library-researcher.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Research external libraries and documentation"
+      },
+      {
+        "name": "lsp-navigator",
+        "path": "global/agents/lsp-navigator",
+        "type": "directory",
+        "deployment": "global",
+        "status": "production",
+        "description": "Navigate code using LSP go-to-definition and hover"
+      },
+      {
+        "name": "mcp-backend-engineer",
+        "path": "global/agents/mcp-backend-engineer.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "MCP server implementation and debugging"
+      },
+      {
+        "name": "n8n-mcp-tester",
+        "path": "global/agents/n8n-mcp-tester.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Test n8n MCP tools and workflows"
+      },
+      {
+        "name": "technical-researcher",
+        "path": "global/agents/technical-researcher.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "In-depth technical research on complex topics"
+      },
+      {
+        "name": "test-automator",
+        "path": "global/agents/test-automator.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Create comprehensive test suites"
+      },
+      {
+        "name": "type-checker",
+        "path": "global/agents/type-checker",
+        "type": "directory",
+        "deployment": "global",
+        "status": "production",
+        "description": "Verify type safety using LSP"
+      }
+    ],
+    "commands": [
+      {
+        "name": "workflow/all_skills",
+        "path": "global/commands/workflow/all_skills.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "List all available skills"
+      },
+      {
+        "name": "workflow/code-review",
+        "path": "global/commands/workflow/code-review.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Comprehensive code review with parallel subagents"
+      },
+      {
+        "name": "workflow/coderabbit-helper",
+        "path": "global/commands/workflow/coderabbit-helper.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Analyze CodeRabbit suggestions"
+      },
+      {
+        "name": "workflow/deep-prime",
+        "path": "global/commands/workflow/deep-prime.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Deep context priming for specific codebase areas"
+      },
+      {
+        "name": "workflow/onboarding",
+        "path": "global/commands/workflow/onboarding.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Onboard new developers"
+      },
+      {
+        "name": "workflow/orchestrate",
+        "path": "global/commands/workflow/orchestrate.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Delegate tasks to Gemini/Codex via forked terminals"
+      },
+      {
+        "name": "workflow/prime",
+        "path": "global/commands/workflow/prime.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Quick context priming (alias for quick-prime)"
+      },
+      {
+        "name": "workflow/quick-prime",
+        "path": "global/commands/workflow/quick-prime.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Quick context priming"
+      },
+      {
+        "name": "workflow/rca",
+        "path": "global/commands/workflow/rca.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Root cause analysis with parallel diagnostic agents"
+      },
+      {
+        "name": "workflow/sync-reference",
+        "path": "global/commands/workflow/sync-reference.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Sync templates against claude-code reference"
+      },
+      {
+        "name": "workflow/ui-review",
+        "path": "global/commands/workflow/ui-review.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Analyze UI components for consistency"
+      },
+      {
+        "name": "dev/component-feedback",
+        "path": "global/commands/dev/component-feedback.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Record feedback about component effectiveness"
+      },
+      {
+        "name": "dev/new-component",
+        "path": "global/commands/dev/new-component.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Scaffold a new Claude Code component"
+      },
+      {
+        "name": "dev/test-component",
+        "path": "global/commands/dev/test-component.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Test a component in isolation"
+      },
+      {
+        "name": "dev/validate-component",
+        "path": "global/commands/dev/validate-component.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Validate component against conventions"
+      },
+      {
+        "name": "prp-claude-code/prp-claude-code-create",
+        "path": "global/commands/prp-claude-code/prp-claude-code-create.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Create PRP for Claude Code"
+      },
+      {
+        "name": "prp-claude-code/prp-claude-code-execute",
+        "path": "global/commands/prp-claude-code/prp-claude-code-execute.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Execute PRP with Claude Code"
+      },
+      {
+        "name": "prp-claude-code/prp-story-task-create",
+        "path": "global/commands/prp-claude-code/prp-story-task-create.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Convert user story to executable PRP"
+      },
+      {
+        "name": "prp-claude-code/prp-story-task-execute",
+        "path": "global/commands/prp-claude-code/prp-story-task-execute.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Execute a Story PRP"
+      },
+      {
+        "name": "prp-any-agent/prp-any-cli-create",
+        "path": "global/commands/prp-any-agent/prp-any-cli-create.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Create PRP for any CLI agent"
+      },
+      {
+        "name": "prp-any-agent/prp-any-cli-execute",
+        "path": "global/commands/prp-any-agent/prp-any-cli-execute.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Execute PRP with any CLI agent"
+      }
+    ],
+    "workflows": [
+      {
+        "name": "bug-investigation",
+        "path": "global/workflows/bug-investigation.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Systematic bug investigation workflow"
+      },
+      {
+        "name": "code-quality",
+        "path": "global/workflows/code-quality.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Pre-merge code quality validation"
+      },
+      {
+        "name": "feature-development",
+        "path": "global/workflows/feature-development.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "End-to-end feature development workflow"
+      },
+      {
+        "name": "new-developer",
+        "path": "global/workflows/new-developer.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "New developer onboarding workflow"
+      }
+    ],
+    "hooks": [],
+    "templates": [
+      {
+        "name": "n8n",
+        "path": "templates/n8n",
+        "status": "production",
+        "description": "n8n workflow automation template pack",
+        "includes": {
+          "skills": 7,
+          "agents": 0,
+          "commands": 0,
+          "workflows": 0
+        }
+      }
+    ]
+  }
+}

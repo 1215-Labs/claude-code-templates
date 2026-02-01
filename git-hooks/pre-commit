@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+# Git pre-commit hook: Validate MANIFEST.json is in sync with filesystem
+#
+# Prevents commits when:
+# - Components exist on disk but aren't in MANIFEST.json
+# - Components are in MANIFEST.json but don't exist on disk
+#
+# This enforces the "single source of truth" principle.
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+VALIDATOR="$REPO_ROOT/scripts/validate-manifest.py"
+
+# Skip if validator doesn't exist
+if [ ! -f "$VALIDATOR" ]; then
+    echo "Warning: validate-manifest.py not found, skipping manifest validation"
+    exit 0
+fi
+
+# Skip if MANIFEST.json doesn't exist
+if [ ! -f "$REPO_ROOT/MANIFEST.json" ]; then
+    echo "Warning: MANIFEST.json not found, skipping manifest validation"
+    exit 0
+fi
+
+# Check if any component directories are being modified
+STAGED_FILES=$(git diff --cached --name-only)
+
+# Only run validation if relevant files are staged
+if echo "$STAGED_FILES" | grep -qE "^(global/|templates/|dev/|MANIFEST\.json)"; then
+    echo "Validating MANIFEST.json..."
+
+    if ! python3 "$VALIDATOR"; then
+        echo ""
+        echo "=========================================="
+        echo "COMMIT BLOCKED: MANIFEST.json out of sync"
+        echo "=========================================="
+        echo ""
+        echo "Fix the issues above, then:"
+        echo "  git add MANIFEST.json"
+        echo "  git commit"
+        echo ""
+        echo "To skip this check (not recommended):"
+        echo "  git commit --no-verify"
+        exit 1
+    fi
+fi
+
+exit 0
