@@ -46,6 +46,17 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/session-summary.py",
+            "timeout": 5000
+          }
+        ]
+      }
     ]
   }
 }

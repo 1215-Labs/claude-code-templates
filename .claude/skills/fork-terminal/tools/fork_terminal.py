@@ -5,12 +5,22 @@ import os
 import platform
 import shutil
 import subprocess
+import sys
+from pathlib import Path
+
+# Add .claude directory to path for utils import
+_claude_dir = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(_claude_dir))
+from utils.logging import audit
 
 
 def fork_terminal(command: str) -> str:
     """Open a new Terminal window and run the specified command."""
     system = platform.system()
     cwd = os.getcwd()
+
+    # Audit log the fork attempt
+    audit("fork_terminal", command=command, cwd=cwd, platform=system)
 
     if system == "Darwin":  # macOS
         # Build shell command - use single quotes for cd to avoid escaping issues

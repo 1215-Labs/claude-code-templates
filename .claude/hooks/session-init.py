@@ -7,10 +7,15 @@ v2.1.0+ feature: Uses 'once: true' to execute only once per session.
 """
 
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
+
+# Add parent directory to path for utils import
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from utils.logging import get_logger, timed_hook
+
+log = get_logger("session-init")
 
 
 def check_typescript_project():
@@ -51,27 +56,37 @@ def check_git_status():
         )
         branch = result.stdout.strip() if result.returncode == 0 else "unknown"
         return {"branch": branch}
-    except Exception:
+    except Exception as e:
+        log.warning("git_status_failed", error=str(e))
         return {"branch": "unknown"}
 
 
 def main():
     """Main hook execution."""
-    project_types = get_project_type()
-    git_info = check_git_status()
+    with timed_hook("session-init", decision="approve") as h:
+        project_types = get_project_type()
+        git_info = check_git_status()
 
-    # Build context message
-    context_parts = []
+        # Build context message
+        context_parts = []
 
-    if project_types != ["unknown"]:
-        context_parts.append(f"Project type(s): {', '.join(project_types)}")
+        if project_types != ["unknown"]:
+            context_parts.append(f"Project type(s): {', '.join(project_types)}")
 
-    if git_info["branch"] != "unknown":
-        context_parts.append(f"Current branch: {git_info['branch']}")
+        if git_info["branch"] != "unknown":
+            context_parts.append(f"Current branch: {git_info['branch']}")
 
-    # Check for CLAUDE.md
-    if Path(".claude/CLAUDE.md").exists():
-        context_parts.append("CLAUDE.md found - project has Claude Code configuration")
+        # Check for CLAUDE.md
+        has_claude_md = Path(".claude/CLAUDE.md").exists()
+        if has_claude_md:
+            context_parts.append("CLAUDE.md found - project has Claude Code configuration")
+
+        # Set additional hook data
+        h.set(
+            project_types=project_types,
+            branch=git_info["branch"],
+            has_claude_md=has_claude_md,
+        )
 
     # Output hook result
     result = {
