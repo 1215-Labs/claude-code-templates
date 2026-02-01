@@ -6,7 +6,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEMPLATES="$SCRIPT_DIR/.claude"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+TEMPLATES="$REPO_ROOT/.claude"
 TARGET="$HOME/.claude"
 
 echo "=== Claude Code Global Installation ==="
