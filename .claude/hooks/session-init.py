@@ -61,11 +61,74 @@ def check_git_status():
         return {"branch": "unknown"}
 
 
+def check_submodule_updates():
+    """Check if claude-code submodule has updates available.
+
+    Only runs in the claude-code-templates repo (where the submodule exists).
+    """
+    # Only check in repos that have the claude-code submodule configured
+    gitmodules = Path(".gitmodules")
+    if not gitmodules.exists() or "claude-code" not in gitmodules.read_text():
+        return None  # Not a repo with claude-code submodule
+
+    submodule_path = Path("claude-code")
+    if not submodule_path.exists() or not (submodule_path / ".git").exists():
+        return None  # Submodule not initialized
+
+    try:
+        # Fetch latest from remote (quick operation)
+        subprocess.run(
+            ["git", "-C", "claude-code", "fetch", "origin"],
+            capture_output=True,
+            timeout=10
+        )
+
+        # Get current version
+        current = subprocess.run(
+            ["git", "-C", "claude-code", "describe", "--tags", "--always"],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        current_version = current.stdout.strip() if current.returncode == 0 else "unknown"
+
+        # Get latest version on origin/main
+        latest = subprocess.run(
+            ["git", "-C", "claude-code", "describe", "--tags", "origin/main"],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        latest_version = latest.stdout.strip() if latest.returncode == 0 else "unknown"
+
+        # Count commits behind
+        behind = subprocess.run(
+            ["git", "-C", "claude-code", "rev-list", "--count", "HEAD..origin/main"],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        commits_behind = int(behind.stdout.strip()) if behind.returncode == 0 else 0
+
+        if commits_behind > 0:
+            return {
+                "current": current_version,
+                "latest": latest_version,
+                "behind": commits_behind
+            }
+        return None  # Up to date
+
+    except Exception as e:
+        log.warning("submodule_check_failed", error=str(e))
+        return None
+
+
 def main():
     """Main hook execution."""
     with timed_hook("session-init", decision="approve") as h:
         project_types = get_project_type()
         git_info = check_git_status()
+        submodule_info = check_submodule_updates()
 
         # Build context message
         context_parts = []
@@ -81,11 +144,19 @@ def main():
         if has_claude_md:
             context_parts.append("CLAUDE.md found - project has Claude Code configuration")
 
+        # Check for submodule updates
+        if submodule_info:
+            context_parts.append(
+                f"⚠️ claude-code submodule update available: {submodule_info['current']} → {submodule_info['latest']} "
+                f"({submodule_info['behind']} commits behind). Run: git submodule update --remote claude-code"
+            )
+
         # Set additional hook data
         h.set(
             project_types=project_types,
             branch=git_info["branch"],
             has_claude_md=has_claude_md,
+            submodule_update=submodule_info,
         )
 
     # Output hook result
