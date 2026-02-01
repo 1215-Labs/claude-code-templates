@@ -1,17 +1,9 @@
 ---
 name: multi-model-orchestration
-description: |
-  Orchestrate tasks across specialized models via forked terminals.
-  Gemini (1M context) for exploration, Codex (SWE-bench leader) for implementation, Opus for synthesis.
-
-  Use when:
-  - Large codebase exploration needed before implementation
-  - Complex features requiring explore-then-implement workflow
-  - Parallel investigations across different codebase areas
-  - Preserving Opus context for strategic decisions
+description: Use when facing large codebase exploration, complex implementation tasks, or when your context would benefit from delegating to Gemini (1M context) or Codex (SWE-bench leader)
 version: 1.0.0
 category: orchestration
-user-invocable: false
+user-invocable: true
 related:
   skills: [fork-terminal]
   commands: [/orchestrate]
@@ -20,6 +12,42 @@ related:
 # Multi-Model Orchestration
 
 Transform Opus into a strategic orchestrator that delegates tasks to specialized models via forked terminals, keeping Opus's context clean for user interaction and synthesis.
+
+## When to Use
+
+```dot
+digraph when_to_orchestrate {
+    "Large task?" [shape=diamond];
+    "Codebase exploration?" [shape=diamond];
+    "Implementation task?" [shape=diamond];
+    "Context getting full?" [shape=diamond];
+    "Handle directly" [shape=box];
+    "Fork Gemini" [shape=box, style=filled, fillcolor=lightblue];
+    "Fork Codex" [shape=box, style=filled, fillcolor=lightgreen];
+    "Consider forking" [shape=box];
+
+    "Large task?" -> "Codebase exploration?" [label="yes"];
+    "Large task?" -> "Handle directly" [label="no - simple"];
+    "Codebase exploration?" -> "Fork Gemini" [label="yes - 1M context"];
+    "Codebase exploration?" -> "Implementation task?" [label="no"];
+    "Implementation task?" -> "Fork Codex" [label="yes - SWE-bench leader"];
+    "Implementation task?" -> "Context getting full?" [label="no"];
+    "Context getting full?" -> "Consider forking" [label="yes"];
+    "Context getting full?" -> "Handle directly" [label="no"];
+}
+```
+
+**Use orchestration when:**
+- Exploring unfamiliar or large codebase (Gemini's 1M context excels here)
+- Implementing features after exploration phase (Codex is SWE-bench leader)
+- Your context is filling up and you need to preserve it for synthesis
+- Task spans multiple subsystems needing parallel investigation
+- You want explore-then-implement workflow
+
+**Don't use when:**
+- Simple 2-3 tool call tasks (forking has overhead)
+- You need tight back-and-forth with the user during work
+- Task requires your full session context to understand
 
 ## Model Specializations
 

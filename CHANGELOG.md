@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-01] make: Make multi-model-orchestration proactive via superpowers integration (b282ac3)
 [2026-02-01] add: Add single source of truth MANIFEST.json with pre-commit validation (20a7cb3)
 [2026-01-24] add: Add parallel subagents to code-review, onboarding, and ui-review commands (93790d6)
 [2026-01-24] fix: Fix remaining issues from .claude folder audit (334406e)
