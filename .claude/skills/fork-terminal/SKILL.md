@@ -1,7 +1,7 @@
 ---
 name: fork-terminal
 description: Fork terminal to new window with Claude Code, Codex CLI, Gemini CLI, or raw commands.
-version: 1.2.0
+version: 2.0.0
 category: terminal
 context: fork
 user-invocable: true
@@ -41,15 +41,42 @@ ENABLE_CODEX_CLI: true
 ENABLE_CLAUDE_CODE: true
 AGENTIC_CODING_TOOLS: claude-code, codex-cli, gemini-cli
 
+## Features (v2.0.0)
+
+### Environment Variable Propagation
+API keys are automatically propagated to forked terminals:
+- GEMINI_API_KEY
+- OPENAI_API_KEY
+- ANTHROPIC_API_KEY
+- GOOGLE_API_KEY
+- NVIDIA_API_KEY
+- FEATHERLESS_API_KEY
+
+### Output Logging
+Enable output logging to capture terminal output for debugging:
+```bash
+# Use --log flag to tee output to /tmp/fork_<tool>_<timestamp>.log
+python3 fork_terminal.py --log --tool codex "codex exec ..."
+```
+
+Log files are stored at: `/tmp/fork_<tool>_YYYYMMDD_HHMMSS.log`
+
+### Non-Interactive Execution
+All cookbooks now use non-interactive modes:
+- **Codex**: `exec --full-auto --skip-git-repo-check`
+- **Gemini**: `-p` (prompt mode) with `--approval-mode yolo`
+- **Claude Code**: `--dangerously-skip-permissions`
+
 ## Instructions
 
 - Based on the user's request, follow the `Cookbook` to determine which tool to use.
+- All agentic tools run in non-interactive mode to avoid prompts
 
 ### Fork Summary User Prompts
 
 - IF: The user requests a fork terminal with a summary. This ONLY works for our agentic coding tools `AGENTIC_CODING_TOOLS`. The tool MUST BE enabled as well.
-- THEN: 
-  - Read, and REPLACE the `.claude/skills/fork-terminal/prompts/fork_summary_user_prompt.md` with the history of the conversation between you and the user so far. 
+- THEN:
+  - Read, and REPLACE the `.claude/skills/fork-terminal/prompts/fork_summary_user_prompt.md` with the history of the conversation between you and the user so far.
   - Include the next users request in the `Next User Request` section.
   - This will be what you pass into the PROMPT parameter of the agentic coding tool.
   - IMPORTANT: To be clear, don't update the file directly, just read it, fill it out IN YOUR MEMORY and use it to craft a new prompt in the structure provided for the new fork agent.
@@ -59,6 +86,13 @@ AGENTIC_CODING_TOOLS: claude-code, codex-cli, gemini-cli
   - "fork terminal use claude code to <xyz> summarize work so far"
   - "spin up a new terminal request <xyz> using claude code include summary"
   - "create a new terminal to <xyz> with claude code with summary"
+
+### Output Logging
+
+- IF: The user requests logging or you want to debug a fork
+- THEN: Add `--log --tool <toolname>` to the fork_terminal.py invocation
+- EXAMPLE: `python3 fork_terminal.py --log --tool codex "codex exec ..."`
+- CHECK LOGS: `tail -f /tmp/fork_codex_*.log`
 
 ## Workflow
 
@@ -72,7 +106,7 @@ AGENTIC_CODING_TOOLS: claude-code, codex-cli, gemini-cli
 ### Raw CLI Commands
 
 - IF: The user requests a non-agentic coding tool AND `ENABLE_RAW_CLI_COMMANDS` is true.
-- THEN: Read and execute: `.claude/skills/fork-terminal/cookbook/cli-command.md` 
+- THEN: Read and execute: `.claude/skills/fork-terminal/cookbook/cli-command.md`
 - EXAMPLES:
   - "Create a new terminal to <xyz> with ffmpeg"
   - "Create a new terminal to <xyz> with curl"
@@ -104,3 +138,70 @@ AGENTIC_CODING_TOOLS: claude-code, codex-cli, gemini-cli
   - "fork terminal use gemini to <xyz>"
   - "spin up a new terminal request <xyz> with gemini"
   - "create a new terminal to <xyz> using gemini"
+
+## Dependencies
+
+### Check Dependencies
+```bash
+bash ~/.claude/skills/fork-terminal/tools/check_dependencies.sh
+```
+
+### Install Dependencies
+```bash
+# Check what's missing
+bash ~/.claude/skills/fork-terminal/tools/install_dependencies.sh --check
+
+# Install all via apt (requires sudo)
+bash ~/.claude/skills/fork-terminal/tools/install_dependencies.sh --all
+
+# Install via Homebrew (no sudo needed)
+bash ~/.claude/skills/fork-terminal/tools/install_dependencies.sh --brew
+```
+
+### Required Tools
+| Tool | Purpose | Install |
+|------|---------|---------|
+| python3 | Core scripts | `apt install python3` |
+| bash | Shell scripts | Usually pre-installed |
+| xterm | Terminal emulator | `apt install xterm` |
+
+### Optional Tools
+| Tool | Purpose | Install |
+|------|---------|---------|
+| xdotool | Window detection | `apt install xdotool` |
+| scrot | Screenshots | `apt install scrot` |
+| imagemagick | Image processing | `apt install imagemagick` or `brew install imagemagick` |
+| tree | Directory visualization | `apt install tree` or `brew install tree` |
+| jq | JSON processing | `apt install jq` or `brew install jq` |
+
+### Agentic CLI Tools
+| Tool | Purpose | Install |
+|------|---------|---------|
+| codex | OpenAI Codex CLI | `npm install -g @openai/codex` |
+| gemini | Google Gemini CLI | `npm install -g @google/gemini-cli` |
+| claude | Claude Code CLI | `npm install -g @anthropic-ai/claude-code` |
+
+## Troubleshooting
+
+### Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| Terminal stalls on prompt | Ensure using non-interactive mode (see cookbooks) |
+| API key not found | Check that key is set in parent environment |
+| "Not inside trusted directory" | Use `--skip-git-repo-check` for Codex |
+| IDE integration nudge | Use `-p` instead of `-i` for Gemini |
+| Can't see terminal output | Use `--log` flag, check `/tmp/fork_*.log` |
+
+### Checking Logs
+
+```bash
+# List recent log files
+ls -la /tmp/fork_*.log
+
+# Tail a specific log
+tail -f /tmp/fork_codex_*.log
+
+# Check for errors
+grep -i error /tmp/fork_*.log
+```
