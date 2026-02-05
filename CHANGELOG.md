@@ -6,6 +6,8 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-04] add: Add Stop hook to warn about uncommitted/unpushed changes (7a908f5)
+[2026-02-04] refactor: Consolidate global/ into .claude/, add fork-terminal dual-mode support (e19bed9)
 [2026-02-01] make: Make multi-model-orchestration proactive via superpowers integration (b282ac3)
 [2026-02-01] add: Add single source of truth MANIFEST.json with pre-commit validation (20a7cb3)
 [2026-01-24] add: Add parallel subagents to code-review, onboarding, and ui-review commands (93790d6)
