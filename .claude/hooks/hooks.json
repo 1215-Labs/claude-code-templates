@@ -43,6 +43,11 @@
           {
             "type": "prompt",
             "prompt": "Before stopping, verify the task is complete: all requested changes made, no pending todos, and code compiles without errors. If incomplete, explain what remains."
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/uncommitted-check.sh",
+            "timeout": 5000
           }
         ]
       }
