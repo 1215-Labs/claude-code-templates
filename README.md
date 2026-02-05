@@ -17,10 +17,10 @@ This repository serves two goals:
 │                                                             │
 │  ┌──────────────┐     ┌──────────────────────────────────┐ │
 │  │ claude-code  │     │ .claude/                         │ │
-│  │ (submodule)  │────►│   agents/    (12 agents)         │ │
-│  │              │     │   commands/  (10+ commands)      │ │
-│  │ Official     │     │   skills/    (12 skills)         │ │
-│  │ Reference    │     │   hooks/     (automated checks)  │ │
+│  │ (submodule)  │────►│   agents/    (13 agents)         │ │
+│  │              │     │   commands/  (17 commands)       │ │
+│  │ Official     │     │   skills/    (6+7 skills)        │ │
+│  │ Reference    │     │   hooks/     (5 hooks)           │ │
 │  └──────────────┘     │   workflows/ (4 workflow chains) │ │
 │         │             └──────────────────────────────────┘ │
 │         │                            │                      │
@@ -91,10 +91,10 @@ All components live in `.claude/`—the single source of truth. How they're depl
 
 | Component | Count | Description |
 |-----------|-------|-------------|
-| Agents | 12 | Specialized sub-agents (code-reviewer, debugger, test-automator, etc.) |
-| Commands | 10+ | Slash commands (/onboarding, /code-review, /rca, etc.) |
-| Skills | 13 | Reusable patterns (LSP navigation, orchestration, n8n development) |
-| Hooks | 4 | Automated checks (type validation, reference checking) |
+| Agents | 13 | Specialized sub-agents (code-reviewer, debugger, test-automator, etc.) |
+| Commands | 17 | Slash commands (/onboarding, /code-review, /rca, /orchestrate, etc.) |
+| Skills | 6 global + 7 template | Reusable patterns (LSP navigation, orchestration, n8n development) |
+| Hooks | 5 | Automated checks (type validation, reference checking, session init) |
 | Workflows | 4 | Multi-step processes (feature development, bug investigation) |
 
 See [.claude/REGISTRY.md](.claude/REGISTRY.md) for the complete component catalog.
@@ -146,7 +146,10 @@ Install the git hooks after cloning:
 ./git-hooks/install.sh
 ```
 
-This enables automatic changelog updates on each commit.
+This installs:
+- **pre-commit**: Validates MANIFEST.json is in sync with filesystem
+- **post-commit**: Auto-updates CHANGELOG.md
+- **pre-push**: Validates documentation alignment (MANIFEST, install-global.sh, docs)
 
 ## Repository Structure
 
@@ -164,7 +167,9 @@ claude-code-templates/
 ├── templates/             # Project-specific template packs
 │   └── n8n/               # n8n workflow automation skills
 ├── git-hooks/             # Git hooks (install with install.sh)
+│   ├── pre-commit         # Validates MANIFEST.json sync
 │   ├── post-commit        # Auto-updates CHANGELOG.md
+│   ├── pre-push           # Validates documentation alignment
 │   └── install.sh         # Hook installer
 └── .claude/               # ALL components (source of truth)
     ├── CLAUDE.md          # Configuration overview

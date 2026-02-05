@@ -6,6 +6,8 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-04] update: Update REGISTRY.md: add /orchestrate to Quick Lookup, bump hook count (260bbf5)
+[2026-02-04] docs: Update CHANGELOG with recent commits (1bf4a33)
 [2026-02-04] add: Add Stop hook to warn about uncommitted/unpushed changes (7a908f5)
 [2026-02-04] refactor: Consolidate global/ into .claude/, add fork-terminal dual-mode support (e19bed9)
 [2026-02-01] make: Make multi-model-orchestration proactive via superpowers integration (b282ac3)

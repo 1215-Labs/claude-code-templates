@@ -20,6 +20,14 @@ cp "$SCRIPT_DIR/post-commit" "$HOOKS_DIR/post-commit"
 chmod +x "$HOOKS_DIR/post-commit"
 echo "  Installed: post-commit (auto-updates CHANGELOG.md)"
 
+# Copy pre-push hook (documentation validation)
+cp "$SCRIPT_DIR/pre-push" "$HOOKS_DIR/pre-push"
+chmod +x "$HOOKS_DIR/pre-push"
+echo "  Installed: pre-push (validates documentation alignment)"
+
 echo "Done."
 echo ""
-echo "Hooks installed. MANIFEST.json will be validated on each commit."
+echo "Hooks installed:"
+echo "  - pre-commit: MANIFEST.json validation on each commit"
+echo "  - post-commit: CHANGELOG.md auto-update"
+echo "  - pre-push: Documentation alignment validation before push"

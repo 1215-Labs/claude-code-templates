@@ -29,14 +29,7 @@
         "status": "production",
         "description": "Headless browser automation with Playwright"
       },
-      {
-        "name": "component-development",
-        "path": ".claude/skills/component-development",
-        "deployment": "global",
-        "status": "production",
-        "description": "Meta-skill for building Claude Code components"
-      },
-      {
+{
         "name": "fork-terminal",
         "path": ".claude/skills/fork-terminal",
         "deployment": "global",
@@ -302,35 +295,7 @@
         "status": "production",
         "description": "Analyze UI components for consistency"
       },
-      {
-        "name": "dev/component-feedback",
-        "path": ".claude/commands/dev/component-feedback.md",
-        "deployment": "global",
-        "status": "production",
-        "description": "Record feedback about component effectiveness"
-      },
-      {
-        "name": "dev/new-component",
-        "path": ".claude/commands/dev/new-component.md",
-        "deployment": "global",
-        "status": "production",
-        "description": "Scaffold a new Claude Code component"
-      },
-      {
-        "name": "dev/test-component",
-        "path": ".claude/commands/dev/test-component.md",
-        "deployment": "global",
-        "status": "production",
-        "description": "Test a component in isolation"
-      },
-      {
-        "name": "dev/validate-component",
-        "path": ".claude/commands/dev/validate-component.md",
-        "deployment": "global",
-        "status": "production",
-        "description": "Validate component against conventions"
-      },
-      {
+{
         "name": "prp-claude-code/prp-claude-code-create",
         "path": ".claude/commands/prp-claude-code/prp-claude-code-create.md",
         "deployment": "global",

@@ -128,11 +128,11 @@ Multi-step workflows for complex tasks:
 
 | Type | Count | Location |
 |------|-------|----------|
-| Agents | 10 | `.claude/agents/` |
-| Commands | 18 | `.claude/commands/` |
-| Skills | 13 | `.claude/skills/` |
+| Agents | 13 | `.claude/agents/` |
+| Commands | 17 | `.claude/commands/` |
+| Skills | 6 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
-| Hooks | 4 | `.claude/hooks/` |
+| Hooks | 5 | `.claude/hooks/` |
 | Workflows | 4 | `.claude/workflows/` |
 
 ## Cross-Reference Map

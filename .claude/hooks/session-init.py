@@ -61,6 +61,17 @@ def check_git_status():
         return {"branch": "unknown"}
 
 
+def check_git_hooks_installed():
+    """Check if git hooks are installed."""
+    hooks_dir = Path(".git/hooks")
+    if not hooks_dir.exists():
+        return None
+
+    expected = ["pre-commit", "post-commit", "pre-push"]
+    missing = [h for h in expected if not (hooks_dir / h).exists()]
+    return missing if missing else None
+
+
 def check_reference_submodules():
     """Check all reference submodules for available updates.
 
@@ -153,6 +164,7 @@ def main():
     with timed_hook("session-init", decision="approve") as h:
         project_types = get_project_type()
         git_info = check_git_status()
+        missing_hooks = check_git_hooks_installed()
         references_info = check_reference_submodules()
 
         # Build context message
@@ -169,6 +181,13 @@ def main():
         if has_claude_md:
             context_parts.append("CLAUDE.md found - project has Claude Code configuration")
 
+        # Check for missing git hooks
+        if missing_hooks:
+            context_parts.append(
+                f"Git hooks not installed ({', '.join(missing_hooks)}). "
+                f"Run: ./git-hooks/install.sh"
+            )
+
         # Check for reference submodule updates
         if references_info and references_info.get("updates"):
             updates = references_info["updates"]
@@ -184,6 +203,7 @@ def main():
             project_types=project_types,
             branch=git_info["branch"],
             has_claude_md=has_claude_md,
+            missing_hooks=missing_hooks,
             references_info=references_info,
         )
 

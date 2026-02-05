@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# Git pre-push hook: Validate documentation alignment
+#
+# Runs validate-docs.py to check:
+# - MANIFEST.json <-> filesystem sync
+# - install-global.sh coverage
+# - Documentation counts and coverage
+# - CHANGELOG freshness
+#
+# Blocks push on critical errors, warns on advisory issues.
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+VALIDATOR="$REPO_ROOT/scripts/validate-docs.py"
+
+# Skip if validator doesn't exist
+if [ ! -f "$VALIDATOR" ]; then
+    echo "Warning: validate-docs.py not found, skipping documentation validation"
+    exit 0
+fi
+
+echo "Validating documentation alignment..."
+
+python3 "$VALIDATOR"
+exit_code=$?
+
+if [ $exit_code -eq 1 ] || [ $exit_code -eq 3 ]; then
+    echo ""
+    echo "=========================================="
+    echo "PUSH BLOCKED: Critical documentation issues"
+    echo "=========================================="
+    echo ""
+    echo "Fix the issues above, then try pushing again."
+    echo ""
+    echo "To skip this check (not recommended):"
+    echo "  git push --no-verify"
+    exit 1
+fi
+
+if [ $exit_code -eq 2 ]; then
+    echo ""
+    echo "Advisory documentation issues found. Pushing anyway."
+fi
+
+exit 0

@@ -57,6 +57,9 @@ link "$TEMPLATES/commands/workflow/code-review.md" "$TARGET/commands"
 link "$TEMPLATES/commands/workflow/rca.md" "$TARGET/commands"
 link "$TEMPLATES/commands/workflow/all_skills.md" "$TARGET/commands"
 link "$TEMPLATES/commands/workflow/orchestrate.md" "$TARGET/commands"
+link "$TEMPLATES/commands/workflow/sync-reference.md" "$TARGET/commands"
+link "$TEMPLATES/commands/workflow/ui-review.md" "$TARGET/commands"
+link "$TEMPLATES/commands/workflow/coderabbit-helper.md" "$TARGET/commands"
 
 # PRP command directories (link entire directories)
 rm -rf "$TARGET/commands/prp-claude-code" 2>/dev/null || true
@@ -78,6 +81,8 @@ link "$TEMPLATES/agents/context-manager.md" "$TARGET/agents"
 link "$TEMPLATES/agents/technical-researcher.md" "$TARGET/agents"
 link "$TEMPLATES/agents/library-researcher.md" "$TARGET/agents"
 link "$TEMPLATES/agents/deployment-engineer.md" "$TARGET/agents"
+link "$TEMPLATES/agents/mcp-backend-engineer.md" "$TARGET/agents"
+link "$TEMPLATES/agents/n8n-mcp-tester.md" "$TARGET/agents"
 
 # LSP agents (link entire directories)
 rm -rf "$TARGET/agents/dependency-analyzer" 2>/dev/null || true
