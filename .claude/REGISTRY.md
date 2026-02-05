@@ -18,6 +18,7 @@ Central index of all .claude components for quick discovery.
 | Create tests | `test-automator` agent |
 | Browser automation | `agent-browser` skill |
 | Fork terminal | `fork-terminal` skill |
+| Orchestrate tasks | `/orchestrate "task"` |
 | n8n workflows | n8n-* skills |
 
 ## By Category
@@ -57,6 +58,7 @@ Central index of all .claude components for quick discovery.
 | Type | Component | Purpose |
 |------|-----------|---------|
 | Hook | `session-init` | Initialize session context |
+| Hook | `uncommitted-check` | Warn about uncommitted/unpushed changes on stop |
 
 ### Onboarding
 | Type | Component | Purpose |
@@ -130,7 +132,7 @@ Multi-step workflows for complex tasks:
 | Commands | 18 | `.claude/commands/` |
 | Skills | 13 | `.claude/skills/` |
 | Rules | 1 | `.claude/rules/` |
-| Hooks | 3 | `.claude/hooks/` |
+| Hooks | 4 | `.claude/hooks/` |
 | Workflows | 4 | `.claude/workflows/` |
 
 ## Cross-Reference Map
