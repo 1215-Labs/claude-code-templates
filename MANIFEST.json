@@ -65,6 +65,13 @@
         "description": "Orchestrate tasks across Gemini/Codex via forked terminals"
       },
       {
+        "name": "skill-evaluator",
+        "path": ".claude/skills/skill-evaluator",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Evaluate external skills/plugins before adoption using parallel agents"
+      },
+      {
         "name": "n8n-code-javascript",
         "path": "templates/n8n/skills/n8n-code-javascript",
         "deployment": "template",

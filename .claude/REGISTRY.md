@@ -19,6 +19,7 @@ Central index of all .claude components for quick discovery.
 | Browser automation | `agent-browser` skill |
 | Fork terminal | `fork-terminal` skill |
 | Orchestrate tasks | `/orchestrate "task"` |
+| Evaluate a skill/plugin | `skill-evaluator` skill |
 | n8n workflows | n8n-* skills |
 
 ## By Category
@@ -89,6 +90,7 @@ Central index of all .claude components for quick discovery.
 | Type | Component | Purpose |
 |------|-----------|---------|
 | Skill | `multi-model-orchestration` | Delegate tasks across Gemini/Codex via forked terminals |
+| Skill | `skill-evaluator` | Evaluate external skills/plugins before adoption (parallel agents) |
 | Command | `/orchestrate` | Quick orchestration via forked terminals |
 
 ### Research
@@ -130,7 +132,7 @@ Multi-step workflows for complex tasks:
 |------|-------|----------|
 | Agents | 13 | `.claude/agents/` |
 | Commands | 17 | `.claude/commands/` |
-| Skills | 6 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
+| Skills | 7 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
 | Hooks | 5 | `.claude/hooks/` |
 | Workflows | 4 | `.claude/workflows/` |
@@ -182,7 +184,8 @@ Multi-step workflows for complex tasks:
 | **Skills** |
 | `agent-browser` | — | — | fork-terminal |
 | `fork-terminal` | context-manager | /orchestrate | agent-browser, multi-model-orchestration |
-| `multi-model-orchestration` | — | /orchestrate | fork-terminal |
+| `multi-model-orchestration` | — | /orchestrate | fork-terminal, skill-evaluator |
+| `skill-evaluator` | codebase-analyst | — | fork-terminal, multi-model-orchestration |
 | `lsp-symbol-navigation` | codebase-analyst | /deep-prime | lsp-dependency-analysis, lsp-type-safety-check |
 | `lsp-type-safety-check` | code-reviewer | /code-review | lsp-symbol-navigation |
 | `lsp-dependency-analysis` | debugger, dependency-analyzer | /rca | lsp-symbol-navigation |

@@ -73,6 +73,7 @@ Skills provide reusable expertise. Key skills:
 | `fork-terminal` | Fork terminal to new window with Claude/Codex/Gemini |
 | `agent-browser` | Headless browser automation with Playwright |
 | `multi-model-orchestration` | Delegate tasks across Gemini/Codex |
+| `skill-evaluator` | Evaluate external skills/plugins before adoption |
 | `n8n-*` | n8n workflow development (7 skills in templates/n8n/) |
 
 ## Commands
@@ -145,7 +146,8 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  SKILLS (reference for patterns)                    │
 │  lsp-symbol-navigation  lsp-dependency-analysis     │
 │  lsp-type-safety-check  fork-terminal               │
-│  agent-browser  multi-model-orchestration  n8n-*    │
+│  agent-browser  multi-model-orchestration           │
+│  skill-evaluator  n8n-*                             │
 ├─────────────────────────────────────────────────────┤
 │  WORKFLOWS (follow for processes)                   │
 │  feature-development  bug-investigation             │
