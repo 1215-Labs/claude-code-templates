@@ -9,6 +9,22 @@ HEAVY_MODEL: gemini-3-pro-preview
 BASE_MODEL: gemini-3-pro-preview
 FAST_MODEL: gemini-2.5-flash
 
+## Gemini Strengths
+
+- 1M token context window (massive codebase understanding)
+- 78% SWE-bench with Flash model
+- Best for: Codebase exploration, architecture analysis, pattern discovery
+- Use Pro for: Complex multi-step reasoning, architecture decisions
+
+## Model Selection
+
+| Task | Model | Thinking Level |
+|------|-------|----------------|
+| Quick exploration | gemini-2.5-flash | minimal |
+| Codebase analysis | gemini-3-flash-preview | medium |
+| Complex reasoning | gemini-3-pro-preview | high |
+| Architecture review | gemini-3-pro-preview | high |
+
 ## Fallback Chain
 
 If the primary model fails, try models in this order:

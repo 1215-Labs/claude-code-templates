@@ -9,6 +9,13 @@ HEAVY_MODEL: gpt-5.2-codex
 BASE_MODEL: gpt-5.2-codex
 FAST_MODEL: gpt-5.1-codex-mini
 
+## Codex Strengths
+
+- Long-context understanding with native compaction
+- State-of-the-art on SWE-Bench Pro (agentic coding)
+- Reliable tool calling
+- Best for: Implementation, refactoring, code changes, bug fixes
+
 ## Fallback Chain
 
 If the primary model fails, try models in this order:

@@ -139,6 +139,44 @@ All cookbooks now use non-interactive modes:
   - "spin up a new terminal request <xyz> with gemini"
   - "create a new terminal to <xyz> using gemini"
 
+## Output Conventions for Orchestration
+
+When forking agentic tools for multi-model orchestration:
+
+### File-Based Results
+
+Forked agents write results to predictable locations:
+```
+docs/
+├── exploration/           # Gemini outputs
+│   └── {task-name}.md     # Comprehensive analysis (progressive disclosure format)
+└── implementation/        # Codex outputs
+    └── {task-name}-log.md # Implementation notes, files changed
+```
+
+### Prompt Structure for Orchestrated Forks
+
+1. **Specify output location** in prompt (docs/exploration/ or docs/implementation/)
+2. **Request structured output** using the appropriate format:
+   - Exploration: Executive Summary, Critical Files, Findings, Recommendations
+   - Implementation: Files Changed, Tests Added, Validation Results
+3. **Include validation commands** for implementation tasks
+4. **Reference output location** so orchestrator can read results
+
+### Example Orchestration Prompt
+
+```
+Explore the authentication system in this codebase.
+Write your findings to docs/exploration/auth-system.md using progressive disclosure format:
+- Executive Summary (2-3 sentences)
+- Quick Reference table
+- Critical Files with line numbers
+- Patterns & Conventions
+- Recommendations for implementation
+```
+
+See also: `.claude/skills/multi-model-orchestration/SKILL.md` for complete orchestration patterns.
+
 ## Dependencies
 
 ### Check Dependencies
