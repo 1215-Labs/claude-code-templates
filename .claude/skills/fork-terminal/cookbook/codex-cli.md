@@ -1,6 +1,6 @@
 # Purpose
 
-Create a new Codex CLI agent to execute the command in non-interactive mode.
+Create a new Codex CLI agent to execute the command.
 
 ## Variables
 
@@ -25,18 +25,21 @@ If the primary model fails, try models in this order:
 
 ## Instructions
 
-- Use the `exec` subcommand for true non-interactive execution (not the default interactive mode)
 - Always use `--full-auto` for automatic approvals with sandboxed execution
 - Always use `--skip-git-repo-check` to avoid "not inside trusted directory" errors
 - For the -m (model) argument, use DEFAULT_MODEL if not specified. If 'fast' is requested, use FAST_MODEL. If 'heavy' is requested, use HEAVY_MODEL.
 
-## Command Template
+## Mode: Non-Interactive (Default)
+
+Use the `exec` subcommand for autonomous execution without user input.
+
+### Command Template
 
 ```bash
 codex exec --full-auto --skip-git-repo-check -m MODEL "PROMPT"
 ```
 
-## Examples
+### Examples
 
 **Basic execution:**
 ```bash
@@ -51,6 +54,23 @@ codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex "PROMPT" 2>&1 | te
 **With custom working directory:**
 ```bash
 codex exec --full-auto --skip-git-repo-check -C /path/to/dir -m gpt-5.2-codex "PROMPT"
+```
+
+## Mode: Interactive
+
+Omit the `exec` subcommand to open an interactive session for collaboration.
+
+### Command Template
+
+```bash
+codex --full-auto --skip-git-repo-check -m MODEL "PROMPT"
+```
+
+### Examples
+
+**Interactive session:**
+```bash
+codex --full-auto --skip-git-repo-check -m gpt-5.2-codex "help me refactor the authentication module"
 ```
 
 ## Installed Codex Skills
@@ -101,4 +121,3 @@ codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex "Use /playwright t
 
 Do NOT use these deprecated patterns:
 - `--dangerously-bypass-approvals-and-sandbox` - Use `--full-auto` instead
-- Interactive mode without `exec` - Always use `codex exec` for forked terminals

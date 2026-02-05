@@ -1,6 +1,6 @@
 # Purpose
 
-Create a new Gemini CLI agent to execute the command in non-interactive prompt mode.
+Create a new Gemini CLI agent to execute the command.
 
 ## Variables
 
@@ -34,18 +34,21 @@ If the primary model fails, try models in this order:
 
 ## Instructions
 
-- Use the `-p` flag (prompt mode) for non-interactive execution, NOT `-i` (interactive mode)
 - Always use `--approval-mode yolo` for automatic tool approvals (more explicit than `-y`)
 - For the --model argument, use DEFAULT_MODEL if not specified. If 'fast' is requested, use FAST_MODEL. If 'heavy' is requested, use HEAVY_MODEL.
 - IMPORTANT: Ensure GEMINI_API_KEY is exported before running the command
 
-## Command Template
+## Mode: Non-Interactive (Default)
+
+Use the `-p` flag (prompt mode) for autonomous execution.
+
+### Command Template
 
 ```bash
 export GEMINI_API_KEY="${GEMINI_API_KEY}" && gemini -p "PROMPT" --model MODEL --approval-mode yolo
 ```
 
-## Examples
+### Examples
 
 **Basic execution:**
 ```bash
@@ -65,6 +68,28 @@ gemini -p "PROMPT" --model gemini-3-pro-preview --approval-mode yolo 2>&1 | tee 
 **Fast model for quick tasks:**
 ```bash
 gemini -p "PROMPT" --model gemini-2.5-flash --approval-mode yolo
+```
+
+## Mode: Interactive
+
+Use the `-i` flag for an interactive session. Supports `--thinking-level` for controlling reasoning depth.
+
+### Command Template
+
+```bash
+export GEMINI_API_KEY="${GEMINI_API_KEY}" && gemini -i --model MODEL --approval-mode yolo
+```
+
+### Examples
+
+**Interactive session with thinking:**
+```bash
+export GEMINI_API_KEY="${GEMINI_API_KEY}" && gemini -i --model gemini-3-pro-preview --approval-mode yolo --thinking-level high
+```
+
+**Interactive session with flash:**
+```bash
+export GEMINI_API_KEY="${GEMINI_API_KEY}" && gemini -i --model gemini-2.5-flash --approval-mode yolo
 ```
 
 ## Authentication
@@ -95,6 +120,5 @@ Note: Check `~/.gemini/settings.json` for `security.auth.selectedType` to see wh
 ## Deprecated Patterns
 
 Do NOT use these deprecated patterns:
-- `-i` flag for interactive mode - Always use `-p` for forked terminals
 - `-y` flag alone - Use `--approval-mode yolo` for clarity
-- Interactive prompt without explicit API key - Always export GEMINI_API_KEY
+- Running without explicit API key - Always export GEMINI_API_KEY

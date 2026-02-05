@@ -23,14 +23,22 @@ Enables spawning new terminal windows with Claude Code, Codex CLI, Gemini CLI, o
 
 ## Core Capabilities
 
+### Dual-Mode Execution
+Each agentic tool supports both modes, detected from user keywords:
+- **Non-interactive** (default): Agent runs autonomously with `-p` / `exec` flags
+- **Interactive**: Agent opens for user collaboration, omitting prompt flags
+
 ### Agent Forking
 Launch Claude Code, Codex CLI, or Gemini CLI in a new terminal with optional context.
 
 ### Raw Command Execution
-Fork a terminal with any CLI command (ffmpeg, curl, python, etc.).
+Fork a terminal with any CLI command (ffmpeg, curl, python, etc.). Always runs in foreground.
 
 ### Context Summarization
 Optionally pass conversation summary to the new agent for continuity.
+
+### Multi-Model Orchestration
+Pairs with the `multi-model-orchestration` skill for explore-then-implement workflows across Gemini and Codex.
 
 ## Supported Agents
 

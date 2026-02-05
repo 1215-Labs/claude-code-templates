@@ -42,6 +42,35 @@ The `claude-code/` submodule points to the [official Anthropic Claude Code repos
 - **Update Trigger**: When the submodule is updated, workflows can detect changes and flag templates that may need revision
 - **Documentation**: Direct access to official docs for verifying template correctness
 
+## Component Deployment Architecture
+
+All components live in `.claude/`—the single source of truth. How they're deployed depends on the `deployment` field in `MANIFEST.json`:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  .claude/  (development directory - ALL components live here)   │
+│                                                                 │
+│  ┌─────────────────────────┐   ┌────────────────────────────┐  │
+│  │  deployment: "global"   │   │  deployment: "template"    │  │
+│  │                         │   │                            │  │
+│  │  fork-terminal          │   │  (in templates/n8n/)       │  │
+│  │  multi-model-orch.      │   │  n8n-code-javascript       │  │
+│  │  code-reviewer agent    │   │  n8n-workflow-patterns      │  │
+│  │  /orchestrate command   │   │  n8n-validation-expert      │  │
+│  │  ...                    │   │  ...                        │  │
+│  └───────────┬─────────────┘   └─────────────┬──────────────┘  │
+│              │                                │                  │
+│              ▼                                ▼                  │
+│  install-global.sh              deploy-template.sh              │
+│  Symlinks to ~/.claude/         Copies to project .claude/      │
+│  Available in ALL projects      Project-specific only            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+- **`install-global.sh`** is the authority on what ships globally—run it after updates
+- **`MANIFEST.json`** is the component catalog with deployment metadata
+- **`REGISTRY.md`** is the human-readable quick-reference
+
 ## Using the Templates
 
 ### Quick Start
@@ -64,7 +93,7 @@ The `claude-code/` submodule points to the [official Anthropic Claude Code repos
 |-----------|-------|-------------|
 | Agents | 12 | Specialized sub-agents (code-reviewer, debugger, test-automator, etc.) |
 | Commands | 10+ | Slash commands (/onboarding, /code-review, /rca, etc.) |
-| Skills | 12 | Reusable patterns (LSP navigation, n8n development) |
+| Skills | 13 | Reusable patterns (LSP navigation, orchestration, n8n development) |
 | Hooks | 4 | Automated checks (type validation, reference checking) |
 | Workflows | 4 | Multi-step processes (feature development, bug investigation) |
 
@@ -124,18 +153,26 @@ This enables automatic changelog updates on each commit.
 ```
 claude-code-templates/
 ├── README.md              # This file
+├── MANIFEST.json          # Component catalog with deployment metadata
 ├── CHANGELOG.md           # Auto-updated change log
-├── claude-code/           # Official Claude Code (submodule)
+├── scripts/
+│   ├── install-global.sh  # Symlinks global components to ~/.claude/
+│   └── validate-manifest.py  # Ensures MANIFEST.json matches filesystem
+├── references/            # Git submodules for learning (not for copying)
+│   ├── claude-code/       # Official Anthropic Claude Code reference
+│   └── ...                # Other reference repos
+├── templates/             # Project-specific template packs
+│   └── n8n/               # n8n workflow automation skills
 ├── git-hooks/             # Git hooks (install with install.sh)
 │   ├── post-commit        # Auto-updates CHANGELOG.md
 │   └── install.sh         # Hook installer
-└── .claude/
+└── .claude/               # ALL components (source of truth)
     ├── CLAUDE.md          # Configuration overview
-    ├── REGISTRY.md        # Component catalog
+    ├── REGISTRY.md        # Human-readable component index
     ├── USER_GUIDE.md      # Usage instructions
     ├── agents/            # Sub-agent definitions
     ├── commands/          # Slash commands
-    ├── skills/            # Reusable expertise
+    ├── skills/            # Reusable expertise (fork-terminal, LSP, orchestration)
     ├── hooks/             # Claude Code hooks (automated checks)
     ├── workflows/         # Multi-step processes
     └── rules/             # Development rules

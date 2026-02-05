@@ -56,6 +56,7 @@ link "$TEMPLATES/commands/workflow/onboarding.md" "$TARGET/commands"
 link "$TEMPLATES/commands/workflow/code-review.md" "$TARGET/commands"
 link "$TEMPLATES/commands/workflow/rca.md" "$TARGET/commands"
 link "$TEMPLATES/commands/workflow/all_skills.md" "$TARGET/commands"
+link "$TEMPLATES/commands/workflow/orchestrate.md" "$TARGET/commands"
 
 # PRP command directories (link entire directories)
 rm -rf "$TARGET/commands/prp-claude-code" 2>/dev/null || true
@@ -109,6 +110,9 @@ ln -s "$TEMPLATES/skills/fork-terminal" "$TARGET/skills/fork-terminal"
 echo "  fork-terminal/"
 ln -s "$TEMPLATES/skills/agent-browser" "$TARGET/skills/agent-browser"
 echo "  agent-browser/"
+rm -rf "$TARGET/skills/multi-model-orchestration" 2>/dev/null || true
+ln -s "$TEMPLATES/skills/multi-model-orchestration" "$TARGET/skills/multi-model-orchestration"
+echo "  multi-model-orchestration/"
 
 # Phase 6: Symlink Workflows
 echo "Phase 6: Symlinking workflows..."

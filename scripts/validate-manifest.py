@@ -37,10 +37,10 @@ def find_skills_on_disk(repo_root: Path) -> set[str]:
     """Find all skill directories (contain SKILL.md)."""
     skills = set()
 
-    # Global skills
-    global_skills = repo_root / "global" / "skills"
-    if global_skills.exists():
-        for item in global_skills.iterdir():
+    # Global skills (in .claude/)
+    claude_skills = repo_root / ".claude" / "skills"
+    if claude_skills.exists():
+        for item in claude_skills.iterdir():
             if item.is_dir() and not should_ignore(item.name):
                 if (item / "SKILL.md").exists():
                     skills.add(str(item.relative_to(repo_root)))
@@ -72,10 +72,10 @@ def find_agents_on_disk(repo_root: Path) -> set[str]:
     """Find all agent files/directories."""
     agents = set()
 
-    # Global agents
-    global_agents = repo_root / "global" / "agents"
-    if global_agents.exists():
-        for item in global_agents.iterdir():
+    # Global agents (in .claude/)
+    claude_agents = repo_root / ".claude" / "agents"
+    if claude_agents.exists():
+        for item in claude_agents.iterdir():
             if should_ignore(item.name):
                 continue
             if item.is_dir():
@@ -112,8 +112,8 @@ def find_commands_on_disk(repo_root: Path) -> set[str]:
             elif item.is_file() and item.suffix == ".md":
                 commands.add(str(item.relative_to(repo_root)))
 
-    # Global commands
-    scan_command_dir(repo_root / "global" / "commands")
+    # Global commands (in .claude/)
+    scan_command_dir(repo_root / ".claude" / "commands")
 
     # Template commands
     templates = repo_root / "templates"
@@ -132,10 +132,10 @@ def find_workflows_on_disk(repo_root: Path) -> set[str]:
     """Find all workflow .md files."""
     workflows = set()
 
-    # Global workflows
-    global_workflows = repo_root / "global" / "workflows"
-    if global_workflows.exists():
-        for item in global_workflows.iterdir():
+    # Global workflows (in .claude/)
+    claude_workflows = repo_root / ".claude" / "workflows"
+    if claude_workflows.exists():
+        for item in claude_workflows.iterdir():
             if item.is_file() and item.suffix == ".md" and not should_ignore(item.name):
                 workflows.add(str(item.relative_to(repo_root)))
 

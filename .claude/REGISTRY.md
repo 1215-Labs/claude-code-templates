@@ -81,7 +81,13 @@ Central index of all .claude components for quick discovery.
 | Type | Component | Purpose |
 |------|-----------|---------|
 | Skill | `agent-browser` | Vercel agent-browser CLI for headless automation |
-| Skill | `fork-terminal` | Fork terminal to new window with Claude/Codex/Gemini |
+| Skill | `fork-terminal` | Fork terminal to new window with Claude/Codex/Gemini (dual-mode) |
+
+### Orchestration
+| Type | Component | Purpose |
+|------|-----------|---------|
+| Skill | `multi-model-orchestration` | Delegate tasks across Gemini/Codex via forked terminals |
+| Command | `/orchestrate` | Quick orchestration via forked terminals |
 
 ### Research
 | Type | Component | Purpose |
@@ -121,8 +127,8 @@ Multi-step workflows for complex tasks:
 | Type | Count | Location |
 |------|-------|----------|
 | Agents | 10 | `.claude/agents/` |
-| Commands | 17 | `.claude/commands/` |
-| Skills | 12 | `.claude/skills/` |
+| Commands | 18 | `.claude/commands/` |
+| Skills | 13 | `.claude/skills/` |
 | Rules | 1 | `.claude/rules/` |
 | Hooks | 3 | `.claude/hooks/` |
 | Workflows | 4 | `.claude/workflows/` |
@@ -173,7 +179,8 @@ Multi-step workflows for complex tasks:
 | `test-automator` | code-reviewer, debugger | /code-review | — |
 | **Skills** |
 | `agent-browser` | — | — | fork-terminal |
-| `fork-terminal` | context-manager | — | agent-browser |
+| `fork-terminal` | context-manager | /orchestrate | agent-browser, multi-model-orchestration |
+| `multi-model-orchestration` | — | /orchestrate | fork-terminal |
 | `lsp-symbol-navigation` | codebase-analyst | /deep-prime | lsp-dependency-analysis, lsp-type-safety-check |
 | `lsp-type-safety-check` | code-reviewer | /code-review | lsp-symbol-navigation |
 | `lsp-dependency-analysis` | debugger, dependency-analyzer | /rca | lsp-symbol-navigation |

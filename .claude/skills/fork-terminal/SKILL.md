@@ -40,6 +40,7 @@ ENABLE_GEMINI_CLI: true
 ENABLE_CODEX_CLI: true
 ENABLE_CLAUDE_CODE: true
 AGENTIC_CODING_TOOLS: claude-code, codex-cli, gemini-cli
+DEFAULT_MODE: non-interactive
 
 ## Features (v2.0.0)
 
@@ -61,16 +62,33 @@ python3 fork_terminal.py --log --tool codex "codex exec ..."
 
 Log files are stored at: `/tmp/fork_<tool>_YYYYMMDD_HHMMSS.log`
 
-### Non-Interactive Execution
-All cookbooks now use non-interactive modes:
-- **Codex**: `exec --full-auto --skip-git-repo-check`
-- **Gemini**: `-p` (prompt mode) with `--approval-mode yolo`
-- **Claude Code**: `--dangerously-skip-permissions`
+### Mode Detection
+
+Detect the execution mode from the user's request:
+
+- **Non-interactive** (default): keywords "background", "fire and forget", "unattended", "non-interactive", or no mode keywords present
+- **Interactive**: keywords "interactive", "watch", "pair", "steer", "collaborate", "together"
+- **Ambiguous**: use DEFAULT_MODE (non-interactive)
+
+### Execution Modes
+
+#### Mode: Non-Interactive (Default)
+Forked agent runs autonomously without user input:
+- **Codex**: `codex exec --full-auto --skip-git-repo-check -m MODEL "PROMPT"`
+- **Gemini**: `gemini -p "PROMPT" --model MODEL --approval-mode yolo`
+- **Claude Code**: `claude -p "PROMPT" --model MODEL --dangerously-skip-permissions`
+
+#### Mode: Interactive
+Forked agent opens for user collaboration:
+- **Codex**: `codex --full-auto --skip-git-repo-check -m MODEL "PROMPT"` (omit `exec`)
+- **Gemini**: `gemini -i --model MODEL --approval-mode yolo` (use `-i` instead of `-p`)
+- **Claude Code**: `claude --model MODEL --dangerously-skip-permissions` (omit `-p`)
 
 ## Instructions
 
 - Based on the user's request, follow the `Cookbook` to determine which tool to use.
-- All agentic tools run in non-interactive mode to avoid prompts
+- Detect the execution mode using the `Mode Detection` rules above.
+- Pass the detected mode to the cookbook—each cookbook documents both non-interactive and interactive CLI flags.
 
 ### Fork Summary User Prompts
 
