@@ -186,6 +186,41 @@ Check logs on timeout:
 tail -20 /tmp/fork_codex_*.log /tmp/fork_gemini_*.log 2>/dev/null
 ```
 
+### Step 5b: Fallback for Failed Agents
+
+If any agent fails (output file missing after timeout), check logs for the cause and apply the fallback chain:
+
+```
+Gemini Flash fails (429/capacity) → retry with Gemini Pro
+Gemini Pro fails (429/capacity)   → fall back to Sonnet subagent
+Codex fails                       → fall back to Sonnet subagent
+```
+
+**Fallback: Gemini Flash → Gemini Pro**
+
+Re-fork the failed agent's prompt using Pro instead of Flash:
+```bash
+python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini \
+  "gemini -p '{FILLED_PROMPT}' --model gemini-3-pro-preview --approval-mode yolo"
+```
+
+Wait 30s before retrying to allow rate limits to clear. Poll again for the output file.
+
+**Fallback: Sonnet Subagent (last resort)**
+
+If Gemini is fully unavailable, dispatch a Claude Sonnet subagent via the Task tool. This uses the Max plan allocation (not API credits):
+
+```
+Use the Task tool with:
+  subagent_type: "general-purpose"
+  model: "sonnet"
+  prompt: {FILLED_PROMPT from the agent template}
+```
+
+The subagent writes its analysis directly. No fork-terminal needed.
+
+**Important:** Note which fallback was used in the final synthesized report so the user knows which models actually contributed.
+
 ### Step 6: Synthesize Report
 
 Read all agent reports (executive summaries first, then details as needed).
@@ -232,10 +267,11 @@ When evaluating multiple targets:
 | Issue | Solution |
 |-------|----------|
 | Agent output missing | Check `/tmp/fork_*.log` for errors |
+| Gemini 429 / capacity error | Apply fallback chain: Flash → Pro → Sonnet subagent (Step 5b) |
 | Git clone fails | Verify URL, check network, try SSH vs HTTPS |
 | Codex API key missing | Set `OPENAI_API_KEY` in environment |
 | Gemini API key missing | Set `GEMINI_API_KEY` in environment |
-| Timeout waiting for agents | Increase poll timeout, check agent logs |
+| Timeout waiting for agents | Check agent logs, apply fallback chain if needed |
 | Ecosystem snapshot empty | Run from project root with MANIFEST.json present |
 
 ## Dependencies

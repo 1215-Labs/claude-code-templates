@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-05] evaluate: Evaluate last30days-skill and compound-engineering-plugin, add fallback chain (247fffa)
 [2026-02-04] add: Add skill-evaluator skill for pre-adoption assessment (d99fb0c)
 [2026-02-04] update: Update REGISTRY.md: add /orchestrate to Quick Lookup, bump hook count (260bbf5)
 [2026-02-04] docs: Update CHANGELOG with recent commits (1bf4a33)
