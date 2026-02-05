@@ -7,7 +7,7 @@ Create a new Codex CLI agent to execute the command.
 DEFAULT_MODEL: gpt-5.2-codex
 HEAVY_MODEL: gpt-5.2-codex
 BASE_MODEL: gpt-5.2-codex
-FAST_MODEL: gpt-5.2-codex-mini
+FAST_MODEL: gpt-5.1-codex-mini
 
 ## Codex Strengths
 
@@ -15,6 +15,23 @@ FAST_MODEL: gpt-5.2-codex-mini
 - State-of-the-art on SWE-Bench Pro (agentic coding)
 - Reliable tool calling
 - Best for: Implementation, refactoring, code changes, bug fixes
+
+## Installed Codex Skills
+
+Reference these in prompts to leverage Codex's installed capabilities:
+
+| Skill | Purpose | Best For |
+|-------|---------|----------|
+| `/doc` | Documentation generation | READMEs, API docs, inline docs |
+| `/gh-address-comments` | Address PR review comments | Resolving reviewer feedback |
+| `/gh-fix-ci` | Fix CI failures | Debugging failed checks/actions |
+| `/openai-docs` | Query OpenAI documentation | API usage, SDK patterns |
+| `/pdf` | PDF processing | Reading/extracting PDF content |
+| `/playwright` | Browser automation & testing | E2E tests, UI validation |
+| `/screenshot` | Take screenshots | Visual verification, bug reports |
+| `/security-best-practices` | Security review | Code audit, OWASP checks |
+| `/security-ownership-map` | Map code ownership & security | Attack surface analysis |
+| `/security-threat-model` | Threat modeling | Risk assessment, security design |
 
 ## Instructions
 

@@ -1,3 +1,21 @@
 [submodule "claude-code"]
-	path = claude-code
+	path = references/claude-code
 	url = git@github.com:anthropics/claude-code.git
+[submodule "references/opencode"]
+	path = references/opencode
+	url = git@github.com:opencode-ai/opencode.git
+[submodule "references/oh-my-opencode"]
+	path = references/oh-my-opencode
+	url = git@github.com:code-yeongyu/oh-my-opencode.git
+[submodule "references/openclaw"]
+	path = references/openclaw
+	url = git@github.com:openclaw/openclaw.git
+[submodule "references/last30days-skill"]
+	path = references/last30days-skill
+	url = git@github.com:mvanhorn/last30days-skill.git
+[submodule "references/compound-engineering-plugin"]
+	path = references/compound-engineering-plugin
+	url = git@github.com:mdc159/compound-engineering-plugin.git
+[submodule "references/agent-zero"]
+	path = references/agent-zero
+	url = git@github.com:mdc159/agent-zero.git

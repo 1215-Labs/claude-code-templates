@@ -13,8 +13,8 @@ FAST_MODEL: gemini-2.5-flash
 
 If the primary model fails, try models in this order:
 1. gemini-3-pro-preview (default)
-2. gemini-2.5-flash (fallback)
-3. gemini-2.0-flash-exp (emergency fallback)
+2. gemini-3-flash-preview (fallback)
+3. gemini-2.5-flash (emergency fallback)
 
 ## Instructions
 

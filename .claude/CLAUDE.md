@@ -28,6 +28,29 @@ See [REGISTRY.md](REGISTRY.md) for complete component catalog and [USER_GUIDE.md
 | Find patterns | `codebase-analyst` agent |
 | Check types | `type-checker` agent |
 
+## Reference Submodules
+
+This repo includes reference submodules in `references/` for learning from other Claude Code projects:
+
+| Submodule | Source | Purpose |
+|-----------|--------|---------|
+| claude-code | anthropics/claude-code | Official Claude Code reference |
+| opencode | opencode-ai/opencode | Terminal-based AI coding agent |
+| oh-my-opencode | code-yeongyu/oh-my-opencode | Agent harness patterns |
+| openclaw | openclaw/openclaw | OpenClaw project |
+| last30days-skill | mvanhorn/last30days-skill | Skill implementation example |
+| compound-engineering-plugin | mdc159/compound-engineering-plugin | Plugin patterns |
+| agent-zero | mdc159/agent-zero | Agent architecture |
+
+**On Session Start:** The session hook checks for updates to these references. When updates are available:
+1. **Ask the user** if they want to update (don't auto-update)
+2. If yes, run: `./scripts/update-references.sh`
+3. After updating, briefly summarize what changed in each updated repo (check recent commits)
+
+**Manual commands:**
+- `./scripts/update-references.sh --status-only` - Check status without updating
+- `./scripts/update-references.sh` - Update all references
+
 ## LSP Usage
 
 When working with code, prefer LSP-based navigation:
@@ -45,6 +68,15 @@ When working with code, prefer LSP-based navigation:
 ├── rules/       # Development rules
 ├── hooks/       # Automated checks
 └── workflows/   # Multi-step workflow chains
+
+references/      # Git submodules for learning/reference (not for copying)
+├── claude-code/
+├── opencode/
+├── oh-my-opencode/
+├── openclaw/
+├── last30days-skill/
+├── compound-engineering-plugin/
+└── agent-zero/
 ```
 
 ## Workflow Chains

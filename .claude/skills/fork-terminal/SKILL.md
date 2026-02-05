@@ -181,6 +181,11 @@ bash ~/.claude/skills/fork-terminal/tools/install_dependencies.sh --brew
 | gemini | Google Gemini CLI | `npm install -g @google/gemini-cli` |
 | claude | Claude Code CLI | `npm install -g @anthropic-ai/claude-code` |
 
+### Installed Codex Skills
+Codex has these skills available. Reference them in forked prompts for specialized tasks:
+`/doc`, `/gh-address-comments`, `/gh-fix-ci`, `/openai-docs`, `/pdf`, `/playwright`,
+`/screenshot`, `/security-best-practices`, `/security-ownership-map`, `/security-threat-model`
+
 ## Troubleshooting
 
 ### Common Issues

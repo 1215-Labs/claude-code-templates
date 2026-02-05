@@ -10,7 +10,7 @@ LOG_DIR="/tmp"
 
 # Fallback chains
 CODEX_MODELS=("gpt-5.2-codex" "gpt-5.1-codex-max" "gpt-4o")
-GEMINI_MODELS=("gemini-3-pro-preview" "gemini-2.5-flash" "gemini-2.0-flash-exp")
+GEMINI_MODELS=("gemini-3-pro-preview" "gemini-3-flash-preview" "gemini-2.5-flash")
 CLAUDE_MODELS=("opus" "sonnet" "haiku")
 
 # Colors

@@ -62,12 +62,17 @@ digraph when_to_orchestrate {
 
 | I need to... | Fork to | Model | Output Location |
 |--------------|---------|-------|-----------------|
-| Explore large codebase | Gemini | gemini-3-flash | docs/exploration/ |
-| Understand architecture | Gemini | gemini-3-pro | docs/exploration/ |
-| Find patterns & conventions | Gemini | gemini-3-flash | docs/exploration/ |
+| Explore large codebase | Gemini | gemini-3-flash-preview | docs/exploration/ |
+| Understand architecture | Gemini | gemini-3-pro-preview | docs/exploration/ |
+| Find patterns & conventions | Gemini | gemini-3-flash-preview | docs/exploration/ |
 | Implement feature | Codex | gpt-5.2-codex | docs/implementation/ |
 | Refactor code | Codex | gpt-5.2-codex | docs/implementation/ |
 | Fix bugs | Codex | gpt-5.2-codex | docs/implementation/ |
+| Fix CI failures | Codex | gpt-5.2-codex | (uses `/gh-fix-ci` skill) |
+| Address PR comments | Codex | gpt-5.2-codex | (uses `/gh-address-comments` skill) |
+| Security review | Codex | gpt-5.2-codex | (uses `/security-best-practices` skill) |
+| E2E / browser testing | Codex | gpt-5.2-codex | (uses `/playwright` skill) |
+| Generate docs | Codex | gpt-5.1-codex-mini | (uses `/doc` skill) |
 | Coordinate & decide | Stay in Opus | - | - |
 
 ## Orchestration Patterns

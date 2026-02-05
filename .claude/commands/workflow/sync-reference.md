@@ -27,7 +27,7 @@ Compare skillz components against the claude-code reference submodule to identif
 
 ## Configuration
 
-**Submodule**: `claude-code/` (https://github.com/anthropics/claude-code.git)
+**Submodule**: `references/claude-code/` (https://github.com/anthropics/claude-code.git)
 **Sync Log**: `.claude/reference-sync.local.md`
 **Report Output**: `reference-sync-report.md`
 
@@ -42,7 +42,7 @@ Check arguments for:
 ### Update Submodule (if --update-submodule)
 
 ```bash
-git submodule update --remote claude-code
+git submodule update --remote references/claude-code
 ```
 
 Report if submodule was updated to a new version.
@@ -56,8 +56,8 @@ Read `.claude/reference-sync.local.md` if it exists:
 ### Get Current State
 
 ```bash
-git -C claude-code rev-parse HEAD
-git -C claude-code describe --tags --always
+git -C references/claude-code rev-parse HEAD
+git -C references/claude-code describe --tags --always
 ```
 
 Store current commit hash and tag for the sync log.
@@ -68,7 +68,7 @@ Store current commit hash and tag for the sync log.
 
 ### Subagent 1: Plugin Structure Explorer
 
-Use the **Explore subagent** with "thorough" thoroughness to analyze `claude-code/plugins/`:
+Use the **Explore subagent** with "thorough" thoroughness to analyze `references/claude-code/plugins/`:
 
 **Discover:**
 - Plugin manifest structure (`plugin.json` patterns)
@@ -81,9 +81,9 @@ Use the **Explore subagent** with "thorough" thoroughness to analyze `claude-cod
 ### Subagent 2: Commands/Agents/Skills Explorer
 
 Use the **Explore subagent** with "thorough" thoroughness to analyze:
-- `claude-code/plugins/*/commands/` - Command patterns
-- `claude-code/plugins/*/agents/` - Agent definitions
-- `claude-code/plugins/*/skills/` - Skill structures
+- `references/claude-code/plugins/*/commands/` - Command patterns
+- `references/claude-code/plugins/*/agents/` - Agent definitions
+- `references/claude-code/plugins/*/skills/` - Skill structures
 
 **Discover:**
 - Frontmatter fields and conventions
@@ -96,7 +96,7 @@ Use the **Explore subagent** with "thorough" thoroughness to analyze:
 ### Subagent 3: Hooks & New Features Explorer
 
 Use the **Explore subagent** with "thorough" thoroughness to analyze:
-- `claude-code/plugins/*/hooks/` - Hook implementations
+- `references/claude-code/plugins/*/hooks/` - Hook implementations
 - Any new directories or component types not in skillz
 - Claude Code documentation for recent features
 
@@ -272,6 +272,6 @@ After completing all phases, provide:
 
 ## Related Commands
 
-- `/deep-prime "claude-code" "plugin patterns"` - Deep dive into reference
+- `/deep-prime "references/claude-code" "plugin patterns"` - Deep dive into reference
 - `/code-review` - Review skillz components for quality
 - `/onboarding` - Get familiar with skillz structure
