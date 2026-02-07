@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "Single source of truth for ALL Claude Code components in this repository",
   "metadata": {
-    "lastUpdated": "2025-02-01",
+    "lastUpdated": "2026-02-07",
     "maintainer": "1215-Labs"
   },
   "deploymentLevels": {
@@ -301,6 +301,27 @@
         "deployment": "global",
         "status": "production",
         "description": "Analyze UI components for consistency"
+      },
+      {
+        "name": "workflow/remember",
+        "path": ".claude/commands/workflow/remember.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Store a fact, preference, or decision in persistent memory"
+      },
+      {
+        "name": "workflow/forget",
+        "path": ".claude/commands/workflow/forget.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Remove a fact or preference from persistent memory"
+      },
+      {
+        "name": "workflow/memory",
+        "path": ".claude/commands/workflow/memory.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Manage persistent memory: status, search, init, prune"
       },
 {
         "name": "prp-claude-code/prp-claude-code-create",

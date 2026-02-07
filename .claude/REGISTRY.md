@@ -20,6 +20,9 @@ Central index of all .claude components for quick discovery.
 | Fork terminal | `fork-terminal` skill |
 | Orchestrate tasks | `/orchestrate "task"` |
 | Evaluate a skill/plugin | `skill-evaluator` skill |
+| Remember a fact | `/remember "fact"` |
+| Forget a fact | `/forget "term"` |
+| Memory status/search | `/memory "status"` |
 | n8n workflows | n8n-* skills |
 
 ## By Category
@@ -55,11 +58,17 @@ Central index of all .claude components for quick discovery.
 | Command | `/rca` | Error investigation |
 | Hook | `lsp-reference-checker` | Reference impact warning |
 
-### Session Management
+### Session Management & Memory
 | Type | Component | Purpose |
 |------|-----------|---------|
 | Hook | `session-init` | Initialize session context |
+| Hook | `memory-loader` | Load persistent memory into context on session start |
+| Hook | `memory-distill` | Create session log stub on session end |
 | Hook | `uncommitted-check` | Warn about uncommitted/unpushed changes on stop |
+| Command | `/remember` | Store facts, preferences, decisions in memory |
+| Command | `/forget` | Remove entries from memory |
+| Command | `/memory` | Status, search, init, prune memory |
+| Util | `memory.py` | Core memory functions (load, classify, secrets) |
 
 ### Onboarding
 | Type | Component | Purpose |
@@ -131,10 +140,10 @@ Multi-step workflows for complex tasks:
 | Type | Count | Location |
 |------|-------|----------|
 | Agents | 13 | `.claude/agents/` |
-| Commands | 17 | `.claude/commands/` |
+| Commands | 20 | `.claude/commands/` |
 | Skills | 7 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
-| Hooks | 5 | `.claude/hooks/` |
+| Hooks | 7 | `.claude/hooks/` |
 | Workflows | 4 | `.claude/workflows/` |
 
 ## Cross-Reference Map

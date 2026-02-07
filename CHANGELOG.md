@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-07] add: Add persistent memory system for cross-session context retention (b7dbd15)
 [2026-02-05] evaluate: Evaluate last30days-skill and compound-engineering-plugin, add fallback chain (247fffa)
 [2026-02-04] add: Add skill-evaluator skill for pre-adoption assessment (d99fb0c)
 [2026-02-04] update: Update REGISTRY.md: add /orchestrate to Quick Lookup, bump hook count (260bbf5)
