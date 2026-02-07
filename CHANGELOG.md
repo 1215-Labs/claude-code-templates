@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-07] harden: MANIFEST-driven install-global.py, 6-check validate-docs.py (frontmatter, cross-refs, hooks/examples)
 [2026-02-07] docs: Update MANIFEST, REGISTRY for reference sync (new hooks, examples, .mcp.json)
 [2026-02-07] update: Align .claude/ components with official claude-code v2.1.31 reference (898434f)
 [2026-02-07] add: Add persistent memory system for cross-session context retention (b7dbd15)
