@@ -396,7 +396,111 @@
         "description": "New developer onboarding workflow"
       }
     ],
-    "hooks": [],
+    "hooks": [
+      {
+        "name": "lsp-reference-checker",
+        "path": ".claude/hooks/lsp-reference-checker.py",
+        "event": "PreToolUse",
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "Check LSP references before edits"
+      },
+      {
+        "name": "security-guidance",
+        "event": "PreToolUse",
+        "type": "prompt",
+        "deployment": "global",
+        "status": "production",
+        "description": "Scan edits for security anti-patterns (XSS, injection, eval, etc.)"
+      },
+      {
+        "name": "lsp-type-validator",
+        "path": ".claude/hooks/lsp-type-validator.py",
+        "event": "PostToolUse",
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "Validate types after edits"
+      },
+      {
+        "name": "session-init",
+        "path": ".claude/hooks/session-init.py",
+        "event": "SessionStart",
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "Initialize session context"
+      },
+      {
+        "name": "memory-loader",
+        "path": ".claude/hooks/memory-loader.py",
+        "event": "SessionStart",
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "Load persistent memory on session start"
+      },
+      {
+        "name": "completion-verify",
+        "event": "Stop",
+        "type": "prompt",
+        "deployment": "global",
+        "status": "production",
+        "description": "Verify task completion before stopping"
+      },
+      {
+        "name": "memory-review",
+        "event": "Stop",
+        "type": "prompt",
+        "deployment": "global",
+        "status": "production",
+        "description": "Review session for memory-worthy information"
+      },
+      {
+        "name": "uncommitted-check",
+        "path": ".claude/hooks/uncommitted-check.sh",
+        "event": "Stop",
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "Warn about uncommitted/unpushed changes"
+      },
+      {
+        "name": "memory-distill",
+        "path": ".claude/hooks/memory-distill.py",
+        "event": "SessionEnd",
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "Create session log stub on session end"
+      },
+      {
+        "name": "session-summary",
+        "path": ".claude/hooks/session-summary.py",
+        "event": "SessionEnd",
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "Generate session summary on end"
+      },
+      {
+        "name": "subagent-verify",
+        "event": "SubagentStop",
+        "type": "prompt",
+        "deployment": "global",
+        "status": "production",
+        "description": "Verify subagent completed its assigned task"
+      },
+      {
+        "name": "context-preserve",
+        "event": "PreCompact",
+        "type": "prompt",
+        "deployment": "global",
+        "status": "production",
+        "description": "Preserve critical context before compaction"
+      }
+    ],
     "templates": [
       {
         "name": "n8n",
@@ -409,6 +513,26 @@
           "commands": 0,
           "workflows": 0
         }
+      }
+    ],
+    "examples": [
+      {
+        "name": "mcp-servers",
+        "path": ".mcp.json",
+        "status": "production",
+        "description": "MCP server configuration template (stdio, SSE, streamable-HTTP)"
+      },
+      {
+        "name": "settings-strict",
+        "path": "examples/settings/settings-strict.json",
+        "status": "production",
+        "description": "Strict security settings (deny web, managed hooks only, sandbox)"
+      },
+      {
+        "name": "settings-permissive",
+        "path": "examples/settings/settings-permissive.json",
+        "status": "production",
+        "description": "Permissive development settings (minimal restrictions)"
       }
     ]
   }

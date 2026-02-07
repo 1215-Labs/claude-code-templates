@@ -65,6 +65,9 @@ Central index of all .claude components for quick discovery.
 | Hook | `memory-loader` | Load persistent memory into context on session start |
 | Hook | `memory-distill` | Create session log stub on session end |
 | Hook | `uncommitted-check` | Warn about uncommitted/unpushed changes on stop |
+| Hook | `security-guidance` | Scan edits for security anti-patterns (PreToolUse prompt) |
+| Hook | `subagent-verify` | Verify subagent completed its task (SubagentStop prompt) |
+| Hook | `context-preserve` | Preserve critical context before compaction (PreCompact prompt) |
 | Command | `/remember` | Store facts, preferences, decisions in memory |
 | Command | `/forget` | Remove entries from memory |
 | Command | `/memory` | Status, search, init, prune memory |
@@ -114,6 +117,13 @@ Central index of all .claude components for quick discovery.
 | Agent | `deployment-engineer` | CI/CD, containerization |
 | Agent | `mcp-backend-engineer` | MCP implementation |
 
+### Configuration Templates
+| Type | Component | Purpose |
+|------|-----------|---------|
+| Example | `.mcp.json` | MCP server config template (stdio, SSE, streamable-HTTP) |
+| Example | `settings-strict.json` | Strict security settings (deny web, managed hooks only) |
+| Example | `settings-permissive.json` | Permissive development settings |
+
 ## Workflow Chains
 
 Multi-step workflows for complex tasks:
@@ -143,7 +153,8 @@ Multi-step workflows for complex tasks:
 | Commands | 20 | `.claude/commands/` |
 | Skills | 7 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
-| Hooks | 7 | `.claude/hooks/` |
+| Hooks | 12 (7 command + 5 prompt) | `.claude/hooks/` |
+| Examples | 3 | `.mcp.json` + `examples/settings/` |
 | Workflows | 4 | `.claude/workflows/` |
 
 ## Cross-Reference Map
