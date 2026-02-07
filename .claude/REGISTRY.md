@@ -24,6 +24,12 @@ Central index of all .claude components for quick discovery.
 | Forget a fact | `/forget "term"` |
 | Memory status/search | `/memory "status"` |
 | n8n workflows | n8n-* skills |
+| Mac health check | `/mac-health` |
+| Mac snapshot diff | `/mac-diff` |
+| Mac snapshot/status | `/mac-status` |
+| Mac config discovery | `/mac-discover` |
+| Mac safe restore | `/mac-restore "latest"` |
+| Mac weekly review | `/mac-status "weekly"` |
 
 ## By Category
 
@@ -92,6 +98,16 @@ Central index of all .claude components for quick discovery.
 | Skill | `n8n-workflow-patterns` | Workflow architecture |
 | Agent | `n8n-mcp-tester` | n8n MCP testing |
 
+### Mac Management
+| Type | Component | Purpose |
+|------|-----------|---------|
+| Command | `/mac-health` | Health check triage with remediation guidance |
+| Command | `/mac-diff` | Snapshot diff with change interpretation |
+| Command | `/mac-status` | Snapshot management and weekly reviews |
+| Command | `/mac-discover` | Find untracked config, apps, and domains |
+| Command | `/mac-restore` | Safe restore with validation and confirmation |
+| Skill | `mac-manage-context` | Shared knowledge base (paths, glossaries, formats) |
+
 ### Browser & Terminal Automation
 | Type | Component | Purpose |
 |------|-----------|---------|
@@ -150,8 +166,8 @@ Multi-step workflows for complex tasks:
 | Type | Count | Location |
 |------|-------|----------|
 | Agents | 13 | `.claude/agents/` |
-| Commands | 20 | `.claude/commands/` |
-| Skills | 7 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
+| Commands | 25 | `.claude/commands/` |
+| Skills | 8 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
 | Hooks | 12 (7 command + 5 prompt) | `.claude/hooks/` |
 | Examples | 3 | `.mcp.json` + `examples/settings/` |
@@ -210,6 +226,7 @@ Multi-step workflows for complex tasks:
 | `lsp-type-safety-check` | code-reviewer | /code-review | lsp-symbol-navigation |
 | `lsp-dependency-analysis` | debugger, dependency-analyzer | /rca | lsp-symbol-navigation |
 | `n8n-*` (7 skills) | n8n-mcp-tester | — | (inter-related) |
+| `mac-manage-context` | — | /mac-health, /mac-diff, /mac-status, /mac-discover, /mac-restore | — |
 
 ### n8n Skills Relationships
 
@@ -243,6 +260,25 @@ n8n-validation-expert ──→ Fix validation errors
          ↓                          ↓
 /prp-any-cli-create ────→ /prp-any-cli-execute
                     (Codex/Gemini/other)
+```
+
+### Mac Management Command Relationships
+
+```
+/mac-status "weekly" ──→ (runs all four below in sequence)
+         │
+         ├──→ /mac-status "snapshot" ──→ snapshot + auto-diff
+         ├──→ /mac-diff ──────────────→ interpret changes
+         ├──→ /mac-health ────────────→ triage findings
+         └──→ /mac-discover (abbreviated)
+                    │
+                    ↓
+              /mac-restore ←── uses snapshot data
+                    │
+                    ↓
+              /mac-health ←── post-restore verify
+
+All commands reference: mac-manage-context skill
 ```
 
 ### Workflow Entry Points

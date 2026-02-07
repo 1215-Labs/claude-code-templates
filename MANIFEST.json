@@ -72,6 +72,13 @@
         "description": "Evaluate external skills/plugins before adoption using parallel agents"
       },
       {
+        "name": "mac-manage-context",
+        "path": ".claude/skills/mac-manage-context",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Shared knowledge base for mac-manage slash commands"
+      },
+      {
         "name": "n8n-code-javascript",
         "path": "templates/n8n/skills/n8n-code-javascript",
         "deployment": "template",
@@ -364,6 +371,41 @@
         "deployment": "global",
         "status": "production",
         "description": "Execute PRP with any CLI agent"
+      },
+      {
+        "name": "mac-manage/mac-health",
+        "path": ".claude/commands/mac-manage/mac-health.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Health check triage with AI-powered remediation guidance"
+      },
+      {
+        "name": "mac-manage/mac-diff",
+        "path": ".claude/commands/mac-manage/mac-diff.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Snapshot diff with AI-powered change interpretation"
+      },
+      {
+        "name": "mac-manage/mac-status",
+        "path": ".claude/commands/mac-manage/mac-status.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Snapshot management, weekly reviews, and system status"
+      },
+      {
+        "name": "mac-manage/mac-discover",
+        "path": ".claude/commands/mac-manage/mac-discover.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Find untracked config files, apps, and preference domains"
+      },
+      {
+        "name": "mac-manage/mac-restore",
+        "path": ".claude/commands/mac-manage/mac-restore.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Safe restore with validation, dry-run, and confirmation gate"
       }
     ],
     "workflows": [
