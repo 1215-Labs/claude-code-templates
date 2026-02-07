@@ -155,6 +155,23 @@ These are Claude Code hooks that run automatically during tool use and session e
 └─────────────────────────────────────────────────────┘
 ```
 
+## Persistent Memory
+
+Claude Code sessions are stateless by default. The persistent memory system saves facts, decisions, and preferences to markdown files that load automatically at session start.
+
+**Key commands:**
+
+| Command | Purpose |
+|---------|---------|
+| `/memory "init"` | Set up memory directories and starter files |
+| `/remember "fact"` | Save a fact (auto-classified to the right file) |
+| `/forget "term"` | Remove entries by keyword or decision ID |
+| `/memory` | Check what's stored, token usage, health |
+
+Memory is two-tiered: **project memory** (`.claude/memory/`, git-tracked) for architecture and decisions, and **global memory** (`~/.claude/memory/`) for personal preferences that follow you across projects.
+
+See [MEMORY_GUIDE.md](MEMORY_GUIDE.md) for the full guide — architecture, token budgets, security, hooks, and maintenance.
+
 ## Tips
 
 1. **Start with commands** - They're the quickest entry point
