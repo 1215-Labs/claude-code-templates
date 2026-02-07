@@ -122,9 +122,8 @@ If adopting (Strategy A or B):
 
 - [ ] Add to `MANIFEST.json` (deployment: global, status: beta)
 - [ ] Update `REGISTRY.md` (category, quick lookup, relationships)
-- [ ] Update `install-global.sh` (if global deployment)
-- [ ] Run `python3 scripts/validate-manifest.py`
-- [ ] Run `python3 scripts/validate-docs.py`
+- [ ] Run `python3 scripts/validate-docs.py` (validates MANIFEST, installer, frontmatter, cross-refs)
+- [ ] Run `python3 scripts/install-global.py --dry-run` to verify it will be installed
 - [ ] Update component counts in REGISTRY
 
 ## Agent Reports

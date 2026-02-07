@@ -20,7 +20,7 @@ This repository serves two goals:
 │  │ (submodule)  │────►│   agents/    (13 agents)         │ │
 │  │              │     │   commands/  (17 commands)       │ │
 │  │ Official     │     │   skills/    (6+7 skills)        │ │
-│  │ Reference    │     │   hooks/     (5 hooks)           │ │
+│  │ Reference    │     │   hooks/     (12 hooks)          │ │
 │  └──────────────┘     │   workflows/ (4 workflow chains) │ │
 │         │             └──────────────────────────────────┘ │
 │         │                            │                      │
@@ -62,13 +62,13 @@ All components live in `.claude/`—the single source of truth. How they're depl
 │              │                                │                  │
 │              ▼                                ▼                  │
 │  install-global.sh              deploy-template.sh              │
-│  Symlinks to ~/.claude/         Copies to project .claude/      │
-│  Available in ALL projects      Project-specific only            │
+│  (reads MANIFEST.json)          Copies to project .claude/      │
+│  Symlinks to ~/.claude/         Project-specific only            │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-- **`install-global.sh`** is the authority on what ships globally—run it after updates
-- **`MANIFEST.json`** is the component catalog with deployment metadata
+- **`MANIFEST.json`** is the single source of truth—all deployment reads from it
+- **`install-global.sh`** reads MANIFEST and symlinks global components (supports `--dry-run`)
 - **`REGISTRY.md`** is the human-readable quick-reference
 
 ## Using the Templates
@@ -94,7 +94,7 @@ All components live in `.claude/`—the single source of truth. How they're depl
 | Agents | 13 | Specialized sub-agents (code-reviewer, debugger, test-automator, etc.) |
 | Commands | 17 | Slash commands (/onboarding, /code-review, /rca, /orchestrate, etc.) |
 | Skills | 6 global + 7 template | Reusable patterns (LSP navigation, orchestration, n8n development) |
-| Hooks | 5 | Automated checks (type validation, reference checking, session init) |
+| Hooks | 12 | Automated checks (type validation, reference checking, session init, memory, etc.) |
 | Workflows | 4 | Multi-step processes (feature development, bug investigation) |
 
 See [.claude/REGISTRY.md](.claude/REGISTRY.md) for the complete component catalog.
@@ -149,7 +149,7 @@ Install the git hooks after cloning:
 This installs:
 - **pre-commit**: Validates MANIFEST.json is in sync with filesystem
 - **post-commit**: Auto-updates CHANGELOG.md
-- **pre-push**: Validates documentation alignment (MANIFEST, install-global.sh, docs)
+- **pre-push**: Validates documentation alignment (6 checks: MANIFEST sync, installer, doc counts, changelog, frontmatter, cross-refs)
 
 ## Repository Structure
 
@@ -159,8 +159,9 @@ claude-code-templates/
 ├── MANIFEST.json          # Component catalog with deployment metadata
 ├── CHANGELOG.md           # Auto-updated change log
 ├── scripts/
-│   ├── install-global.sh  # Symlinks global components to ~/.claude/
-│   └── validate-manifest.py  # Ensures MANIFEST.json matches filesystem
+│   ├── install-global.py  # MANIFEST-driven installer (symlinks to ~/.claude/)
+│   ├── install-global.sh  # Wrapper for install-global.py
+│   └── validate-docs.py   # 6-check documentation validator (called by pre-push)
 ├── references/            # Git submodules for learning (not for copying)
 │   ├── claude-code/       # Official Anthropic Claude Code reference
 │   └── ...                # Other reference repos
