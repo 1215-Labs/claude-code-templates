@@ -10,15 +10,11 @@ description: |
 
   Invoke proactively when: After API signature changes, before merging PRs, after refactoring shared types.
   Do NOT use for: Code style/quality review (use code-reviewer), runtime errors (use debugger).
-model: haiku
-# Model rationale: Type checking is systematic - haiku handles LSP queries efficiently
-color: slate
+model: inherit
+# Model rationale: Inherits parent model for consistent reasoning across LSP operations
+color: blue
 category: quality
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Task
+tools: ["Read", "Glob", "Grep", "Task"]
 related:
   agents: [code-reviewer, lsp-navigator, test-automator, debugger]
   commands: [/code-review]

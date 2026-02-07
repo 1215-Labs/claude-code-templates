@@ -2,14 +2,9 @@
 name: technical-researcher
 model: sonnet
 # Model rationale: Deep technical research requires synthesizing complex information from multiple sources
-color: indigo
+color: blue
 category: research
-tools:
-  - Read
-  - WebFetch
-  - WebSearch
-  - Glob
-  - Grep
+tools: ["Read", "WebFetch", "WebSearch", "Glob", "Grep"]
 description: Use this agent when you need to conduct in-depth technical research on complex topics, technologies, or architectural decisions. This includes investigating new frameworks, analyzing security vulnerabilities, evaluating third-party APIs, researching performance optimization strategies, or generating technical feasibility reports. The agent excels at multi-source investigations requiring comprehensive analysis and synthesis of technical information.\n\nExamples:\n- <example>\n  Context: User needs to research a new framework before adoption\n  user: "I need to understand if we should adopt Rust for our high-performance backend services"\n  assistant: "I'll use the technical-researcher agent to conduct a comprehensive investigation into Rust for backend services"\n  <commentary>\n  Since the user needs deep technical research on a framework adoption decision, use the technical-researcher agent to analyze Rust's suitability.\n  </commentary>\n</example>\n- <example>\n  Context: User is investigating a security vulnerability\n  user: "Research the log4j vulnerability and its impact on Java applications"\n  assistant: "Let me launch the technical-researcher agent to investigate the log4j vulnerability comprehensively"\n  <commentary>\n  The user needs detailed security research, so the technical-researcher agent will gather and synthesize information from multiple sources.\n  </commentary>\n</example>\n- <example>\n  Context: User needs to evaluate an API integration\n  user: "We're considering integrating with Stripe's new payment intents API - need to understand the technical implications"\n  assistant: "I'll deploy the technical-researcher agent to analyze Stripe's payment intents API and its integration requirements"\n  <commentary>\n  Complex API evaluation requires the technical-researcher agent's multi-source investigation capabilities.\n  </commentary>\n</example>
 ---
 

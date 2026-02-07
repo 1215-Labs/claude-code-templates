@@ -7,6 +7,10 @@ description: |
 
   Use for: Discovering what skills are available in the current session
 user-invocable: true
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
 ---
 
 # List All Skills

@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "example-stdio": {
+      "command": "npx",
+      "args": ["-y", "@example/mcp-server"],
+      "env": {
+        "API_KEY": "your-api-key-here"
+      }
+    },
+    "example-sse": {
+      "type": "sse",
+      "url": "http://localhost:3001/sse"
+    },
+    "example-http": {
+      "type": "streamable-http",
+      "url": "http://localhost:3002/mcp"
+    }
+  }
+}

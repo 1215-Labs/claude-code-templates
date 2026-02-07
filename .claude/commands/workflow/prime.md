@@ -10,6 +10,10 @@ description: |
 user-invocable: true
 related:
   commands: [/quick-prime, /deep-prime, /onboarding]
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
 ---
 
 # Context Priming

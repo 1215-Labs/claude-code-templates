@@ -4,11 +4,7 @@ description: Use this agent when you need to review recently written or modified
 model: inherit
 # Model rationale: Inherits parent model; code review benefits from same reasoning level as implementation
 color: red
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash(*)
+tools: ["Read", "Glob", "Grep", "Bash(*)"]
 category: quality
 related:
   agents: [test-automator, type-checker, codebase-analyst]

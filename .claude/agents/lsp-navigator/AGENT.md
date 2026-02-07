@@ -10,15 +10,11 @@ description: |
 
   Invoke proactively when: Exploring unfamiliar code, tracing execution flow, understanding symbol relationships.
   Do NOT use for: Pattern discovery across codebase (use codebase-analyst), large-scale refactoring analysis (use dependency-analyzer).
-model: haiku
-# Model rationale: Symbol lookup is straightforward - haiku provides fast responses for navigation tasks
-color: pink
+model: inherit
+# Model rationale: Inherits parent model for consistent reasoning across LSP operations
+color: magenta
 category: analysis
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Task
+tools: ["Read", "Glob", "Grep", "Task"]
 related:
   agents: [codebase-analyst, dependency-analyzer, debugger]
   commands: [/deep-prime]

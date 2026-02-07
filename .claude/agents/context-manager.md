@@ -3,11 +3,7 @@ name: context-manager
 model: sonnet
 # Model rationale: Context synthesis and prioritization requires nuanced judgment about relevance
 color: cyan
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Task
+tools: ["Read", "Glob", "Grep", "Task"]
 description: Use this agent when you need to manage context across multiple agents and long-running tasks, especially for projects exceeding 10k tokens. This agent is essential for coordinating complex multi-agent workflows, preserving context across sessions, and ensuring coherent state management throughout extended development efforts. Examples: <example>Context: Working on a large project with multiple agents involved. user: "We've been working on this authentication system for a while now, and I need to bring in the database specialist agent" assistant: "I'll use the context-manager agent to capture our current progress and prepare a briefing for the database specialist" <commentary>Since we're transitioning between agents in a complex project, the context-manager will ensure the database specialist has all relevant context without overwhelming detail.</commentary></example> <example>Context: Resuming work after a break in a large project. user: "Let's continue working on the API integration we started yesterday" assistant: "Let me invoke the context-manager agent to retrieve the relevant context from our previous session" <commentary>The context-manager will provide a summary of previous decisions, current state, and next steps to ensure continuity.</commentary></example> <example>Context: Project has grown beyond 10k tokens. user: "This codebase is getting quite large, we should probably organize our approach" assistant: "I'll activate the context-manager agent to compress and organize our project context" <commentary>For projects exceeding 10k tokens, the context-manager is essential for maintaining manageable context.</commentary></example>
 category: analysis
 related:

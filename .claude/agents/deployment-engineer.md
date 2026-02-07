@@ -2,14 +2,9 @@
 name: deployment-engineer
 model: sonnet
 # Model rationale: Infrastructure decisions require careful analysis of trade-offs and security implications
-color: orange
+color: yellow
 category: infrastructure
-tools:
-  - Read
-  - Write
-  - Bash(*)
-  - Glob
-  - Grep
+tools: ["Read", "Write", "Bash(*)", "Glob", "Grep"]
 description: Use this agent when you need to set up CI/CD pipelines, containerize applications, configure cloud deployments, or automate infrastructure. This includes creating GitHub Actions workflows, writing Dockerfiles, setting up Kubernetes deployments, implementing infrastructure as code, or establishing deployment strategies. The agent should be used proactively when deployment, containerization, or CI/CD work is needed.\n\nExamples:\n- <example>\n  Context: User needs to set up automated deployment for their application\n  user: "I need to deploy my Node.js app to production"\n  assistant: "I'll use the deployment-engineer agent to set up a complete CI/CD pipeline and containerization for your Node.js application"\n  <commentary>\n  Since the user needs deployment setup, use the Task tool to launch the deployment-engineer agent to create the necessary CI/CD and container configurations.\n  </commentary>\n</example>\n- <example>\n  Context: User has just created a new web service and needs deployment automation\n  user: "I've finished building the API service"\n  assistant: "Now let me use the deployment-engineer agent to set up automated deployments for your API service"\n  <commentary>\n  Proactively use the deployment-engineer agent after development work to establish proper deployment infrastructure.\n  </commentary>\n</example>\n- <example>\n  Context: User wants to implement Kubernetes for their microservices\n  user: "How should I structure my Kubernetes deployments for these three microservices?"\n  assistant: "I'll use the deployment-engineer agent to create a complete Kubernetes deployment strategy for your microservices"\n  <commentary>\n  For Kubernetes and container orchestration questions, use the deployment-engineer agent to provide production-ready configurations.\n  </commentary>\n</example>
 ---
 

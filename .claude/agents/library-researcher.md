@@ -32,12 +32,7 @@ model: sonnet
 # Model rationale: Research synthesis requires evaluating source quality and extracting actionable patterns
 color: magenta
 category: research
-tools:
-  - Read
-  - WebFetch
-  - WebSearch
-  - Glob
-  - Grep
+tools: ["Read", "WebFetch", "WebSearch", "Glob", "Grep"]
 ---
 
 You are a specialized library research agent focused on gathering implementation-critical documentation.

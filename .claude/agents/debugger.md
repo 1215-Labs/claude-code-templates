@@ -3,12 +3,7 @@ name: debugger
 model: sonnet
 # Model rationale: Root cause analysis requires deep reasoning about code behavior and error patterns
 color: yellow
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash(*)
-  - Write
+tools: ["Read", "Glob", "Grep", "Bash(*)", "Write"]
 description: Use this agent when encountering errors, test failures, unexpected behavior, or any issues that require root cause analysis. The agent should be invoked proactively whenever debugging is needed. Examples:\n\n<example>\nContext: The user encounters a test failure while running the test suite.\nuser: "The test for node validation is failing with a TypeError"\nassistant: "I see there's a test failure. Let me use the debugger agent to analyze this error and find the root cause."\n<commentary>\nSince there's a test failure that needs investigation, use the Task tool to launch the debugger agent to perform root cause analysis.\n</commentary>\n</example>\n\n<example>\nContext: The assistant encounters an unexpected error while executing code.\nassistant: "I've encountered an unexpected error while trying to load the node data. Let me use the debugger agent to investigate this issue."\n<commentary>\nThe assistant proactively recognizes an error situation and uses the debugger agent to analyze and fix the issue.\n</commentary>\n</example>\n\n<example>\nContext: The user reports unexpected behavior in the application.\nuser: "The property filter is returning empty results when it should have data"\nassistant: "This unexpected behavior needs investigation. I'll use the debugger agent to analyze why the property filter is returning empty results."\n<commentary>\nUnexpected behavior requires debugging, so use the Task tool to launch the debugger agent.\n</commentary>\n</example>
 category: debugging
 related:

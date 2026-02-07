@@ -7,8 +7,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/hooks/lsp-reference-checker.py",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lsp-reference-checker.py",
             "timeout": 30000
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Before applying this file change, scan the content for security anti-patterns:\n- Command injection: user input passed to exec(), spawn(), system(), or backticks\n- XSS: unsanitized user input rendered in HTML/JSX without escaping\n- SQL injection: string concatenation in SQL queries instead of parameterized queries\n- eval/Function constructor: dynamic code execution from untrusted input\n- Path traversal: user input in file paths without sanitization\n- Hardcoded secrets: API keys, passwords, tokens, or private keys in source code\n- Insecure deserialization: JSON.parse or yaml.load on untrusted input without validation\n\nIf any of these patterns are detected, BLOCK the edit and explain the vulnerability with a safe alternative. If the code is safe, allow it silently."
           }
         ]
       }
@@ -19,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/hooks/lsp-type-validator.py",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lsp-type-validator.py",
             "timeout": 60000
           }
         ]
@@ -30,12 +39,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/hooks/session-init.py",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/session-init.py",
             "timeout": 10000
           },
           {
             "type": "command",
-            "command": "python3 .claude/hooks/memory-loader.py",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/memory-loader.py",
             "timeout": 10000
           }
         ],
@@ -55,7 +64,7 @@
           },
           {
             "type": "command",
-            "command": "bash .claude/hooks/uncommitted-check.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/uncommitted-check.sh",
             "timeout": 5000
           }
         ]
@@ -66,16 +75,38 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/hooks/memory-distill.py",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/memory-distill.py",
             "timeout": 5000
           },
           {
             "type": "command",
-            "command": "python3 .claude/hooks/session-summary.py",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/session-summary.py",
             "timeout": 5000
           }
         ]
       }
-    ]
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Verify the subagent completed its assigned task. Check that the output addresses the original request and contains actionable results. If the subagent failed or returned incomplete results, note what is missing."
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Before compacting context, preserve these critical items in your summary:\n- Current task objective and progress\n- Key decisions made and their rationale\n- File paths and line numbers being actively worked on\n- Any unresolved errors or blockers\n- User preferences expressed during this session"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [],
+    "Notification": []
   }
 }

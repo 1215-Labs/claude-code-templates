@@ -107,6 +107,6 @@ See `.claude/hooks/` for automated LSP-based checks.
 
 **Commands** (`.claude/commands/**/*.md`): Can use `$ARGUMENTS` to receive user input. Support single or multiple quoted arguments.
 
-**Hooks** (`.claude/hooks/hooks.json`): Define `PreToolUse`, `PostToolUse`, `SessionStart`, `Stop` events with command or prompt-based hooks.
+**Hooks** (`.claude/hooks/hooks.json`): Define hook events with command or prompt-based hooks. Supported events: `PreToolUse`, `PostToolUse`, `SessionStart`, `SessionEnd`, `Stop`, `SubagentStop`, `PreCompact`, `UserPromptSubmit`, `Notification`.
 
 **Workflows** (`.claude/workflows/*.md`): Multi-step sequences combining commands, agents, and decision points.

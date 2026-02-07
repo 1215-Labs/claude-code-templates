@@ -2,14 +2,9 @@
 name: mcp-backend-engineer
 model: sonnet
 # Model rationale: MCP protocol compliance requires precision; architectural decisions need careful analysis
-color: purple
+color: magenta
 category: infrastructure
-tools:
-  - Read
-  - Write
-  - Bash(*)
-  - Glob
-  - Grep
+tools: ["Read", "Write", "Bash(*)", "Glob", "Grep"]
 description: Use this agent when you need to work with Model Context Protocol (MCP) implementation, especially when modifying the MCP layer of the application. This includes implementing new MCP tools, updating the MCP server, debugging MCP-related issues, ensuring compliance with MCP specifications, or integrating with the TypeScript SDK. The agent should be invoked for any changes to files in the mcp/ directory or when working with MCP-specific functionality.\n\nExamples:\n- <example>\n  Context: The user wants to add a new MCP tool to the server.\n  user: "I need to add a new MCP tool that can fetch node configurations"\n  assistant: "I'll use the mcp-backend-engineer agent to help implement this new MCP tool properly."\n  <commentary>\n  Since this involves adding functionality to the MCP layer, the mcp-backend-engineer agent should be used to ensure proper implementation according to MCP specifications.\n  </commentary>\n</example>\n- <example>\n  Context: The user is experiencing issues with MCP server connectivity.\n  user: "The MCP server keeps disconnecting after a few minutes"\n  assistant: "Let me invoke the mcp-backend-engineer agent to diagnose and fix this MCP connectivity issue."\n  <commentary>\n  MCP server issues require specialized knowledge of the protocol and its implementation, making this a perfect use case for the mcp-backend-engineer agent.\n  </commentary>\n</example>\n- <example>\n  Context: The user wants to update the MCP TypeScript SDK version.\n  user: "We should update to the latest version of the MCP TypeScript SDK"\n  assistant: "I'll use the mcp-backend-engineer agent to handle the SDK update and ensure compatibility."\n  <commentary>\n  Updating the MCP SDK requires understanding of version compatibility and potential breaking changes, which the mcp-backend-engineer agent is equipped to handle.\n  </commentary>\n</example>
 ---
 

@@ -10,15 +10,11 @@ description: |
 
   Invoke proactively when: Before removing/renaming modules, planning refactors, investigating circular dependencies.
   Do NOT use for: Code flow tracing (use lsp-navigator), pattern discovery (use codebase-analyst).
-model: haiku
-# Model rationale: Dependency mapping is systematic LSP traversal - haiku handles this efficiently
-color: violet
+model: inherit
+# Model rationale: Inherits parent model for consistent reasoning across LSP operations
+color: magenta
 category: analysis
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Task
+tools: ["Read", "Glob", "Grep", "Task"]
 related:
   agents: [lsp-navigator, codebase-analyst, debugger]
   commands: [/deep-prime, /rca]

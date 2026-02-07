@@ -31,11 +31,7 @@ description: |
 model: sonnet
 # Model rationale: Pattern analysis requires nuanced understanding - sonnet handles complex codebase reasoning
 color: blue
-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash(git *)
+tools: ["Read", "Glob", "Grep", "Bash(git *)"]
 category: analysis
 related:
   agents: [context-manager, lsp-navigator, dependency-analyzer, debugger]
