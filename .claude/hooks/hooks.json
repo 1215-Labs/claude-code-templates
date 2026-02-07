@@ -1,5 +1,5 @@
 {
-  "description": "LSP-aware hooks for code quality validation",
+  "description": "LSP-aware hooks for code quality validation and persistent memory",
   "hooks": {
     "PreToolUse": [
       {
@@ -32,6 +32,11 @@
             "type": "command",
             "command": "python3 .claude/hooks/session-init.py",
             "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/memory-loader.py",
+            "timeout": 10000
           }
         ],
         "once": true
@@ -45,6 +50,10 @@
             "prompt": "Before stopping, verify the task is complete: all requested changes made, no pending todos, and code compiles without errors. If incomplete, explain what remains."
           },
           {
+            "type": "prompt",
+            "prompt": "Review this session for memory-worthy information. If there are new facts, preferences, decisions, or learnings worth persisting, write them to the appropriate memory files:\n\n- User preferences/identity → ~/.claude/memory/user-profile.md\n- Communication style → ~/.claude/memory/voice.md\n- Tool/environment info → ~/.claude/memory/tool-environment.md\n- Project architecture/conventions → .claude/memory/project-context.md\n- Architectural decisions (use DEC-NNN format) → .claude/memory/decisions.md\n- Tasks/TODOs for next session → .claude/memory/tasks.md\n\nAlso write a brief session summary to .claude/memory/sessions/ with filename format YYYY-MM-DD_HHMM.md containing:\n- ## Summary (2-3 sentences of what was accomplished)\n- ## Key Changes (bullet list of files/features changed)\n- ## Open Items (anything left unfinished)\n\nRules:\n- Do NOT store secrets (API keys, passwords, tokens, private keys)\n- Do NOT duplicate entries that already exist in memory files\n- Only store genuinely useful information, not trivial details\n- If nothing worth remembering happened, skip memory writes entirely\n- Append to existing sections with timestamp prefix: - [YYYY-MM-DD] content"
+          },
+          {
             "type": "command",
             "command": "bash .claude/hooks/uncommitted-check.sh",
             "timeout": 5000
@@ -55,6 +64,11 @@
     "SessionEnd": [
       {
         "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/memory-distill.py",
+            "timeout": 5000
+          },
           {
             "type": "command",
             "command": "python3 .claude/hooks/session-summary.py",
