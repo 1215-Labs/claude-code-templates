@@ -247,6 +247,13 @@
     ],
     "commands": [
       {
+        "name": "workflow/catchup",
+        "path": ".claude/commands/workflow/catchup.md",
+        "deployment": "global",
+        "status": "production",
+        "description": "Session resume briefing: last session, git state, tasks, next actions"
+      },
+      {
         "name": "workflow/all_skills",
         "path": ".claude/commands/workflow/all_skills.md",
         "deployment": "global",

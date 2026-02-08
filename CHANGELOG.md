@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-07] add: Add /catchup command for session resume briefings, add Next Session field to Stop hook (59f8be3)
 [2026-02-07] fix: Fix documentation gaps, harden pre-push hook to block on all issues (0510f73)
 [2026-02-07] add: Add /repo-equip command, repo-equip-engine skill, cbass commands + context skill, n8n workflow manager PRP (621b209)
 [2026-02-07] add: Add mac-manage slash commands for AI-powered Mac system management (c2e6daf)

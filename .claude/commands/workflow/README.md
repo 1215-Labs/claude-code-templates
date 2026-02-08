@@ -6,6 +6,7 @@ A suite of Claude Code commands for streamlined development workflows. These com
 
 | Command | Purpose | Usage |
 |---------|---------|-------|
+| `/catchup` | Resume session | `/catchup` |
 | `/onboarding` | New developer intro | `/onboarding` |
 | `/quick-prime` | Fast context | `/quick-prime` |
 | `/deep-prime` | Deep context | `/deep-prime "area" "focus"` |
@@ -17,6 +18,9 @@ A suite of Claude Code commands for streamlined development workflows. These com
 ## Workflow
 
 ```
+Resume work   ──► /catchup
+                      │
+                      ▼
 New developer ──► /onboarding
                       │
                       ▼

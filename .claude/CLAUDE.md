@@ -20,6 +20,7 @@ See [REGISTRY.md](REGISTRY.md) for complete component catalog and [USER_GUIDE.md
 
 | Task | Command/Agent |
 |------|---------------|
+| Resume session | `/catchup` |
 | New to project | `/onboarding` |
 | Quick context | `/quick-prime` |
 | Deep context | `/deep-prime "area" "focus"` |
