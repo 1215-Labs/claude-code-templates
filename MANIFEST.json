@@ -79,6 +79,20 @@
         "description": "Shared knowledge base for mac-manage slash commands"
       },
       {
+        "name": "repo-equip-engine",
+        "path": ".claude/skills/repo-equip-engine",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Matching heuristics, gap detection, and templates for automated repo equipment"
+      },
+      {
+        "name": "cbass-context",
+        "path": ".claude/skills/cbass-context",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Shared knowledge base for cbass slash commands — Docker Compose services, profiles, domains"
+      },
+      {
         "name": "n8n-code-javascript",
         "path": "templates/n8n/skills/n8n-code-javascript",
         "deployment": "template",
@@ -371,6 +385,34 @@
         "deployment": "global",
         "status": "production",
         "description": "Execute PRP with any CLI agent"
+      },
+      {
+        "name": "workflow/repo-equip",
+        "path": ".claude/commands/workflow/repo-equip.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Analyze a repo and equip it with matching Claude Code components"
+      },
+      {
+        "name": "cbass/cbass-status",
+        "path": ".claude/commands/cbass/cbass-status.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Check cbass service status with AI-powered health interpretation"
+      },
+      {
+        "name": "cbass/cbass-logs",
+        "path": ".claude/commands/cbass/cbass-logs.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "View and analyze cbass service logs with AI error interpretation"
+      },
+      {
+        "name": "cbass/cbass-deploy",
+        "path": ".claude/commands/cbass/cbass-deploy.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Guided cbass deployment with pre-flight checks and validation"
       },
       {
         "name": "mac-manage/mac-health",

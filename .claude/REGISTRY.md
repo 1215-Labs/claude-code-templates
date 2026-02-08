@@ -20,6 +20,7 @@ Central index of all .claude components for quick discovery.
 | Fork terminal | `fork-terminal` skill |
 | Orchestrate tasks | `/orchestrate "task"` |
 | Evaluate a skill/plugin | `skill-evaluator` skill |
+| Equip a repo with components | `/repo-equip "/path/to/repo"` |
 | Remember a fact | `/remember "fact"` |
 | Forget a fact | `/forget "term"` |
 | Memory status/search | `/memory "status"` |
@@ -30,6 +31,9 @@ Central index of all .claude components for quick discovery.
 | Mac config discovery | `/mac-discover` |
 | Mac safe restore | `/mac-restore "latest"` |
 | Mac weekly review | `/mac-status "weekly"` |
+| cbass service status | `/cbass-status` |
+| cbass log analysis | `/cbass-logs "service"` |
+| cbass deploy | `/cbass-deploy "gpu-nvidia"` |
 
 ## By Category
 
@@ -108,6 +112,14 @@ Central index of all .claude components for quick discovery.
 | Command | `/mac-restore` | Safe restore with validation and confirmation |
 | Skill | `mac-manage-context` | Shared knowledge base (paths, glossaries, formats) |
 
+### cbass (Self-Hosted AI Stack)
+| Type | Component | Purpose |
+|------|-----------|---------|
+| Command | `/cbass-status` | Service status with AI health interpretation |
+| Command | `/cbass-logs` | Log analysis with AI error interpretation |
+| Command | `/cbass-deploy` | Guided deployment with pre-flight checks |
+| Skill | `cbass-context` | Shared knowledge base (services, profiles, domains, glossary) |
+
 ### Browser & Terminal Automation
 | Type | Component | Purpose |
 |------|-----------|---------|
@@ -119,7 +131,9 @@ Central index of all .claude components for quick discovery.
 |------|-----------|---------|
 | Skill | `multi-model-orchestration` | Delegate tasks across Gemini/Codex via forked terminals |
 | Skill | `skill-evaluator` | Evaluate external skills/plugins before adoption (parallel agents) |
+| Skill | `repo-equip-engine` | Matching heuristics and templates for automated repo equipment |
 | Command | `/orchestrate` | Quick orchestration via forked terminals |
+| Command | `/repo-equip` | Analyze a repo and equip it with matching Claude Code components |
 
 ### Research
 | Type | Component | Purpose |
@@ -166,8 +180,8 @@ Multi-step workflows for complex tasks:
 | Type | Count | Location |
 |------|-------|----------|
 | Agents | 13 | `.claude/agents/` |
-| Commands | 25 | `.claude/commands/` |
-| Skills | 8 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
+| Commands | 29 | `.claude/commands/` |
+| Skills | 10 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
 | Hooks | 12 (7 command + 5 prompt) | `.claude/hooks/` |
 | Examples | 3 | `.mcp.json` + `examples/settings/` |
@@ -222,11 +236,13 @@ Multi-step workflows for complex tasks:
 | `fork-terminal` | context-manager | /orchestrate | agent-browser, multi-model-orchestration |
 | `multi-model-orchestration` | — | /orchestrate | fork-terminal, skill-evaluator |
 | `skill-evaluator` | codebase-analyst | — | fork-terminal, multi-model-orchestration |
+| `repo-equip-engine` | — | /repo-equip | skill-evaluator, multi-model-orchestration |
 | `lsp-symbol-navigation` | codebase-analyst | /deep-prime | lsp-dependency-analysis, lsp-type-safety-check |
 | `lsp-type-safety-check` | code-reviewer | /code-review | lsp-symbol-navigation |
 | `lsp-dependency-analysis` | debugger, dependency-analyzer | /rca | lsp-symbol-navigation |
 | `n8n-*` (7 skills) | n8n-mcp-tester | — | (inter-related) |
 | `mac-manage-context` | — | /mac-health, /mac-diff, /mac-status, /mac-discover, /mac-restore | — |
+| `cbass-context` | — | /cbass-status, /cbass-logs, /cbass-deploy | — |
 
 ### n8n Skills Relationships
 
@@ -279,6 +295,20 @@ n8n-validation-expert ──→ Fix validation errors
               /mac-health ←── post-restore verify
 
 All commands reference: mac-manage-context skill
+```
+
+### cbass Command Relationships
+
+```
+/cbass-deploy ──→ start services with profile/environment
+         │
+         ↓
+/cbass-status ──→ check all 28 services
+         │
+         ├──→ /cbass-logs "<service>" ──→ diagnose failures
+         └──→ /rca "<issue>" ──→ deep root cause analysis
+
+All commands reference: cbass-context skill
 ```
 
 ### Workflow Entry Points
