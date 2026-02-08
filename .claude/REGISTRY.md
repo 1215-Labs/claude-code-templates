@@ -21,6 +21,7 @@ Central index of all .claude components for quick discovery.
 | Orchestrate tasks | `/orchestrate "task"` |
 | Evaluate a skill/plugin | `skill-evaluator` skill |
 | Equip a repo with components | `/repo-equip "/path/to/repo"` |
+| Skill priorities (auto) | `skill-router` skill (SessionStart) |
 | Remember a fact | `/remember "fact"` |
 | Forget a fact | `/forget "term"` |
 | Memory status/search | `/memory "status"` |
@@ -73,6 +74,8 @@ Central index of all .claude components for quick discovery.
 |------|-----------|---------|
 | Hook | `session-init` | Initialize session context |
 | Hook | `memory-loader` | Load persistent memory into context on session start |
+| Hook | `skill-router-loader` | Inject skill priorities and enforcement at session start |
+| Skill | `skill-router` | Proactive skill invocation engine with 1% threshold |
 | Hook | `memory-distill` | Create session log stub on session end |
 | Hook | `uncommitted-check` | Warn about uncommitted/unpushed changes on stop |
 | Hook | `security-guidance` | Scan edits for security anti-patterns (PreToolUse prompt) |
@@ -132,6 +135,7 @@ Central index of all .claude components for quick discovery.
 | Skill | `multi-model-orchestration` | Delegate tasks across Gemini/Codex via forked terminals |
 | Skill | `skill-evaluator` | Evaluate external skills/plugins before adoption (parallel agents) |
 | Skill | `repo-equip-engine` | Matching heuristics and templates for automated repo equipment |
+| Skill | `skill-router` | Proactive skill invocation with per-repo priority lists |
 | Command | `/orchestrate` | Quick orchestration via forked terminals |
 | Command | `/repo-equip` | Analyze a repo and equip it with matching Claude Code components |
 
@@ -181,9 +185,9 @@ Multi-step workflows for complex tasks:
 |------|-------|----------|
 | Agents | 13 | `.claude/agents/` |
 | Commands | 29 | `.claude/commands/` |
-| Skills | 10 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
+| Skills | 11 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
-| Hooks | 12 (7 command + 5 prompt) | `.claude/hooks/` |
+| Hooks | 13 (8 command + 5 prompt) | `.claude/hooks/` |
 | Examples | 3 | `.mcp.json` + `examples/settings/` |
 | Workflows | 4 | `.claude/workflows/` |
 

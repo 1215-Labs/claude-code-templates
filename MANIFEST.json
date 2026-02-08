@@ -93,6 +93,13 @@
         "description": "Shared knowledge base for cbass slash commands — Docker Compose services, profiles, domains"
       },
       {
+        "name": "skill-router",
+        "path": ".claude/skills/skill-router",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Proactive skill invocation engine with per-repo priority lists"
+      },
+      {
         "name": "n8n-code-javascript",
         "path": "templates/n8n/skills/n8n-code-javascript",
         "deployment": "template",
@@ -455,6 +462,13 @@
         "deployment": "global",
         "status": "beta",
         "description": "Safe restore with validation, dry-run, and confirmation gate"
+      },
+      {
+        "name": "ollama/ollama-optimize",
+        "path": ".claude/commands/ollama/ollama-optimize.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Recommend optimal Ollama model quantization and context window for Apple Silicon"
       }
     ],
     "workflows": [
@@ -531,6 +545,15 @@
         "deployment": "global",
         "status": "production",
         "description": "Load persistent memory on session start"
+      },
+      {
+        "name": "skill-router-loader",
+        "path": ".claude/hooks/skill-router-loader.py",
+        "event": "SessionStart",
+        "type": "command",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Inject skill-router enforcement and repo-specific priorities"
       },
       {
         "name": "completion-verify",

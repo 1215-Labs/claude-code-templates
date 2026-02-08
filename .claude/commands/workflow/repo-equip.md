@@ -210,6 +210,18 @@ For each close-fit component (typically a context skill):
 2. Write `SKILL.md` using the Context Skill Template from `repo-equip-engine`
 3. Fill in all placeholders with data from Subagent A findings
 
+### Step 1.5: Generate Skill Priorities File
+
+Generate a `skill-priorities.md` for the target repo using the Skill Priorities Template from `repo-equip-engine`:
+
+1. Ensure `.claude/memory/` directory exists in the target repo: `mkdir -p {REPO_PATH}/.claude/memory/`
+2. Categorize all installed components into tiers:
+   - **Always tier**: `/catchup` + the repo's primary status/overview command (e.g., `/cbass-status`)
+   - **Context-Triggered tier**: All repo-specific commands with trigger keywords describing when to activate
+   - **Available tier**: Universal commands like `/code-review`, `/deep-prime`, `/remember`
+3. Fill in the **Repo Context** section with domain, command prefix, and context skill name
+4. Write to `{REPO_PATH}/.claude/memory/skill-priorities.md`
+
 ### Step 2: Create Simple Gap Components
 
 For each simple gap component:
@@ -302,6 +314,7 @@ Read back the updated CLAUDE.md to confirm:
 - Section renders correctly
 - Command names match what was created
 - No broken references
+- Skill priorities file exists at `{REPO_PATH}/.claude/memory/skill-priorities.md`
 
 ## Output Summary
 
@@ -310,6 +323,7 @@ After completing all phases, provide:
 1. **Equipment Summary**:
    - Components created (with paths)
    - Components documented (direct fit count)
+   - Skill priorities file generated (path)
    - PRPs generated (if any)
 
 2. **What's New in the Target Repo**:

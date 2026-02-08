@@ -221,6 +221,37 @@ Reference the `{REPO_NAME}-context` skill for paths, output formats, and glossar
 {RESULTS_FORMAT}
 ```
 
+### Skill Priorities Template
+
+Write to `{REPO_PATH}/.claude/memory/skill-priorities.md`:
+
+```markdown
+# Skill Priorities
+
+## Always (invoke proactively every session)
+- `/catchup` - Resume session with briefing (run first thing)
+{ALWAYS_ENTRIES}
+
+## Context-Triggered (invoke when topic matches)
+{CONTEXT_ENTRIES}
+
+## Available (use when explicitly relevant)
+- `/code-review` - Before merging or pushing
+- `/deep-prime "area"` - When diving into unfamiliar code
+- `/remember "fact"` - When discovering reusable knowledge
+
+## Repo Context
+- **Primary domain**: {DOMAIN}
+- **Key commands prefix**: `/{PREFIX}-*`
+- **Context skill**: `{REPO_NAME}-context`
+```
+
+**Tier assignment rules:**
+- **Always**: `/catchup` + the repo's primary status/overview command (e.g., `/{PREFIX}-status`)
+- **Context-Triggered**: All repo-specific commands, with a brief trigger description (e.g., "When checking service health")
+- **Available**: Universal commands that apply to any repo
+- **Repo Context**: Domain, command prefix, and context skill name from the analysis
+
 ### MANIFEST.json Entry Snippets
 
 **Skill entry:**

@@ -77,6 +77,7 @@ Skills provide reusable expertise. Key skills:
 | `repo-equip-engine` | Matching heuristics and templates for `/repo-equip` |
 | `mac-manage-context` | Shared knowledge base for `/mac-*` commands |
 | `cbass-context` | Shared knowledge base for `/cbass-*` commands |
+| `skill-router` | Proactive skill invocation with per-repo priority lists |
 | `n8n-*` | n8n workflow development (7 skills in templates/n8n/) |
 
 ## Commands
@@ -173,6 +174,7 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  lsp-type-safety-check  fork-terminal  agent-browser     │
 │  multi-model-orchestration  skill-evaluator              │
 │  repo-equip-engine  mac-manage-context  cbass-context    │
+│  skill-router                                            │
 │  n8n-* (7 template skills)                               │
 ├──────────────────────────────────────────────────────────┤
 │  WORKFLOWS (follow for processes)                        │
