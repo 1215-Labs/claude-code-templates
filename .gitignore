@@ -21,3 +21,12 @@ Thumbs.db
 # Python
 __pycache__/
 *.pyc
+
+# Binary/reference files
+*.pdf
+
+# Local sync state
+.claude/reference-sync.local.md
+
+# Session logs (ephemeral)
+.claude/memory/sessions/

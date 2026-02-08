@@ -1,0 +1,8 @@
+{
+  "name": "claude-code-templates",
+  "version": "2.0.0",
+  "description": "Reusable Claude Code configuration templates with LSP-aware agents, skills, hooks, and workflows for development automation",
+  "author": {
+    "name": "1215-Labs"
+  }
+}

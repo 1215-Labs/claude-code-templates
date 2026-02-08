@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-07] add: Add plugin manifest, /ollama-optimize command, and reference sync report (fc0e9a8)
 [2026-02-07] add: Add skill-router for proactive skill invocation at session start with per-repo priorities (f7e985c)
 [2026-02-07] add: Add /catchup command for session resume briefings, add Next Session field to Stop hook (59f8be3)
 [2026-02-07] fix: Fix documentation gaps, harden pre-push hook to block on all issues (0510f73)
