@@ -177,15 +177,15 @@ First sync - baseline established.
 
 ### Immediate (Critical)
 - [ ] Create `.claude-plugin/plugin.json` manifest for skillz
-- [ ] Add `allowed-tools` frontmatter to all commands that use restricted tools
+- [x] Add `allowed-tools` frontmatter to all commands that use restricted tools (already present in all 31 commands)
 - [ ] Update hooks.json to use wrapper format with `description` field
 
 ### Short-term (High Priority)
 - [ ] Add `.mcp.json` template/pattern for MCP integration
 - [ ] Adopt `${CLAUDE_PLUGIN_ROOT}` in hook scripts for portability
-- [ ] Add security-guidance hook (PreToolUse monitoring Edit/Write for security patterns)
+- [x] Add security-guidance hook (PreToolUse monitoring Edit/Write for security patterns — replaced prompt hook with command-based security-check.py)
 - [ ] Implement `SubagentStop` and `SessionEnd` hooks where beneficial
-- [ ] Align agent `tools` field format with official convention
+- [x] Align agent `tools` field format with official convention (already using JSON array format)
 - [ ] Add `argument-hint` to commands that accept arguments
 
 ### Long-term (Medium/Low)

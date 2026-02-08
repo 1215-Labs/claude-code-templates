@@ -16,8 +16,9 @@
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Before applying this file change, scan the content for security anti-patterns:\n- Command injection: user input passed to exec(), spawn(), system(), or backticks\n- XSS: unsanitized user input rendered in HTML/JSX without escaping\n- SQL injection: string concatenation in SQL queries instead of parameterized queries\n- eval/Function constructor: dynamic code execution from untrusted input\n- Path traversal: user input in file paths without sanitization\n- Hardcoded secrets: API keys, passwords, tokens, or private keys in source code\n- Insecure deserialization: JSON.parse or yaml.load on untrusted input without validation\n\nIf any of these patterns are detected, BLOCK the edit and explain the vulnerability with a safe alternative. If the code is safe, allow it silently."
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/security-check.py",
+            "timeout": 5000
           }
         ]
       }
