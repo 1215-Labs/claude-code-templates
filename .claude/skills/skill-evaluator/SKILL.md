@@ -1,6 +1,7 @@
 ---
 name: skill-evaluator
 description: Use when evaluating external skills, plugins, or reference submodules before adoption — assesses structural quality, ecosystem fit, and adoption risk using parallel agents
+version: 1.0.0
 ---
 
 # Skill Evaluator

@@ -74,6 +74,9 @@ Skills provide reusable expertise. Key skills:
 | `agent-browser` | Headless browser automation with Playwright |
 | `multi-model-orchestration` | Delegate tasks across Gemini/Codex |
 | `skill-evaluator` | Evaluate external skills/plugins before adoption |
+| `repo-equip-engine` | Matching heuristics and templates for `/repo-equip` |
+| `mac-manage-context` | Shared knowledge base for `/mac-*` commands |
+| `cbass-context` | Shared knowledge base for `/cbass-*` commands |
 | `n8n-*` | n8n workflow development (7 skills in templates/n8n/) |
 
 ## Commands
@@ -89,6 +92,7 @@ Skills provide reusable expertise. Key skills:
 | `/rca` | Root cause analysis |
 | `/orchestrate` | Delegate to Gemini/Codex |
 | `/sync-reference` | Compare against claude-code reference |
+| `/repo-equip` | Equip any repo with matching components |
 | `/all_skills` | List available skills |
 | `/coderabbit-helper` | Analyze CodeRabbit suggestions |
 
@@ -102,6 +106,24 @@ Skills provide reusable expertise. Key skills:
 | `/prp-story-task-execute` | Execute story PRP |
 | `/prp-any-cli-create` | Create PRP for any CLI agent |
 | `/prp-any-cli-execute` | Execute PRP with any CLI agent |
+
+### Mac Management Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/mac-health` | Health check triage with remediation |
+| `/mac-diff` | Snapshot diff with change interpretation |
+| `/mac-status` | Snapshot management and weekly reviews |
+| `/mac-discover` | Find untracked config and apps |
+| `/mac-restore` | Safe restore with validation |
+
+### cbass Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/cbass-status` | Service status with health interpretation |
+| `/cbass-logs` | Log analysis with error interpretation |
+| `/cbass-deploy` | Guided deployment with pre-flight checks |
 
 ## Workflows
 
@@ -130,29 +152,33 @@ These are Claude Code hooks that run automatically during tool use and session e
 ## Quick Reference Card
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  COMMANDS (invoke directly)                         │
-│  /onboarding  /quick-prime  /deep-prime             │
-│  /code-review  /ui-review  /rca  /orchestrate       │
-│  /sync-reference  /coderabbit-helper  /all_skills   │
-├─────────────────────────────────────────────────────┤
-│  AGENTS (ask to use)                                │
-│  codebase-analyst  code-reviewer  debugger          │
-│  test-automator  type-checker  dependency-analyzer  │
-│  lsp-navigator  context-manager  library-researcher │
-│  technical-researcher  deployment-engineer          │
-│  mcp-backend-engineer  n8n-mcp-tester               │
-├─────────────────────────────────────────────────────┤
-│  SKILLS (reference for patterns)                    │
-│  lsp-symbol-navigation  lsp-dependency-analysis     │
-│  lsp-type-safety-check  fork-terminal               │
-│  agent-browser  multi-model-orchestration           │
-│  skill-evaluator  n8n-*                             │
-├─────────────────────────────────────────────────────┤
-│  WORKFLOWS (follow for processes)                   │
-│  feature-development  bug-investigation             │
-│  code-quality  new-developer                        │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│  COMMANDS (invoke directly)                              │
+│  /onboarding  /quick-prime  /deep-prime  /repo-equip     │
+│  /code-review  /ui-review  /rca  /orchestrate            │
+│  /sync-reference  /coderabbit-helper  /all_skills        │
+│  /remember  /forget  /memory                             │
+│  /mac-health  /mac-diff  /mac-status  /mac-discover      │
+│  /mac-restore  /cbass-status  /cbass-logs  /cbass-deploy │
+├──────────────────────────────────────────────────────────┤
+│  AGENTS (ask to use)                                     │
+│  codebase-analyst  code-reviewer  debugger               │
+│  test-automator  type-checker  dependency-analyzer       │
+│  lsp-navigator  context-manager  library-researcher      │
+│  technical-researcher  deployment-engineer               │
+│  mcp-backend-engineer  n8n-mcp-tester                    │
+├──────────────────────────────────────────────────────────┤
+│  SKILLS (reference for patterns)                         │
+│  lsp-symbol-navigation  lsp-dependency-analysis          │
+│  lsp-type-safety-check  fork-terminal  agent-browser     │
+│  multi-model-orchestration  skill-evaluator              │
+│  repo-equip-engine  mac-manage-context  cbass-context    │
+│  n8n-* (7 template skills)                               │
+├──────────────────────────────────────────────────────────┤
+│  WORKFLOWS (follow for processes)                        │
+│  feature-development  bug-investigation                  │
+│  code-quality  new-developer                             │
+└──────────────────────────────────────────────────────────┘
 ```
 
 ## Persistent Memory

@@ -317,10 +317,22 @@ def check_doc_counts() -> list[str]:
 
 
 def check_changelog_freshness() -> list[str]:
-    """Check 4: HEAD commit has CHANGELOG entry."""
+    """Check 4: CHANGELOG reflects recent work.
+
+    Passes if ANY of these are true:
+    - HEAD commit hash appears in CHANGELOG.md
+    - CHANGELOG.md was modified in the HEAD commit (handles the circular
+      hash problem: amending to add the hash changes the hash)
+    """
     warnings = []
 
     try:
+        changelog = REPO_ROOT / "CHANGELOG.md"
+        if not changelog.exists():
+            warnings.append("CHANGELOG.md not found")
+            return warnings
+
+        # Check 1: HEAD hash in CHANGELOG
         result = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
             capture_output=True, text=True, timeout=5,
@@ -330,14 +342,22 @@ def check_changelog_freshness() -> list[str]:
             return warnings
 
         head_hash = result.stdout.strip()
-        changelog = REPO_ROOT / "CHANGELOG.md"
+        content = changelog.read_text()
+        if head_hash in content:
+            return warnings  # Pass: hash found
 
-        if changelog.exists():
-            content = changelog.read_text()
-            if head_hash not in content:
-                warnings.append(
-                    f"CHANGELOG.md missing entry for HEAD commit ({head_hash})"
-                )
+        # Check 2: CHANGELOG modified in HEAD commit
+        result = subprocess.run(
+            ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
+            capture_output=True, text=True, timeout=5,
+            cwd=REPO_ROOT
+        )
+        if result.returncode == 0 and "CHANGELOG.md" in result.stdout:
+            return warnings  # Pass: CHANGELOG was updated in this commit
+
+        warnings.append(
+            f"CHANGELOG.md missing entry for HEAD commit ({head_hash})"
+        )
     except Exception:
         pass
 
