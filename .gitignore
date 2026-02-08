@@ -27,6 +27,3 @@ __pycache__/
 
 # Local sync state
 .claude/reference-sync.local.md
-
-# Session logs (ephemeral)
-.claude/memory/sessions/

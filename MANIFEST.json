@@ -512,12 +512,13 @@
         "description": "Check LSP references before edits"
       },
       {
-        "name": "security-guidance",
+        "name": "security-check",
+        "path": ".claude/hooks/security-check.py",
         "event": "PreToolUse",
-        "type": "prompt",
+        "type": "command",
         "deployment": "global",
         "status": "production",
-        "description": "Scan edits for security anti-patterns (XSS, injection, eval, etc.)"
+        "description": "Deterministic scan for security anti-patterns (XSS, injection, eval, etc.)"
       },
       {
         "name": "lsp-type-validator",
