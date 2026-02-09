@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-09] add: Add agent teams documentation from Claude Code docs (280a153)
 [2026-02-09] add: Add agent teams feature: command, skill, hooks, workflow, and docs (816a34a)
 [2026-02-09] fix: Fix hook timeouts (seconds not ms) and update reference sync report (da7fd51)
 [2026-02-07] add: Add Claude Code skill evaluation doc and update session notes (824813d)
