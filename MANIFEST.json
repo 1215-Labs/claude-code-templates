@@ -100,6 +100,13 @@
         "description": "Proactive skill invocation engine with per-repo priority lists"
       },
       {
+        "name": "repo-optimize-engine",
+        "path": ".claude/skills/repo-optimize-engine",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Scoring rubrics, freshness criteria, and task graph generation for multi-model repo optimization"
+      },
+      {
         "name": "agent-teams",
         "path": ".claude/skills/agent-teams",
         "deployment": "global",
@@ -476,6 +483,13 @@
         "deployment": "global",
         "status": "beta",
         "description": "Recommend optimal Ollama model quantization and context window for Apple Silicon"
+      },
+      {
+        "name": "workflow/repo-optimize",
+        "path": ".claude/commands/workflow/repo-optimize.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Multi-model repo optimization with Gemini + Codex analysis and 3-agent team execution"
       },
       {
         "name": "workflow/spawn-team",

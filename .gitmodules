@@ -19,3 +19,6 @@
 [submodule "references/agent-zero"]
 	path = references/agent-zero
 	url = git@github.com:mdc159/agent-zero.git
+[submodule "references/plannotator"]
+	path = references/plannotator
+	url = git@github.com:backnotprop/plannotator.git

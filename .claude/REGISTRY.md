@@ -22,6 +22,7 @@ Central index of all .claude components for quick discovery.
 | Spawn agent team | `/spawn-team "task"` |
 | Evaluate a skill/plugin | `skill-evaluator` skill |
 | Equip a repo with components | `/repo-equip "/path/to/repo"` |
+| Optimize a repo (deep) | `/repo-optimize "/path/to/repo"` |
 | Skill priorities (auto) | `skill-router` skill (SessionStart) |
 | Remember a fact | `/remember "fact"` |
 | Forget a fact | `/forget "term"` |
@@ -136,9 +137,11 @@ Central index of all .claude components for quick discovery.
 | Skill | `multi-model-orchestration` | Delegate tasks across Gemini/Codex via forked terminals |
 | Skill | `skill-evaluator` | Evaluate external skills/plugins before adoption (parallel agents) |
 | Skill | `repo-equip-engine` | Matching heuristics and templates for automated repo equipment |
+| Skill | `repo-optimize-engine` | Freshness scoring, task graph generation for multi-model repo optimization |
 | Skill | `skill-router` | Proactive skill invocation with per-repo priority lists |
 | Command | `/orchestrate` | Quick orchestration via forked terminals |
 | Command | `/repo-equip` | Analyze a repo and equip it with matching Claude Code components |
+| Command | `/repo-optimize` | Multi-model repo optimization with agent team execution |
 
 ### Agent Teams (Experimental)
 | Type | Component | Purpose |
@@ -197,8 +200,8 @@ Multi-step workflows for complex tasks:
 | Type | Count | Location |
 |------|-------|----------|
 | Agents | 13 | `.claude/agents/` |
-| Commands | 32 | `.claude/commands/` |
-| Skills | 12 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
+| Commands | 33 | `.claude/commands/` |
+| Skills | 13 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
 | Hooks | 15 (11 command + 4 prompt) | `.claude/hooks/` |
 | Examples | 4 | `.mcp.json` + `examples/settings/` |
@@ -262,6 +265,7 @@ Multi-step workflows for complex tasks:
 | `multi-model-orchestration` | — | /orchestrate | fork-terminal, skill-evaluator |
 | `skill-evaluator` | codebase-analyst | — | fork-terminal, multi-model-orchestration |
 | `repo-equip-engine` | — | /repo-equip | skill-evaluator, multi-model-orchestration |
+| `repo-optimize-engine` | — | /repo-optimize | repo-equip-engine, multi-model-orchestration, agent-teams, fork-terminal |
 | `agent-teams` | — | /spawn-team | multi-model-orchestration, fork-terminal |
 | `lsp-symbol-navigation` | codebase-analyst | /deep-prime | lsp-dependency-analysis, lsp-type-safety-check |
 | `lsp-type-safety-check` | code-reviewer | /code-review | lsp-symbol-navigation |
