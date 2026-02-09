@@ -8,7 +8,7 @@
           {
             "type": "command",
             "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lsp-reference-checker.py",
-            "timeout": 30000
+            "timeout": 30
           }
         ]
       },
@@ -18,7 +18,7 @@
           {
             "type": "command",
             "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/security-check.py",
-            "timeout": 5000
+            "timeout": 10
           }
         ]
       }
@@ -30,7 +30,7 @@
           {
             "type": "command",
             "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/lsp-type-validator.py",
-            "timeout": 60000
+            "timeout": 60
           }
         ]
       }
@@ -41,17 +41,17 @@
           {
             "type": "command",
             "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/session-init.py",
-            "timeout": 10000
+            "timeout": 15
           },
           {
             "type": "command",
             "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/memory-loader.py",
-            "timeout": 10000
+            "timeout": 10
           },
           {
             "type": "command",
             "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/skill-router-loader.py",
-            "timeout": 5000
+            "timeout": 10
           }
         ],
         "once": true
@@ -71,7 +71,7 @@
           {
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/uncommitted-check.sh",
-            "timeout": 5000
+            "timeout": 10
           }
         ]
       }
@@ -82,12 +82,12 @@
           {
             "type": "command",
             "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/memory-distill.py",
-            "timeout": 5000
+            "timeout": 10
           },
           {
             "type": "command",
             "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/session-summary.py",
-            "timeout": 5000
+            "timeout": 10
           }
         ]
       }

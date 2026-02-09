@@ -1,17 +1,17 @@
 # Reference Sync Report
 
-**Generated**: 2026-02-07
-**claude-code version**: v2.1.31 (bd78b216)
-**skillz commit**: 0c784a8
+**Generated**: 2026-02-09
+**claude-code version**: v2.1.31 (`bd78b21`)
+**skillz commit**: `d80249e`
 **Mode**: quick
 
 ## Executive Summary
 
-The official Claude Code reference (v2.1.31) now ships a **formal plugin system** with `.claude-plugin/plugin.json` manifests, 14 official plugins, and standardized component conventions. The skillz templates predate this plugin architecture and use a flat `.claude/` directory structure with custom frontmatter fields (`category`, `related`, `color`) that differ from the official conventions. Key gaps include: no `.claude-plugin/` manifest, missing `allowed-tools` frontmatter in commands, absence of several new hook events (`SubagentStop`, `SessionEnd`, `PreCompact`, `Notification`), and no MCP integration patterns (`.mcp.json`).
+The official claude-code plugin repository (13 plugins) has adopted a standardized **plugin architecture** using `.claude-plugin/plugin.json` manifests, which differs fundamentally from skillz's flat `.claude/` directory structure. Key gaps include: missing plugin manifest support, no `hooks-handlers/` pattern, absence of several high-value plugins (pr-review-toolkit, security-guidance, ralph-wiggum, frontend-design), and outdated hook patterns compared to reference implementations. The most impactful improvement would be migrating to the official plugin structure for better portability and ecosystem compatibility.
 
 ## What's New Since Last Sync
 
-First sync - baseline established.
+Previous sync: 2026-02-07 (same claude-code version v2.1.31). No upstream changes since last sync. This report reflects an updated analysis with deeper discovery.
 
 ## Recommended Updates
 
@@ -19,180 +19,167 @@ First sync - baseline established.
 
 | Component | Issue | Recommendation |
 |-----------|-------|----------------|
-| Plugin manifest | skillz has no `.claude-plugin/plugin.json` | Add a plugin manifest to make skillz installable as a proper Claude Code plugin via `/plugin install` |
-| Hook events | skillz hooks only use `PreToolUse`, `PostToolUse`, `SessionStart`, `Stop` | Add support for `SubagentStop`, `SessionEnd`, `PreCompact`, `Notification`, `UserPromptSubmit` events |
-| `allowed-tools` in commands | skillz commands lack `allowed-tools` frontmatter | Add `allowed-tools` field to command frontmatter for proper permission scoping (e.g., code-review needs `Bash(gh pr *)`) |
+| Plugin manifest | skillz has no `.claude-plugin/plugin.json` | Add plugin.json manifest to enable plugin discovery and versioning |
+| Hook events | skillz hooks don't use official 9-event API | Align hooks.json with official format: PreToolUse, PostToolUse, Stop, SubagentStop, UserPromptSubmit, SessionStart, SessionEnd, PreCompact, Notification |
+| `${CLAUDE_PLUGIN_ROOT}` | skillz hooks use hardcoded paths | Replace hardcoded paths with `${CLAUDE_PLUGIN_ROOT}` for portability |
 
 ### High Priority
 
 | Component | Issue | Recommendation |
 |-----------|-------|----------------|
-| MCP integration | No `.mcp.json` or MCP patterns in skillz | Add `.mcp.json` configuration patterns and examples for external service integration |
-| Agent `tools` field format | skillz agents use custom array syntax with `- Tool` items | Align with official format: either `tools: ["Read", "Grep"]` (JSON array) or `tools: Glob, Grep, LS, Read` (comma-separated string) |
-| Hook JSON format | skillz uses direct format in `hooks.json` | Official plugins use wrapper format: `{ "description": "...", "hooks": { "PreToolUse": [...] } }` |
-| Security guidance | No security-focused hook | Adopt the `security-guidance` plugin pattern: PreToolUse hook monitoring Edit/Write for 9 security patterns (XSS, injection, eval, etc.) |
-| `${CLAUDE_PLUGIN_ROOT}` | Not used in skillz hooks/scripts | Use `${CLAUDE_PLUGIN_ROOT}` for portable paths in hook commands and scripts |
+| pr-review-toolkit | No equivalent in skillz | Adopt 6-agent PR review system: code-reviewer, code-simplifier, comment-analyzer, pr-test-analyzer, silent-failure-hunter, type-design-analyzer |
+| security-guidance | skillz has basic security-check.py | Adopt official security-guidance plugin with 9+ pattern detections (GH Actions injection, eval, XSS, etc.) |
+| frontend-design skill | Not in skillz | Adopt for projects needing UI work - provides distinctive design guidance |
+| Agent descriptions | skillz uses basic text descriptions | Adopt `<example>` blocks with Context/User/Assistant/Commentary pattern for agent trigger descriptions |
+| Command `allowed-tools` | skillz commands lack tool restrictions | Add `allowed-tools` frontmatter to commands (e.g., `Bash(gh pr view:*)`) for security |
 
 ### Medium Priority
 
 | Component | Issue | Recommendation |
 |-----------|-------|----------------|
-| Skill progressive disclosure | skillz skills have flat structure | Adopt 3-level disclosure: metadata (always loaded) → SKILL.md (~1500 words) → references/examples (on demand) |
-| Agent `description` format | skillz uses multi-line examples | Official uses `<example>` blocks in descriptions for reliable triggering |
-| Command `argument-hint` field | Not present in skillz commands | Add `argument-hint` frontmatter for better `/command` autocomplete UX |
-| Plugin-dev toolkit | No equivalent in skillz | Consider adopting `plugin-dev` patterns for plugin creation guidance |
-| Hookify patterns | No user-configurable hooks | Consider hookify's `.local.md` pattern for user-defined validation rules |
-| Commit commands | No `/commit` or `/commit-push-pr` | Adopt `commit-commands` plugin patterns for git workflow automation |
-| Feature-dev workflow | skillz has `feature-workflow.md` rule | Official `feature-dev` plugin has a full 7-phase command with 3 dedicated agents |
-| Settings examples | No settings.json templates | Add example settings templates (strict, permissive, sandbox modes) from `examples/settings/` |
+| plugin-dev skills | No plugin development guidance | Adopt plugin-dev toolkit with 7 skills: hook-development, skill-development, command-development, agent-development, plugin-structure, plugin-settings, mcp-integration |
+| ralph-wiggum loop | No autonomous loop pattern | Adopt Stop-hook-based iteration pattern for autonomous refinement tasks |
+| explanatory-output-style | No equivalent | Consider adopting SessionStart hook pattern for loading contextual style guidance |
+| Skill `references/` dirs | skillz skills lack reference docs | Add `references/` and `examples/` subdirectories to skills for deep-dive documentation |
+| README per plugin | skillz lacks component READMEs | Add README.md to each major component group |
+| Code review command | skillz has its own code-review | Compare against official code-review plugin which uses parallel multi-model agents (haiku screening, sonnet compliance, opus bug hunting) |
 
 ### Low Priority
 
 | Component | Issue | Recommendation |
 |-----------|-------|----------------|
-| Agent colors | skillz uses custom colors (violet, pink, slate) | Official uses: blue, cyan, green, yellow, magenta, red |
-| Model field | skillz uses `model: haiku` | Official prefers `model: inherit` (recommended) or explicit `model: sonnet` |
-| README.md per plugin | skillz has project-level README only | Each plugin should have its own README.md with overview, commands, agents, and usage examples |
-| Ralph-wiggum pattern | Not in skillz | Consider adopting self-referential iteration loops for autonomous long-running tasks |
-| Frontend-design skill | Not in skillz | Adopt auto-invoked skill for frontend work guidance |
-| claude-opus-4-5-migration | Not in skillz | Model migration skill for upgrading model strings and prompts |
+| commit-commands | skillz has no commit helper | Consider adopting structured commit workflow commands |
+| claude-opus-4-5-migration | Not in skillz | Reference skill for model migration patterns |
+| learning-output-style | Not in skillz | Alternative to explanatory-output for interactive learning |
+| Agent `color` field | Some skillz agents lack color | Add `color` field to agent frontmatter for visual distinction |
 
 ## Pattern Comparison
 
 ### Frontmatter Conventions
 
-#### Agent Frontmatter
+#### Agents
 
 | Field | claude-code | skillz | Status |
 |-------|-------------|--------|--------|
-| `name` | Required, kebab-case | Present | Match |
-| `description` | Multi-line with `<example>` blocks | Multi-line with bullet examples | Differs |
-| `model` | `inherit` (recommended), `sonnet`, `opus`, `haiku` | `haiku` (hardcoded) | Differs |
-| `color` | blue, cyan, green, yellow, magenta, red | violet, pink, slate (custom) | Differs |
-| `tools` | JSON array `["Read", "Grep"]` or comma string | YAML list `- Read`, `- Grep` | Differs |
-| `category` | Not in official | Present (analysis, quality) | Extra field |
-| `related` | Not in official | Present (agents, commands, skills, hooks, workflows) | Extra field |
+| `name` | Required | Required | Match |
+| `description` | Uses `<example>` blocks | Plain text | **Differs** - claude-code uses structured examples |
+| `model` | `sonnet`, `inherit`, etc. | Present in some | Partial match |
+| `color` | Required (magenta, yellow, green) | Sometimes present | **Differs** |
+| `tools` | Array: `["Write", "Read"]` | Array format | Match |
 
-#### Command Frontmatter
+#### Commands
 
 | Field | claude-code | skillz | Status |
 |-------|-------------|--------|--------|
-| `description` | Required | Present in some | Partial |
-| `allowed-tools` | Present for permission scoping | Not used | Missing |
-| `argument-hint` | Present for UX | Not used | Missing |
-| `$ARGUMENTS` | Supported for user input | Used | Match |
+| `description` | Required | Present | Match |
+| `argument-hint` | Used in feature-dev, hookify | Rarely used | **Differs** |
+| `allowed-tools` | Granular: `Bash(gh pr view:*)` | Not used | **Differs** - security gap |
 
-#### Skill Frontmatter (SKILL.md)
+#### Skills
 
 | Field | claude-code | skillz | Status |
 |-------|-------------|--------|--------|
-| `name` | Required | Present | Match |
-| `description` | Third-person trigger descriptions | Present | Match |
-| `version` | Present | Present in some | Partial |
-| `category` | Not standard | Present | Extra field |
-| `user-invocable` | Present | Present in some | Partial |
+| `name` | Required | Required | Match |
+| `description` | Uses trigger phrases | Uses trigger phrases | Match |
+| `version` | Used in some | Used in some | Match |
+| `license` | Used in frontend-design | Not used | Differs |
+| Subdirectories | `references/`, `examples/`, `scripts/` | None | **Differs** |
 
 ### Directory Structure
 
-| Aspect | claude-code (plugins) | skillz (.claude/) |
-|--------|----------------------|-------------------|
-| Root marker | `.claude-plugin/plugin.json` | No manifest |
-| Commands | `commands/` | `.claude/commands/` (with subdirs) |
-| Agents | `agents/` | `.claude/agents/` (flat + nested) |
-| Skills | `skills/skill-name/SKILL.md` | `.claude/skills/skill-name/SKILL.md` |
-| Hooks | `hooks/hooks.json` + `hooks-handlers/` | `.claude/hooks/hooks.json` + `.py`/`.sh` files |
-| MCP | `.mcp.json` at plugin root | Not present |
-| Workflows | Not in plugins (project-level) | `.claude/workflows/` |
-| Rules | Not in plugins (project-level) | `.claude/rules/` |
-| Utils | Not in plugins | `.claude/utils/` (Python modules) |
-| Memory | Not in plugins | `.claude/memory/` |
+| Aspect | claude-code | skillz | Status |
+|--------|-------------|--------|--------|
+| Root structure | `plugin-name/.claude-plugin/plugin.json` | `.claude/` flat structure | **Differs** |
+| Manifest | `.claude-plugin/plugin.json` | None | **Differs** |
+| Commands | `commands/*.md` | `commands/**/*.md` (nested) | Differs (skillz uses namespaces) |
+| Agents | `agents/*.md` | `agents/*.md` | Match |
+| Skills | `skills/*/SKILL.md` | `skills/*/SKILL.md` | Match |
+| Hooks | `hooks/hooks.json` + scripts | `hooks/hooks.json` + scripts | Match |
+| Hook handlers | `hooks-handlers/*.sh` | Not present | **Differs** |
+| Infrastructure | `core/`, `matchers/`, `utils/` | Not present | **Differs** |
+| Examples | `examples/` in plugins | Not present | **Differs** |
+| Documentation | `README.md` per plugin | One main CLAUDE.md | **Differs** |
 
 ### Naming Conventions
 
 | Aspect | claude-code | skillz | Status |
 |--------|-------------|--------|--------|
-| Plugin names | kebab-case, start with letter | N/A | N/A |
-| Agent files | `name.md` (flat) | `name.md` (flat) or `name/AGENT.md` (nested) | Differs |
-| Command files | `name.md` or `namespace/name.md` | `name.md` or `namespace/name.md` | Match |
-| Skill dirs | `skill-name/SKILL.md` | `skill-name/SKILL.md` | Match |
-| Hook scripts | `hooks-handlers/script.sh` | Direct `.py`/`.sh` in hooks dir | Differs |
+| Plugin names | kebab-case | N/A (no plugins) | N/A |
+| Command files | kebab-case `.md` | kebab-case `.md` | Match |
+| Agent files | kebab-case `.md` | kebab-case `.md` | Match |
+| Skill dirs | kebab-case | kebab-case | Match |
+| Hook scripts | snake_case `.py`/`.sh` | kebab-case `.py`/`.sh` | **Differs** |
 
 ## Plugins Worth Adopting
 
-### Immediate Value
+### Tier 1 - High Value
 
-1. **commit-commands** - `/commit`, `/commit-push-pr`, `/clean_gone` for git workflow
-2. **security-guidance** - PreToolUse hook for real-time security pattern detection
-3. **hookify** - User-configurable hooks from `.local.md` files
+1. **pr-review-toolkit** - 6 specialized review agents with parallel multi-model execution. Significantly more sophisticated than skillz's single code-reviewer agent. Commands: `/review-pr`.
 
-### High Value
+2. **security-guidance** - Python hook detecting 9+ security anti-patterns (GH Actions injection, eval, XSS, child_process.exec, pickle, os.system). More comprehensive than skillz's `security-check.py`.
 
-4. **code-review** (official) - 5 parallel Sonnet agents with confidence scoring, GitHub integration
-5. **feature-dev** - Full 7-phase workflow with `code-explorer`, `code-architect`, `code-reviewer` agents
-6. **plugin-dev** - 7 expert skills for building Claude Code plugins
+3. **plugin-dev** - 7 skills covering plugin development with examples, references, and scripts. Essential for maintaining and extending skillz itself.
 
-### Nice to Have
+### Tier 2 - Moderate Value
 
-7. **ralph-wiggum** - Self-referential iteration loops for autonomous development
-8. **frontend-design** - Auto-invoked skill for bold, production-grade UI
-9. **pr-review-toolkit** - 6 specialized review agents (comments, tests, errors, types, quality, simplification)
-10. **explanatory-output-style** - Educational context injection at SessionStart
+4. **frontend-design** - Distinctive UI design skill avoiding "AI slop" aesthetics. Useful for projects with frontend work.
+
+5. **feature-dev** - Structured multi-phase feature development with agents for codebase exploration, architecture design, and implementation.
+
+6. **ralph-wiggum** - Autonomous iteration pattern using Stop hooks. Novel approach for test-driven or iterative refinement tasks.
+
+### Tier 3 - Niche Value
+
+7. **explanatory-output-style** / **learning-output-style** - SessionStart hooks that inject behavioral guidance. Pattern is useful even if specific styles aren't needed.
+
+8. **commit-commands** - Git workflow automation. Skillz has similar via workflow commands.
+
+9. **agent-sdk-dev** - Agent SDK development kit. Only relevant if building custom agents outside Claude Code.
 
 ## Hook Patterns
 
-### Events Available (Reference)
+### Official Hook Events (9 types)
 
-| Event | Available in skillz | Notes |
-|-------|-------------------|-------|
-| `PreToolUse` | Yes | Used for LSP reference checking |
-| `PostToolUse` | Yes | Used for LSP type validation |
-| `SessionStart` | Yes | Used for session-init, memory-loader |
-| `Stop` | Yes | Used for completion verification |
-| `SubagentStop` | **No** | New - intercept subagent exits |
-| `SessionEnd` | **No** | New - cleanup on session end |
-| `PreCompact` | **No** | New - before context compaction |
-| `Notification` | **No** | New - on Claude notifications |
-| `UserPromptSubmit` | **No** | New - validate user prompts |
+| Event | Purpose | skillz Support |
+|-------|---------|----------------|
+| PreToolUse | Validate/modify before tool runs | Partial (pretooluse.py) |
+| PostToolUse | React after tool completes | Partial (posttooluse.py) |
+| Stop | Validate before session stops | Not implemented |
+| SubagentStop | Validate before subagent stops | Not implemented |
+| UserPromptSubmit | Process user input | Partial |
+| SessionStart | Load context/environment | Implemented (session-init.py) |
+| SessionEnd | Cleanup/save state | Implemented (session-summary.py) |
+| PreCompact | Preserve info before compaction | Not implemented |
+| Notification | React to notifications | Not implemented |
 
-### Hook Type Patterns (Reference)
+### Key Hook Patterns from Reference
 
-| Pattern | Description | Used in skillz |
-|---------|-------------|----------------|
-| Command hooks | Bash/script execution | Yes (Python scripts) |
-| Prompt hooks | LLM-based decision making | Yes (Stop hook) |
-| Matcher patterns | Tool filtering (`Write\|Edit`, `mcp__.*`) | Partial |
-| `${CLAUDE_PLUGIN_ROOT}` | Portable path references | No |
-| `$CLAUDE_ENV_FILE` | Persist env vars from SessionStart | No |
-| Exit code semantics | 0=success, 2=blocking error | Not documented |
-
-### Notable Hook Implementations
-
-1. **Security guidance**: PreToolUse on `Edit|Write|MultiEdit` checking 9 security patterns
-2. **Hookify**: User-defined rules in `.local.md` with conditions and actions
-3. **Ralph-wiggum**: Stop hook that blocks exit to create iteration loops
-4. **Learning mode**: SessionStart hook injecting educational context
-5. **Explanatory mode**: SessionStart hook adding pattern insights
+1. **Command hooks** with `${CLAUDE_PLUGIN_ROOT}` paths and JSON stdin
+2. **Prompt-based hooks** using LLM for context-aware validation (recommended for complex decisions)
+3. **Matcher patterns**: exact (`"Write"`), OR (`"Read|Write|Edit"`), wildcard (`"*"`), regex (`"mcp__.*"`)
+4. **Hook output format**: `{ "continue": true, "suppressOutput": false, "systemMessage": "..." }`
+5. **PreToolUse decisions**: `{ "hookSpecificOutput": { "permissionDecision": "allow|deny|ask" } }`
+6. **Stop hook blocking**: Exit code 2 + stderr for blocking, enabling iteration loops
 
 ## Action Items
 
 ### Immediate (Critical)
-- [ ] Create `.claude-plugin/plugin.json` manifest for skillz
-- [x] Add `allowed-tools` frontmatter to all commands that use restricted tools (already present in all 31 commands)
-- [ ] Update hooks.json to use wrapper format with `description` field
+- [ ] Add `.claude-plugin/plugin.json` manifest with name, version, description
+- [ ] Audit hooks.json format against official schema (wrapper `{ "hooks": { ... } }` format)
+- [ ] Replace hardcoded paths in hook scripts with `${CLAUDE_PLUGIN_ROOT}`
 
 ### Short-term (High Priority)
-- [ ] Add `.mcp.json` template/pattern for MCP integration
-- [ ] Adopt `${CLAUDE_PLUGIN_ROOT}` in hook scripts for portability
-- [x] Add security-guidance hook (PreToolUse monitoring Edit/Write for security patterns — replaced prompt hook with command-based security-check.py)
-- [ ] Implement `SubagentStop` and `SessionEnd` hooks where beneficial
-- [x] Align agent `tools` field format with official convention (already using JSON array format)
-- [ ] Add `argument-hint` to commands that accept arguments
+- [ ] Adopt pr-review-toolkit agents (code-simplifier, silent-failure-hunter, type-design-analyzer, comment-analyzer, pr-test-analyzer)
+- [ ] Upgrade security-check.py to match security-guidance plugin patterns (9+ detections)
+- [ ] Add `allowed-tools` to command frontmatter for security boundaries
+- [ ] Update agent descriptions to use `<example>` block format with Context/User/Assistant/Commentary
+- [ ] Add Stop and SubagentStop hooks for completion validation
 
 ### Long-term (Medium/Low)
-- [ ] Adopt 3-level progressive disclosure for skills (metadata → core → references)
-- [ ] Align agent colors with official palette (blue, cyan, green, yellow, magenta, red)
-- [ ] Prefer `model: inherit` over hardcoded `model: haiku` in agents
-- [ ] Evaluate adopting `commit-commands`, `hookify`, and `feature-dev` plugins
-- [ ] Add per-plugin README.md documentation
-- [ ] Create example settings templates (strict, permissive, sandbox)
-- [ ] Consider ralph-wiggum pattern for autonomous long-running tasks
+- [ ] Add `references/` and `examples/` subdirectories to skills
+- [ ] Consider adopting ralph-wiggum autonomous loop pattern
+- [ ] Add README.md to each major component directory
+- [ ] Evaluate frontend-design skill adoption for UI-focused projects
+- [ ] Implement PreCompact hook for context preservation
+- [ ] Add plugin-dev skills for self-documentation
+- [ ] Standardize hook script naming to snake_case (match reference)
