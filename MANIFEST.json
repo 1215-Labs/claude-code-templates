@@ -107,6 +107,13 @@
         "description": "Scoring rubrics, freshness criteria, and task graph generation for multi-model repo optimization"
       },
       {
+        "name": "obsidian-context",
+        "path": ".claude/skills/obsidian-context",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Shared knowledge base for obsidian-ecosystem-hub slash commands — VPS paths, Docker services, domain glossary"
+      },
+      {
         "name": "agent-teams",
         "path": ".claude/skills/agent-teams",
         "deployment": "global",
@@ -443,6 +450,55 @@
         "description": "Guided cbass deployment with pre-flight checks and validation"
       },
       {
+        "name": "obsidian/obsidian-status",
+        "path": ".claude/commands/obsidian/obsidian-status.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Show all VPS Docker service statuses and Caddy reverse proxy health"
+      },
+      {
+        "name": "obsidian/obsidian-health",
+        "path": ".claude/commands/obsidian/obsidian-health.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Deep health check for VPS services with endpoint testing"
+      },
+      {
+        "name": "obsidian/obsidian-restart",
+        "path": ".claude/commands/obsidian/obsidian-restart.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Restart VPS Docker service(s) with pre-flight and post-restart verification"
+      },
+      {
+        "name": "obsidian/obsidian-logs",
+        "path": ".claude/commands/obsidian/obsidian-logs.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "View and analyze VPS service logs with AI error interpretation"
+      },
+      {
+        "name": "obsidian/obsidian-env-check",
+        "path": ".claude/commands/obsidian/obsidian-env-check.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Validate all required environment variables in VPS .env file"
+      },
+      {
+        "name": "obsidian/obsidian-caddy-reload",
+        "path": ".claude/commands/obsidian/obsidian-caddy-reload.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Reload Caddy reverse proxy configuration on VPS"
+      },
+      {
+        "name": "obsidian/obsidian-vault-sync",
+        "path": ".claude/commands/obsidian/obsidian-vault-sync.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Sync Obsidian vault between local filesystem and MinIO S3"
+      },
+      {
         "name": "mac-manage/mac-health",
         "path": ".claude/commands/mac-manage/mac-health.md",
         "deployment": "global",
@@ -534,6 +590,13 @@
         "deployment": "global",
         "status": "alpha",
         "description": "End-to-end agent team coordination workflow"
+      },
+      {
+        "name": "service-deployment",
+        "path": ".claude/workflows/service-deployment.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "VPS service deployment workflow for obsidian-ecosystem-hub"
       }
     ],
     "hooks": [

@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-09] add: Add obsidian-ecosystem-hub optimization: context skill, 7 VPS commands, workflow, PRPs (4ceabe5)
 [2026-02-09] promote: Promote USER_GUIDE.md coverage check from advisory to critical (1011b23)
 [2026-02-09] add: Add /repo-optimize: multi-model repo optimization with agent teams (c5bc857)
 [2026-02-09] add: Add agent teams documentation from Claude Code docs (280a153)

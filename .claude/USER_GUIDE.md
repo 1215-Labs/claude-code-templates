@@ -88,6 +88,7 @@ Skills provide reusable expertise. Key skills:
 | `repo-optimize-engine` | Scoring rubrics and task graph generation for `/repo-optimize` |
 | `mac-manage-context` | Shared knowledge base for `/mac-*` commands |
 | `cbass-context` | Shared knowledge base for `/cbass-*` commands |
+| `obsidian-context` | Shared knowledge base for `/obsidian-*` commands |
 | `skill-router` | Proactive skill invocation with per-repo priority lists |
 | `agent-teams` | Best practices for agent team coordination (reference) |
 | `n8n-*` | n8n workflow development (7 skills in templates/n8n/) |
@@ -192,7 +193,7 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  lsp-type-safety-check  fork-terminal  agent-browser     │
 │  multi-model-orchestration  skill-evaluator              │
 │  repo-equip-engine  repo-optimize-engine                 │
-│  mac-manage-context  cbass-context                       │
+│  mac-manage-context  cbass-context  obsidian-context      │
 │  skill-router  agent-teams                               │
 │  n8n-* (7 template skills)                               │
 ├──────────────────────────────────────────────────────────┤

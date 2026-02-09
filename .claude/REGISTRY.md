@@ -37,6 +37,13 @@ Central index of all .claude components for quick discovery.
 | cbass service status | `/cbass-status` |
 | cbass log analysis | `/cbass-logs "service"` |
 | cbass deploy | `/cbass-deploy "gpu-nvidia"` |
+| Obsidian VPS status | `/obsidian-status` |
+| Obsidian service health | `/obsidian-health "service"` |
+| Obsidian restart service | `/obsidian-restart "service"` |
+| Obsidian service logs | `/obsidian-logs "service"` |
+| Obsidian env validation | `/obsidian-env-check` |
+| Obsidian Caddy reload | `/obsidian-caddy-reload` |
+| Obsidian vault sync | `/obsidian-vault-sync "push"` |
 
 ## By Category
 
@@ -125,6 +132,18 @@ Central index of all .claude components for quick discovery.
 | Command | `/cbass-deploy` | Guided deployment with pre-flight checks |
 | Skill | `cbass-context` | Shared knowledge base (services, profiles, domains, glossary) |
 
+### Obsidian Ecosystem Hub (VPS Deployment Stack)
+| Type | Component | Purpose |
+|------|-----------|---------|
+| Command | `/obsidian-status` | Show all 16 Docker service statuses + Caddy health |
+| Command | `/obsidian-health` | Deep health check with endpoint testing |
+| Command | `/obsidian-restart` | Restart service(s) with pre-flight + post-restart verification |
+| Command | `/obsidian-logs` | View and analyze service logs with error interpretation |
+| Command | `/obsidian-env-check` | Validate required environment variables in .env |
+| Command | `/obsidian-caddy-reload` | Reload Caddy reverse proxy configuration |
+| Command | `/obsidian-vault-sync` | Sync Obsidian vault between local filesystem and MinIO S3 |
+| Skill | `obsidian-context` | Shared knowledge base (16 services, 8 domains, MinIO buckets, glossary) |
+
 ### Browser & Terminal Automation
 | Type | Component | Purpose |
 |------|-----------|---------|
@@ -200,8 +219,8 @@ Multi-step workflows for complex tasks:
 | Type | Count | Location |
 |------|-------|----------|
 | Agents | 13 | `.claude/agents/` |
-| Commands | 33 | `.claude/commands/` |
-| Skills | 13 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
+| Commands | 40 | `.claude/commands/` |
+| Skills | 14 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
 | Hooks | 15 (11 command + 4 prompt) | `.claude/hooks/` |
 | Examples | 4 | `.mcp.json` + `examples/settings/` |
@@ -273,6 +292,7 @@ Multi-step workflows for complex tasks:
 | `n8n-*` (7 skills) | n8n-mcp-tester | — | (inter-related) |
 | `mac-manage-context` | — | /mac-health, /mac-diff, /mac-status, /mac-discover, /mac-restore | — |
 | `cbass-context` | — | /cbass-status, /cbass-logs, /cbass-deploy | — |
+| `obsidian-context` | — | /obsidian-status, /obsidian-health, /obsidian-restart, /obsidian-logs, /obsidian-env-check, /obsidian-caddy-reload, /obsidian-vault-sync | — |
 
 ### n8n Skills Relationships
 
@@ -339,6 +359,23 @@ All commands reference: mac-manage-context skill
          └──→ /rca "<issue>" ──→ deep root cause analysis
 
 All commands reference: cbass-context skill
+```
+
+### Obsidian Command Relationships
+
+```
+/obsidian-status ──→ check all 16 services + Caddy
+         │
+         ├──→ /obsidian-health "<service>" ──→ deep endpoint test
+         ├──→ /obsidian-logs "<service>" ──→ diagnose failures
+         ├──→ /obsidian-restart "<service>" ──→ restart + verify
+         └──→ /rca "<issue>" ──→ deep root cause analysis
+
+/obsidian-env-check ──→ validate .env before deploy
+/obsidian-caddy-reload ──→ reload Caddy after Caddyfile changes
+/obsidian-vault-sync ──→ sync vault (push/pull/sync/watch)
+
+All commands reference: obsidian-context skill
 ```
 
 ### Workflow Entry Points
