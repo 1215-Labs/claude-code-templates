@@ -23,6 +23,8 @@ Central index of all .claude components for quick discovery.
 | Evaluate a skill/plugin | `skill-evaluator` skill |
 | Equip a repo with components | `/repo-equip "/path/to/repo"` |
 | Distill eval into components | `/reference-distill "eval-name"` |
+| Build UV hooks | `uv-hook-template` skill |
+| View context usage in status line | `status-line-context` hook (Notification) |
 | Optimize a repo (deep) | `/repo-optimize "/path/to/repo"` |
 | Generate a new agent | `meta-agent` agent |
 | Skill priorities (auto) | `skill-router` skill (SessionStart) |
@@ -74,6 +76,7 @@ Central index of all .claude components for quick discovery.
 | Hook | `lsp-type-validator` | Pre-commit type check |
 | Hook | `ruff-validator` | PostToolUse Python lint check (blocks on ruff failures) |
 | Hook | `ty-validator` | PostToolUse Python type check (blocks on ty failures) |
+| Hook | `dangerous-command-blocker` | PreToolUse guard for dangerous `rm -rf` and `.env` access |
 
 ### Debugging
 | Type | Component | Purpose |
@@ -88,6 +91,7 @@ Central index of all .claude components for quick discovery.
 | Hook | `session-init` | Initialize session context |
 | Hook | `memory-loader` | Load persistent memory into context on session start |
 | Hook | `skill-router-loader` | Inject skill priorities and enforcement at session start |
+| Hook | `status-line-context` | Notification status line: model, context usage progress bar, percent used, tokens left, session ID |
 | Skill | `skill-router` | Proactive skill invocation engine with 1% threshold |
 | Hook | `memory-distill` | Create session log stub on session end |
 | Hook | `uncommitted-check` | Warn about uncommitted/unpushed changes on stop |
@@ -168,6 +172,11 @@ Central index of all .claude components for quick discovery.
 | Command | `/repo-equip` | Analyze a repo and equip it with matching Claude Code components |
 | Command | `/repo-optimize` | Multi-model repo optimization with agent team execution |
 
+### Hook Development
+| Type | Component | Purpose |
+|------|-----------|---------|
+| Skill | `uv-hook-template` | UV + PEP 723 templates for PreToolUse, PostToolUse, UserPromptSubmit, SessionStart, and Notification hooks |
+
 ### Agent Teams (Experimental)
 | Type | Component | Purpose |
 |------|-----------|---------|
@@ -179,6 +188,7 @@ Central index of all .claude components for quick discovery.
 | Workflow | `agent-team-coordination` | End-to-end team coordination workflow |
 | Hook | `teammate-idle-gate` | Quality gate: check uncommitted changes + pending tasks (TeammateIdle) |
 | Hook | `task-completed-gate` | Quality gate: run build/lint before task completion (TaskCompleted) |
+| Hook | `prompt-validator` | UserPromptSubmit validator for empty/oversized/injection-like prompts with session prompt-count context |
 | Example | `settings-agent-teams.json` | Settings template with feature flag + teammate mode |
 
 ### Research
@@ -229,9 +239,9 @@ Multi-step workflows for complex tasks:
 |------|-------|----------|
 | Agents | 16 | `.claude/agents/` |
 | Commands | 41 | `.claude/commands/` |
-| Skills | 15 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
+| Skills | 16 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
-| Hooks | 17 (13 command + 4 prompt) | `.claude/hooks/` |
+| Hooks | 20 (16 command + 4 prompt) | `.claude/hooks/` |
 | Examples | 4 | `.mcp.json` + `examples/settings/` |
 | Workflows | 5 | `.claude/workflows/` |
 

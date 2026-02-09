@@ -121,6 +121,13 @@
         "description": "Evaluation-to-integration engine: parse skill-evaluator reports, extract and adapt patterns, track provenance"
       },
       {
+        "name": "uv-hook-template",
+        "path": ".claude/skills/uv-hook-template",
+        "deployment": "global",
+        "status": "beta",
+        "description": "UV single-file script templates for Claude Code hooks with PEP 723 inline dependencies"
+      },
+      {
         "name": "agent-teams",
         "path": ".claude/skills/agent-teams",
         "deployment": "global",
@@ -654,6 +661,15 @@
         "description": "Deterministic scan for security anti-patterns (XSS, injection, eval, etc.)"
       },
       {
+        "name": "dangerous-command-blocker",
+        "path": ".claude/hooks/dangerous-command-blocker.py",
+        "event": "PreToolUse",
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "Block dangerous rm -rf patterns and .env access attempts in tool usage"
+      },
+      {
         "name": "lsp-type-validator",
         "path": ".claude/hooks/lsp-type-validator.py",
         "event": "PostToolUse",
@@ -783,6 +799,24 @@
         "deployment": "global",
         "status": "beta",
         "description": "Run ty type check on Python files after Write/Edit, block on failure"
+      },
+      {
+        "name": "prompt-validator",
+        "path": ".claude/hooks/prompt-validator.py",
+        "event": "UserPromptSubmit",
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "Validate user prompts, block empty/injection-like submissions, and inject per-session prompt context"
+      },
+      {
+        "name": "status-line-context",
+        "path": ".claude/hooks/status-line-context.py",
+        "event": "Notification",
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "Render ANSI context-window usage status line with model, progress bar, percentage, tokens left, and session ID"
       }
     ],
     "templates": [

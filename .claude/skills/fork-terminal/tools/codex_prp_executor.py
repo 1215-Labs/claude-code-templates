@@ -133,7 +133,6 @@ def build_codex_command(
         "codex", "exec",
         "--full-auto",
         "--skip-git-repo-check",
-        "--ephemeral",
         "-m", model,
         "-o", result_file,
         "--output-schema", schema_path,

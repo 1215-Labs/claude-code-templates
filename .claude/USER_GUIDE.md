@@ -88,6 +88,7 @@ Skills provide reusable expertise. Key skills:
 | `multi-model-orchestration` | Delegate tasks across Gemini/Codex |
 | `skill-evaluator` | Evaluate external skills/plugins before adoption |
 | `reference-distill` | Extract and integrate patterns from evaluated references |
+| `uv-hook-template` | UV single-file script hook templates with PEP 723 metadata |
 | `repo-equip-engine` | Matching heuristics and templates for `/repo-equip` |
 | `repo-optimize-engine` | Scoring rubrics and task graph generation for `/repo-optimize` |
 | `mac-manage-context` | Shared knowledge base for `/mac-*` commands |
@@ -198,7 +199,8 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  lsp-symbol-navigation  lsp-dependency-analysis          │
 │  lsp-type-safety-check  fork-terminal  agent-browser     │
 │  multi-model-orchestration  skill-evaluator              │
-│  reference-distill  repo-equip-engine                    │
+│  reference-distill  uv-hook-template                     │
+│  repo-equip-engine                                       │
 │  repo-optimize-engine                                    │
 │  mac-manage-context  cbass-context  obsidian-context      │
 │  skill-router  agent-teams                               │
