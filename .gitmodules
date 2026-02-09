@@ -22,3 +22,6 @@
 [submodule "references/plannotator"]
 	path = references/plannotator
 	url = git@github.com:backnotprop/plannotator.git
+[submodule "references/claude-code-hooks-mastery"]
+	path = references/claude-code-hooks-mastery
+	url = git@github.com:disler/claude-code-hooks-mastery.git

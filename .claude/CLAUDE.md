@@ -42,6 +42,7 @@ This repo includes reference submodules in `references/` for learning from other
 | last30days-skill | mvanhorn/last30days-skill | Skill implementation example |
 | compound-engineering-plugin | mdc159/compound-engineering-plugin | Plugin patterns |
 | agent-zero | mdc159/agent-zero | Agent architecture |
+| claude-code-hooks-mastery | disler/claude-code-hooks-mastery | Hooks, sub-agents, meta-agent patterns |
 
 **On Session Start:** The session hook checks for updates to these references. When updates are available:
 1. **Ask the user** if they want to update (don't auto-update)
@@ -77,7 +78,8 @@ references/      # Git submodules for learning/reference (not for copying)
 ├── openclaw/
 ├── last30days-skill/
 ├── compound-engineering-plugin/
-└── agent-zero/
+├── agent-zero/
+└── claude-code-hooks-mastery/
 ```
 
 ## Workflow Chains
