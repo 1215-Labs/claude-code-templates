@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-09] add: Add Codex PRP execution methodology and fix stale --ephemeral references (1e50eb0)
 [2026-02-09] mark: Mark 4 PRPs as adopted in adoptions.md, update tasks (523f45a)
 [2026-02-09] execute: Execute 4 PRPs via Codex forked terminals: hooks, templates, status line (7845614)
 [2026-02-09] add: Add Codex PRP executor: optimized fork infrastructure for single-PRP execution (6ea6954)

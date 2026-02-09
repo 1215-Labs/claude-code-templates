@@ -125,10 +125,13 @@ Execute PRP (Prompt Request Protocol) documents autonomously with structured out
 
 | Flag | Purpose |
 |------|---------|
-| `--ephemeral` | No session persistence — clean per-PRP execution |
+| `--full-auto` | Auto-approve + workspace-write sandbox |
+| `--skip-git-repo-check` | Avoid trusted-directory errors |
 | `--output-schema FILE` | Force final message to conform to JSON schema |
 | `-o FILE` | Capture final message to file for programmatic reading |
 | `--add-dir /tmp` | Allow writing temp/report files outside repo |
+
+See `codex-prp-methodology.md` for the complete PRP execution guide.
 
 ### PRP Executor Script
 
@@ -149,7 +152,6 @@ uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py PRPs/distill-foo
 codex exec \
   --full-auto \
   --skip-git-repo-check \
-  --ephemeral \
   -m gpt-5.3-codex \
   -o /tmp/codex-prp-result.json \
   --output-schema .claude/skills/fork-terminal/templates/codex-prp-output-schema.json \
