@@ -31,6 +31,16 @@ Quick reference for using the `.claude` folder components.
 /orchestrate "task"       # Delegate to Gemini/Codex via forked terminals
 ```
 
+### Agent Teams (Experimental)
+
+```
+/spawn-team "task"        # Create agent team for parallel work
+```
+
+Coordinate multiple Claude Code instances for parallel review, investigation, or cross-layer implementation. Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in settings.
+
+**Tip**: Start with review teams (security + performance + tests) before attempting implementation teams.
+
 ### Understanding Code
 
 | Need | Use |
@@ -78,6 +88,7 @@ Skills provide reusable expertise. Key skills:
 | `mac-manage-context` | Shared knowledge base for `/mac-*` commands |
 | `cbass-context` | Shared knowledge base for `/cbass-*` commands |
 | `skill-router` | Proactive skill invocation with per-repo priority lists |
+| `agent-teams` | Best practices for agent team coordination (reference) |
 | `n8n-*` | n8n workflow development (7 skills in templates/n8n/) |
 
 ## Commands
@@ -92,6 +103,7 @@ Skills provide reusable expertise. Key skills:
 | `/ui-review` | UI consistency check |
 | `/rca` | Root cause analysis |
 | `/orchestrate` | Delegate to Gemini/Codex |
+| `/spawn-team` | Create agent team for parallel work |
 | `/sync-reference` | Compare against claude-code reference |
 | `/repo-equip` | Equip any repo with matching components |
 | `/all_skills` | List available skills |
@@ -136,6 +148,7 @@ For multi-step processes, follow workflow chains:
 | `bug-investigation` | Debugging issues |
 | `code-quality` | Before merge/deploy |
 | `new-developer` | Onboarding |
+| `agent-team-coordination` | Parallel team work |
 
 **View workflow**: Read `.claude/workflows/<name>.md`
 
@@ -149,6 +162,8 @@ These are Claude Code hooks that run automatically during tool use and session e
 | `lsp-type-validator` | PreToolUse | Blocks edits with type errors |
 | `session-init` | SessionStart | Initialize session context, check references |
 | `uncommitted-check` | Stop | Warn about uncommitted/unpushed changes |
+| `teammate-idle-gate` | TeammateIdle | Check for uncommitted changes + pending tasks |
+| `task-completed-gate` | TaskCompleted | Run build/lint before task completion |
 
 ## Quick Reference Card
 
@@ -157,6 +172,7 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  COMMANDS (invoke directly)                              │
 │  /onboarding  /quick-prime  /deep-prime  /repo-equip     │
 │  /code-review  /ui-review  /rca  /orchestrate            │
+│  /spawn-team                                             │
 │  /sync-reference  /coderabbit-helper  /all_skills        │
 │  /remember  /forget  /memory                             │
 │  /mac-health  /mac-diff  /mac-status  /mac-discover      │
@@ -174,12 +190,12 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  lsp-type-safety-check  fork-terminal  agent-browser     │
 │  multi-model-orchestration  skill-evaluator              │
 │  repo-equip-engine  mac-manage-context  cbass-context    │
-│  skill-router                                            │
+│  skill-router  agent-teams                               │
 │  n8n-* (7 template skills)                               │
 ├──────────────────────────────────────────────────────────┤
 │  WORKFLOWS (follow for processes)                        │
 │  feature-development  bug-investigation                  │
-│  code-quality  new-developer                             │
+│  code-quality  new-developer  agent-team-coordination    │
 └──────────────────────────────────────────────────────────┘
 ```
 

@@ -1,5 +1,5 @@
 {
-  "description": "LSP-aware hooks for code quality validation and persistent memory",
+  "description": "LSP-aware hooks for code quality validation, persistent memory, and agent team coordination",
   "hooks": {
     "PreToolUse": [
       {
@@ -113,6 +113,28 @@
       }
     ],
     "UserPromptSubmit": [],
-    "Notification": []
+    "Notification": [],
+    "TeammateIdle": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/teammate-idle-gate.py",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/task-completed-gate.py",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
   }
 }

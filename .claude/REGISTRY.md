@@ -19,6 +19,7 @@ Central index of all .claude components for quick discovery.
 | Browser automation | `agent-browser` skill |
 | Fork terminal | `fork-terminal` skill |
 | Orchestrate tasks | `/orchestrate "task"` |
+| Spawn agent team | `/spawn-team "task"` |
 | Evaluate a skill/plugin | `skill-evaluator` skill |
 | Equip a repo with components | `/repo-equip "/path/to/repo"` |
 | Skill priorities (auto) | `skill-router` skill (SessionStart) |
@@ -139,6 +140,16 @@ Central index of all .claude components for quick discovery.
 | Command | `/orchestrate` | Quick orchestration via forked terminals |
 | Command | `/repo-equip` | Analyze a repo and equip it with matching Claude Code components |
 
+### Agent Teams (Experimental)
+| Type | Component | Purpose |
+|------|-----------|---------|
+| Command | `/spawn-team` | Create and coordinate an agent team for parallel work |
+| Skill | `agent-teams` | Best practices for team coordination (reference, not user-invocable) |
+| Workflow | `agent-team-coordination` | End-to-end team coordination workflow |
+| Hook | `teammate-idle-gate` | Quality gate: check uncommitted changes + pending tasks (TeammateIdle) |
+| Hook | `task-completed-gate` | Quality gate: run build/lint before task completion (TaskCompleted) |
+| Example | `settings-agent-teams.json` | Settings template with feature flag + teammate mode |
+
 ### Research
 | Type | Component | Purpose |
 |------|-----------|---------|
@@ -157,6 +168,7 @@ Central index of all .claude components for quick discovery.
 | Example | `.mcp.json` | MCP server config template (stdio, SSE, streamable-HTTP) |
 | Example | `settings-strict.json` | Strict security settings (deny web, managed hooks only) |
 | Example | `settings-permissive.json` | Permissive development settings |
+| Example | `settings-agent-teams.json` | Agent teams config (feature flag + teammate mode) |
 
 ## Workflow Chains
 
@@ -168,6 +180,7 @@ Multi-step workflows for complex tasks:
 | [bug-investigation](workflows/bug-investigation.md) | `/rca` | Systematic debugging |
 | [code-quality](workflows/code-quality.md) | `/code-review` | Pre-merge validation |
 | [new-developer](workflows/new-developer.md) | `/onboarding` | Onboarding progression |
+| [agent-team-coordination](workflows/agent-team-coordination.md) | `/spawn-team` | Parallel team coordination |
 
 ### PRP (Prompt Request Protocol)
 | Type | Component | Purpose |
@@ -184,12 +197,12 @@ Multi-step workflows for complex tasks:
 | Type | Count | Location |
 |------|-------|----------|
 | Agents | 13 | `.claude/agents/` |
-| Commands | 29 | `.claude/commands/` |
-| Skills | 11 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
+| Commands | 32 | `.claude/commands/` |
+| Skills | 12 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
-| Hooks | 13 (8 command + 5 prompt) | `.claude/hooks/` |
-| Examples | 3 | `.mcp.json` + `examples/settings/` |
-| Workflows | 4 | `.claude/workflows/` |
+| Hooks | 15 (11 command + 4 prompt) | `.claude/hooks/` |
+| Examples | 4 | `.mcp.json` + `examples/settings/` |
+| Workflows | 5 | `.claude/workflows/` |
 
 ## Cross-Reference Map
 
@@ -218,6 +231,14 @@ Multi-step workflows for complex tasks:
          │                      │
          ↓                      ↓
     dependency-analyzer ←─→ lsp-dependency-analysis
+
+                    AGENT TEAMS (EXPERIMENTAL)
+                    ==========================
+    /spawn-team ──→ agent-teams skill ──→ agent-team-coordination
+         │                                       │
+         ├──→ teammate-idle-gate (hook)          │
+         ├──→ task-completed-gate (hook)         │
+         └──→ /code-review (final validation)  ←─┘
 ```
 
 ### Component Relationships Table
@@ -241,6 +262,7 @@ Multi-step workflows for complex tasks:
 | `multi-model-orchestration` | — | /orchestrate | fork-terminal, skill-evaluator |
 | `skill-evaluator` | codebase-analyst | — | fork-terminal, multi-model-orchestration |
 | `repo-equip-engine` | — | /repo-equip | skill-evaluator, multi-model-orchestration |
+| `agent-teams` | — | /spawn-team | multi-model-orchestration, fork-terminal |
 | `lsp-symbol-navigation` | codebase-analyst | /deep-prime | lsp-dependency-analysis, lsp-type-safety-check |
 | `lsp-type-safety-check` | code-reviewer | /code-review | lsp-symbol-navigation |
 | `lsp-dependency-analysis` | debugger, dependency-analyzer | /rca | lsp-symbol-navigation |
@@ -324,3 +346,4 @@ All commands reference: cbass-context skill
 | `/deep-prime` | feature-development | Deep dive before coding |
 | `/code-review` | code-quality | Pre-merge validation |
 | `/rca` | bug-investigation | Debugging issues |
+| `/spawn-team` | agent-team-coordination | Parallel team work |

@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "Single source of truth for ALL Claude Code components in this repository",
   "metadata": {
-    "lastUpdated": "2026-02-07",
+    "lastUpdated": "2026-02-09",
     "maintainer": "1215-Labs"
   },
   "deploymentLevels": {
@@ -98,6 +98,13 @@
         "deployment": "global",
         "status": "beta",
         "description": "Proactive skill invocation engine with per-repo priority lists"
+      },
+      {
+        "name": "agent-teams",
+        "path": ".claude/skills/agent-teams",
+        "deployment": "global",
+        "status": "alpha",
+        "description": "Best practices and patterns for agent team coordination"
       },
       {
         "name": "n8n-code-javascript",
@@ -469,6 +476,13 @@
         "deployment": "global",
         "status": "beta",
         "description": "Recommend optimal Ollama model quantization and context window for Apple Silicon"
+      },
+      {
+        "name": "workflow/spawn-team",
+        "path": ".claude/commands/workflow/spawn-team.md",
+        "deployment": "global",
+        "status": "alpha",
+        "description": "Create and coordinate an agent team for parallel work"
       }
     ],
     "workflows": [
@@ -499,6 +513,13 @@
         "deployment": "global",
         "status": "production",
         "description": "New developer onboarding workflow"
+      },
+      {
+        "name": "agent-team-coordination",
+        "path": ".claude/workflows/agent-team-coordination.md",
+        "deployment": "global",
+        "status": "alpha",
+        "description": "End-to-end agent team coordination workflow"
       }
     ],
     "hooks": [
@@ -614,6 +635,24 @@
         "deployment": "global",
         "status": "production",
         "description": "Preserve critical context before compaction"
+      },
+      {
+        "name": "teammate-idle-gate",
+        "path": ".claude/hooks/teammate-idle-gate.py",
+        "event": "TeammateIdle",
+        "type": "command",
+        "deployment": "global",
+        "status": "alpha",
+        "description": "Quality gate: check for uncommitted changes and pending tasks before teammate goes idle"
+      },
+      {
+        "name": "task-completed-gate",
+        "path": ".claude/hooks/task-completed-gate.py",
+        "event": "TaskCompleted",
+        "type": "command",
+        "deployment": "global",
+        "status": "alpha",
+        "description": "Quality gate: run build/lint checks before allowing task completion"
       }
     ],
     "templates": [
@@ -648,6 +687,12 @@
         "path": "examples/settings/settings-permissive.json",
         "status": "production",
         "description": "Permissive development settings (minimal restrictions)"
+      },
+      {
+        "name": "settings-agent-teams",
+        "path": "examples/settings/settings-agent-teams.json",
+        "status": "alpha",
+        "description": "Agent teams configuration (experimental feature flag + teammate mode)"
       }
     ]
   }
