@@ -117,6 +117,52 @@ codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex "Use /playwright t
 | Command hangs | Check if API key is valid, use timeout |
 | Model not available | Fall back to next model in chain |
 
+## Mode: PRP Execution
+
+Execute PRP (Prompt Request Protocol) documents autonomously with structured output and independent validation.
+
+### Key Flags for PRP Mode
+
+| Flag | Purpose |
+|------|---------|
+| `--ephemeral` | No session persistence — clean per-PRP execution |
+| `--output-schema FILE` | Force final message to conform to JSON schema |
+| `-o FILE` | Capture final message to file for programmatic reading |
+| `--add-dir /tmp` | Allow writing temp/report files outside repo |
+
+### PRP Executor Script
+
+```bash
+# Dry run (show command, don't execute)
+uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py PRPs/distill-foo.md --dry-run
+
+# Execute with model fallback chain (gpt-5.3-codex → gpt-5.2-codex → gpt-5.1-codex-max)
+uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py PRPs/distill-foo.md
+
+# Execute with specific model and timeout
+uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py PRPs/distill-foo.md -m gpt-5.3-codex -t 600
+```
+
+### Raw PRP Command (without executor wrapper)
+
+```bash
+codex exec \
+  --full-auto \
+  --skip-git-repo-check \
+  --ephemeral \
+  -m gpt-5.3-codex \
+  -o /tmp/codex-prp-result.json \
+  --output-schema .claude/skills/fork-terminal/templates/codex-prp-output-schema.json \
+  -C /path/to/repo \
+  --add-dir /tmp \
+  "$(cat /tmp/codex-prp-prompt.txt)" \
+  2>&1 | tee /tmp/codex-prp-output.log
+```
+
+### AGENTS.md Integration
+
+Codex auto-reads `AGENTS.md` from the repo root — our conventions (UV shebangs, hooks.json format, etc.) are injected as free passive context without consuming prompt tokens.
+
 ## Deprecated Flags
 
 Do NOT use these deprecated patterns:

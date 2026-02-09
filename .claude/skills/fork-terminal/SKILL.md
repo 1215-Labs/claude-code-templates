@@ -41,6 +41,10 @@ ENABLE_CODEX_CLI: true
 ENABLE_CLAUDE_CODE: true
 AGENTIC_CODING_TOOLS: claude-code, codex-cli, gemini-cli
 DEFAULT_MODE: non-interactive
+PRP_EXECUTOR: .claude/skills/fork-terminal/tools/codex_prp_executor.py
+PRP_VALIDATOR: .claude/skills/fork-terminal/tools/codex_prp_validator.py
+PRP_OUTPUT_SCHEMA: .claude/skills/fork-terminal/templates/codex-prp-output-schema.json
+PRP_PROMPT_TEMPLATE: .claude/skills/fork-terminal/templates/codex-prp-prompt.md
 
 ## Features (v2.0.0)
 
@@ -194,6 +198,41 @@ Write your findings to docs/exploration/auth-system.md using progressive disclos
 ```
 
 See also: `.claude/skills/multi-model-orchestration/SKILL.md` for complete orchestration patterns.
+
+### PRP Execution via Codex
+
+Execute PRP (Prompt Request Protocol) documents using Codex with optimized flags:
+
+```bash
+# Dry run — show command without executing
+uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py PRPs/distill-foo.md --dry-run
+
+# Execute with default model fallback chain
+uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py PRPs/distill-foo.md
+
+# Execute with specific model
+uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py PRPs/distill-foo.md -m gpt-5.3-codex
+
+# Via fork terminal (user watches in new window)
+python3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex-prp \
+  "uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py PRPs/distill-foo.md"
+```
+
+**Output files** (under `/tmp/codex-prp-{name}-*`):
+| File | Purpose |
+|------|---------|
+| `-prompt.txt` | Generated prompt sent to Codex |
+| `-result.json` | Codex structured output (via --output-schema) |
+| `-output.log` | Full terminal output |
+| `-report.json` | Combined executor + validator report |
+| `-done.json` | Completion flag with exit code, model, duration |
+
+**Monitoring from Claude Code:**
+```bash
+tail -f /tmp/codex-prp-{name}-output.log   # Live output
+cat /tmp/codex-prp-{name}-done.json         # Check completion
+cat /tmp/codex-prp-{name}-report.json       # Read results
+```
 
 ## Dependencies
 

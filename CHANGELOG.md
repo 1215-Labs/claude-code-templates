@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-09] add: Add Codex PRP executor: optimized fork infrastructure for single-PRP execution (6ea6954)
 [2026-02-09] add: Add OpenAI Codex reference submodule (1897b35)
 [2026-02-09] add: Add reference-distill pipeline and extract 9 components from claude-code-hooks-mastery (0ec03c1)
 [2026-02-09] add: Add claude-code-hooks-mastery reference submodule (248db83)
