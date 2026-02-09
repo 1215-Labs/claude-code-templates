@@ -33,8 +33,9 @@ Provenance tracking for components adopted from evaluated reference submodules.
 - **Adaptation**: convention-convert
 - **Evaluation**: claude-code-hooks-mastery (3.50/5)
 - **Priority**: 1
-- **Status**: deferred-to-prp
+- **Status**: adopted
 - **PRP**: PRPs/distill-dangerous-command-blocker.md
+- **Executed**: 2026-02-09 via Codex gpt-5.3-codex (169s, 8/8 tests)
 - **Propagated To**: []
 
 ### ADO-002: prompt-validator (PRP)
@@ -46,8 +47,9 @@ Provenance tracking for components adopted from evaluated reference submodules.
 - **Adaptation**: convention-convert
 - **Evaluation**: claude-code-hooks-mastery (3.50/5)
 - **Priority**: 1
-- **Status**: deferred-to-prp
+- **Status**: adopted
 - **PRP**: PRPs/distill-prompt-validator.md
+- **Executed**: 2026-02-09 via Codex gpt-5.3-codex (158s, 6/6 tests)
 - **Propagated To**: []
 
 ### ADO-003: uv-hook-template (PRP)
@@ -59,8 +61,9 @@ Provenance tracking for components adopted from evaluated reference submodules.
 - **Adaptation**: full-rewrite
 - **Evaluation**: claude-code-hooks-mastery (3.50/5)
 - **Priority**: 1
-- **Status**: deferred-to-prp
+- **Status**: adopted
 - **PRP**: PRPs/distill-uv-hook-template.md
+- **Executed**: 2026-02-09 via Codex gpt-5.3-codex (189s, 8/8 tests)
 - **Propagated To**: []
 
 ### ADO-004: ruff-validator
@@ -96,8 +99,9 @@ Provenance tracking for components adopted from evaluated reference submodules.
 - **Adaptation**: convention-convert
 - **Evaluation**: claude-code-hooks-mastery (3.50/5)
 - **Priority**: 3
-- **Status**: deferred-to-prp
+- **Status**: adopted
 - **PRP**: PRPs/distill-status-line-context.md
+- **Executed**: 2026-02-09 via Codex gpt-5.3-codex (157s, 7/7 tests)
 - **Propagated To**: []
 
 ### ADO-007: meta-agent
