@@ -68,6 +68,9 @@ Invoke agents by name when you need specialized help:
 | `deployment-engineer` | CI/CD, containers, cloud deployments |
 | `mcp-backend-engineer` | MCP server implementation |
 | `n8n-mcp-tester` | n8n MCP tool testing |
+| `meta-agent` | Generate new sub-agent configs from descriptions |
+| `team-builder` | Single-task engineering execution in agent teams |
+| `team-validator` | Read-only task validation in agent teams |
 
 **Example**: "Use the `debugger` agent to investigate this error..."
 
@@ -84,6 +87,7 @@ Skills provide reusable expertise. Key skills:
 | `agent-browser` | Headless browser automation with Playwright |
 | `multi-model-orchestration` | Delegate tasks across Gemini/Codex |
 | `skill-evaluator` | Evaluate external skills/plugins before adoption |
+| `reference-distill` | Extract and integrate patterns from evaluated references |
 | `repo-equip-engine` | Matching heuristics and templates for `/repo-equip` |
 | `repo-optimize-engine` | Scoring rubrics and task graph generation for `/repo-optimize` |
 | `mac-manage-context` | Shared knowledge base for `/mac-*` commands |
@@ -107,6 +111,7 @@ Skills provide reusable expertise. Key skills:
 | `/orchestrate` | Delegate to Gemini/Codex |
 | `/spawn-team` | Create agent team for parallel work |
 | `/sync-reference` | Compare against claude-code reference |
+| `/reference-distill` | Extract high-ROI patterns from evaluated references |
 | `/repo-equip` | Equip any repo with matching components |
 | `/repo-optimize` | Deep multi-model repo optimization with agent team |
 | `/all_skills` | List available skills |
@@ -187,12 +192,14 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  lsp-navigator  context-manager  library-researcher      │
 │  technical-researcher  deployment-engineer               │
 │  mcp-backend-engineer  n8n-mcp-tester                    │
+│  meta-agent  team-builder  team-validator                 │
 ├──────────────────────────────────────────────────────────┤
 │  SKILLS (reference for patterns)                         │
 │  lsp-symbol-navigation  lsp-dependency-analysis          │
 │  lsp-type-safety-check  fork-terminal  agent-browser     │
 │  multi-model-orchestration  skill-evaluator              │
-│  repo-equip-engine  repo-optimize-engine                 │
+│  reference-distill  repo-equip-engine                    │
+│  repo-optimize-engine                                    │
 │  mac-manage-context  cbass-context  obsidian-context      │
 │  skill-router  agent-teams                               │
 │  n8n-* (7 template skills)                               │

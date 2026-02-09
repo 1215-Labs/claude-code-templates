@@ -2,7 +2,16 @@
 
 ## Active
 
+- [2026-02-09] Execute PRP: PRPs/distill-dangerous-command-blocker.md (from claude-code-hooks-mastery distillation)
+- [2026-02-09] Execute PRP: PRPs/distill-prompt-validator.md (from claude-code-hooks-mastery distillation)
+- [2026-02-09] Execute PRP: PRPs/distill-uv-hook-template.md (from claude-code-hooks-mastery distillation)
+- [2026-02-09] Execute PRP: PRPs/distill-status-line-context.md (from claude-code-hooks-mastery distillation)
+- [2026-02-09] Test extracted ruff-validator, ty-validator, meta-agent, team-builder, team-validator in isolation
+- [2026-02-09] Run `/repo-equip` on target repos to propagate adopted patterns
+
 ## Completed
+
+- [2026-02-09] Run `/reference-distill "claude-code-hooks-mastery"` — extracted 5 direct + 4 PRPs
 
 ## Blocked
 

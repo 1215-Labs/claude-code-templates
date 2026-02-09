@@ -22,7 +22,9 @@ Central index of all .claude components for quick discovery.
 | Spawn agent team | `/spawn-team "task"` |
 | Evaluate a skill/plugin | `skill-evaluator` skill |
 | Equip a repo with components | `/repo-equip "/path/to/repo"` |
+| Distill eval into components | `/reference-distill "eval-name"` |
 | Optimize a repo (deep) | `/repo-optimize "/path/to/repo"` |
+| Generate a new agent | `meta-agent` agent |
 | Skill priorities (auto) | `skill-router` skill (SessionStart) |
 | Remember a fact | `/remember "fact"` |
 | Forget a fact | `/forget "term"` |
@@ -70,6 +72,8 @@ Central index of all .claude components for quick discovery.
 | Command | `/ui-review` | UI consistency check |
 | Skill | `lsp-type-safety-check` | Type validation patterns |
 | Hook | `lsp-type-validator` | Pre-commit type check |
+| Hook | `ruff-validator` | PostToolUse Python lint check (blocks on ruff failures) |
+| Hook | `ty-validator` | PostToolUse Python type check (blocks on ty failures) |
 
 ### Debugging
 | Type | Component | Purpose |
@@ -156,9 +160,11 @@ Central index of all .claude components for quick discovery.
 | Skill | `multi-model-orchestration` | Delegate tasks across Gemini/Codex via forked terminals |
 | Skill | `skill-evaluator` | Evaluate external skills/plugins before adoption (parallel agents) |
 | Skill | `repo-equip-engine` | Matching heuristics and templates for automated repo equipment |
+| Skill | `reference-distill` | Evaluation-to-integration engine: parse evals, extract, adapt, track provenance |
 | Skill | `repo-optimize-engine` | Freshness scoring, task graph generation for multi-model repo optimization |
 | Skill | `skill-router` | Proactive skill invocation with per-repo priority lists |
 | Command | `/orchestrate` | Quick orchestration via forked terminals |
+| Command | `/reference-distill` | Extract and integrate high-ROI patterns from evaluated references |
 | Command | `/repo-equip` | Analyze a repo and equip it with matching Claude Code components |
 | Command | `/repo-optimize` | Multi-model repo optimization with agent team execution |
 
@@ -167,6 +173,9 @@ Central index of all .claude components for quick discovery.
 |------|-----------|---------|
 | Command | `/spawn-team` | Create and coordinate an agent team for parallel work |
 | Skill | `agent-teams` | Best practices for team coordination (reference, not user-invocable) |
+| Agent | `meta-agent` | Generate new sub-agent configs from descriptions |
+| Agent | `team-builder` | Focused engineering agent for single-task execution in teams |
+| Agent | `team-validator` | Read-only validation agent for verifying task completion |
 | Workflow | `agent-team-coordination` | End-to-end team coordination workflow |
 | Hook | `teammate-idle-gate` | Quality gate: check uncommitted changes + pending tasks (TeammateIdle) |
 | Hook | `task-completed-gate` | Quality gate: run build/lint before task completion (TaskCompleted) |
@@ -218,11 +227,11 @@ Multi-step workflows for complex tasks:
 
 | Type | Count | Location |
 |------|-------|----------|
-| Agents | 13 | `.claude/agents/` |
-| Commands | 40 | `.claude/commands/` |
-| Skills | 14 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
+| Agents | 16 | `.claude/agents/` |
+| Commands | 41 | `.claude/commands/` |
+| Skills | 15 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
-| Hooks | 15 (11 command + 4 prompt) | `.claude/hooks/` |
+| Hooks | 17 (13 command + 4 prompt) | `.claude/hooks/` |
 | Examples | 4 | `.mcp.json` + `examples/settings/` |
 | Workflows | 5 | `.claude/workflows/` |
 
@@ -254,6 +263,20 @@ Multi-step workflows for complex tasks:
          ↓                      ↓
     dependency-analyzer ←─→ lsp-dependency-analysis
 
+                    EVALUATION & ADOPTION PIPELINE
+                    ================================
+    /sync-reference ──→ skill-evaluator ──→ /reference-distill
+                                                    │
+                                    ┌───────────────┤
+                                    ↓               ↓
+                              adoptions.md    PRPs/distill-*.md
+                                    │               │
+                                    ↓               ↓
+                              /repo-equip    /prp-claude-code-execute
+                                    │
+                                    ↓
+                              /repo-optimize
+
                     AGENT TEAMS (EXPERIMENTAL)
                     ==========================
     /spawn-team ──→ agent-teams skill ──→ agent-team-coordination
@@ -278,12 +301,16 @@ Multi-step workflows for complex tasks:
 | `n8n-mcp-tester` | — | — | n8n-* skills |
 | `technical-researcher` | library-researcher | — | — |
 | `test-automator` | code-reviewer, debugger | /code-review | — |
+| `meta-agent` | code-reviewer, debugger, test-automator | /repo-equip | reference-distill |
+| `team-builder` | team-validator | /spawn-team | agent-teams |
+| `team-validator` | team-builder | /spawn-team | agent-teams |
 | **Skills** |
 | `agent-browser` | — | — | fork-terminal |
 | `fork-terminal` | context-manager | /orchestrate | agent-browser, multi-model-orchestration |
 | `multi-model-orchestration` | — | /orchestrate | fork-terminal, skill-evaluator |
 | `skill-evaluator` | codebase-analyst | — | fork-terminal, multi-model-orchestration |
-| `repo-equip-engine` | — | /repo-equip | skill-evaluator, multi-model-orchestration |
+| `reference-distill` | — | /reference-distill | skill-evaluator, repo-equip-engine, repo-optimize-engine, fork-terminal |
+| `repo-equip-engine` | — | /repo-equip | skill-evaluator, multi-model-orchestration, reference-distill |
 | `repo-optimize-engine` | — | /repo-optimize | repo-equip-engine, multi-model-orchestration, agent-teams, fork-terminal |
 | `agent-teams` | — | /spawn-team | multi-model-orchestration, fork-terminal |
 | `lsp-symbol-navigation` | codebase-analyst | /deep-prime | lsp-dependency-analysis, lsp-type-safety-check |

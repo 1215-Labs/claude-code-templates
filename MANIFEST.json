@@ -114,6 +114,13 @@
         "description": "Shared knowledge base for obsidian-ecosystem-hub slash commands — VPS paths, Docker services, domain glossary"
       },
       {
+        "name": "reference-distill",
+        "path": ".claude/skills/reference-distill",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Evaluation-to-integration engine: parse skill-evaluator reports, extract and adapt patterns, track provenance"
+      },
+      {
         "name": "agent-teams",
         "path": ".claude/skills/agent-teams",
         "deployment": "global",
@@ -271,6 +278,27 @@
         "deployment": "global",
         "status": "production",
         "description": "Verify type safety using LSP"
+      },
+      {
+        "name": "meta-agent",
+        "path": ".claude/agents/meta-agent.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Generate new sub-agent configuration files from descriptions"
+      },
+      {
+        "name": "team-builder",
+        "path": ".claude/agents/team-builder.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Focused engineering agent for executing single tasks in agent teams"
+      },
+      {
+        "name": "team-validator",
+        "path": ".claude/agents/team-validator.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Read-only validation agent for verifying task completion in agent teams"
       }
     ],
     "commands": [
@@ -541,6 +569,13 @@
         "description": "Recommend optimal Ollama model quantization and context window for Apple Silicon"
       },
       {
+        "name": "workflow/reference-distill",
+        "path": ".claude/commands/workflow/reference-distill.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Extract and integrate high-ROI patterns from evaluated reference submodules"
+      },
+      {
         "name": "workflow/repo-optimize",
         "path": ".claude/commands/workflow/repo-optimize.md",
         "deployment": "global",
@@ -730,6 +765,24 @@
         "deployment": "global",
         "status": "alpha",
         "description": "Quality gate: run build/lint checks before allowing task completion"
+      },
+      {
+        "name": "ruff-validator",
+        "path": ".claude/hooks/ruff-validator.py",
+        "event": "PostToolUse",
+        "type": "command",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Run ruff lint check on Python files after Write/Edit, block on failure"
+      },
+      {
+        "name": "ty-validator",
+        "path": ".claude/hooks/ty-validator.py",
+        "event": "PostToolUse",
+        "type": "command",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Run ty type check on Python files after Write/Edit, block on failure"
       }
     ],
     "templates": [
