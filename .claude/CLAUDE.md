@@ -43,6 +43,7 @@ This repo includes reference submodules in `references/` for learning from other
 | compound-engineering-plugin | mdc159/compound-engineering-plugin | Plugin patterns |
 | agent-zero | mdc159/agent-zero | Agent architecture |
 | claude-code-hooks-mastery | disler/claude-code-hooks-mastery | Hooks, sub-agents, meta-agent patterns |
+| codex | openai/codex | OpenAI Codex CLI agent |
 
 **On Session Start:** The session hook checks for updates to these references. When updates are available:
 1. **Ask the user** if they want to update (don't auto-update)
@@ -79,7 +80,8 @@ references/      # Git submodules for learning/reference (not for copying)
 ├── last30days-skill/
 ├── compound-engineering-plugin/
 ├── agent-zero/
-└── claude-code-hooks-mastery/
+├── claude-code-hooks-mastery/
+└── codex/
 ```
 
 ## Workflow Chains
