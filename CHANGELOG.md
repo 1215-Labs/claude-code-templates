@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-09] promote: Promote USER_GUIDE.md coverage check from advisory to critical (1011b23)
 [2026-02-09] add: Add /repo-optimize: multi-model repo optimization with agent teams (c5bc857)
 [2026-02-09] add: Add agent teams documentation from Claude Code docs (280a153)
 [2026-02-09] add: Add agent teams feature: command, skill, hooks, workflow, and docs (816a34a)

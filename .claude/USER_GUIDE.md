@@ -85,6 +85,7 @@ Skills provide reusable expertise. Key skills:
 | `multi-model-orchestration` | Delegate tasks across Gemini/Codex |
 | `skill-evaluator` | Evaluate external skills/plugins before adoption |
 | `repo-equip-engine` | Matching heuristics and templates for `/repo-equip` |
+| `repo-optimize-engine` | Scoring rubrics and task graph generation for `/repo-optimize` |
 | `mac-manage-context` | Shared knowledge base for `/mac-*` commands |
 | `cbass-context` | Shared knowledge base for `/cbass-*` commands |
 | `skill-router` | Proactive skill invocation with per-repo priority lists |
@@ -106,6 +107,7 @@ Skills provide reusable expertise. Key skills:
 | `/spawn-team` | Create agent team for parallel work |
 | `/sync-reference` | Compare against claude-code reference |
 | `/repo-equip` | Equip any repo with matching components |
+| `/repo-optimize` | Deep multi-model repo optimization with agent team |
 | `/all_skills` | List available skills |
 | `/coderabbit-helper` | Analyze CodeRabbit suggestions |
 
@@ -172,7 +174,7 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  COMMANDS (invoke directly)                              │
 │  /onboarding  /quick-prime  /deep-prime  /repo-equip     │
 │  /code-review  /ui-review  /rca  /orchestrate            │
-│  /spawn-team                                             │
+│  /spawn-team  /repo-optimize                             │
 │  /sync-reference  /coderabbit-helper  /all_skills        │
 │  /remember  /forget  /memory                             │
 │  /mac-health  /mac-diff  /mac-status  /mac-discover      │
@@ -189,7 +191,8 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  lsp-symbol-navigation  lsp-dependency-analysis          │
 │  lsp-type-safety-check  fork-terminal  agent-browser     │
 │  multi-model-orchestration  skill-evaluator              │
-│  repo-equip-engine  mac-manage-context  cbass-context    │
+│  repo-equip-engine  repo-optimize-engine                 │
+│  mac-manage-context  cbass-context                       │
 │  skill-router  agent-teams                               │
 │  n8n-* (7 template skills)                               │
 ├──────────────────────────────────────────────────────────┤

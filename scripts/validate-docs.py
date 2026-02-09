@@ -5,7 +5,7 @@ Validate documentation alignment across the repository.
 Runs 6 checks:
   1. MANIFEST <-> Filesystem sync, including hooks/examples (critical)
   2. install-global.py dry-run validation (critical)
-  3. Documentation counts & coverage (advisory)
+  3. Documentation counts & coverage (critical)
   4. CHANGELOG freshness (advisory)
   5. YAML frontmatter validation (advisory)
   6. Cross-reference validation (advisory)
@@ -619,13 +619,13 @@ def main():
     else:
         print("  OK")
 
-    # Check 3: Documentation counts (advisory)
+    # Check 3: Documentation counts & coverage (critical)
     print("Check 3: Documentation counts & coverage...")
     warns = check_doc_counts()
     if warns:
-        advisory_warnings.extend(warns)
+        critical_errors.extend(warns)
         for w in warns:
-            print(f"  WARNING: {w}")
+            print(f"  CRITICAL: {w}")
     else:
         print("  OK")
 
