@@ -85,6 +85,7 @@ Skills provide reusable expertise. Key skills:
 | `lsp-type-safety-check` | Verify type safety |
 | `fork-terminal` | Fork terminal to new window with Claude/Codex/Gemini |
 | `agent-browser` | Headless browser automation with Playwright |
+| `agent-sandboxes` | E2B sandbox CLI for isolated code execution |
 | `multi-model-orchestration` | Delegate tasks across Gemini/Codex |
 | `skill-evaluator` | Evaluate external skills/plugins before adoption |
 | `reference-distill` | Extract and integrate patterns from evaluated references |
@@ -199,7 +200,8 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  SKILLS (reference for patterns)                         │
 │  lsp-symbol-navigation  lsp-dependency-analysis          │
 │  lsp-type-safety-check  fork-terminal  agent-browser     │
-│  multi-model-orchestration  skill-evaluator              │
+│  agent-sandboxes  multi-model-orchestration              │
+│  skill-evaluator                                         │
 │  reference-distill  uv-hook-template                     │
 │  youtube-transcript                                      │
 │  repo-equip-engine                                       │

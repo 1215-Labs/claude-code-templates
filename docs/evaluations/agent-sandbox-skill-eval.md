@@ -18,8 +18,8 @@ agent-sandbox-skill is a well-engineered E2B sandbox CLI that fills a **critical
 |-----------|-------|-------|
 | Structural Quality | 3.90/5 | Sonnet (structural) |
 | Ecosystem Fit | 4.80/5 | Sonnet (ecosystem) |
-| Risk Profile | 3.40/5 | Sonnet (risk) + video context |
-| **Overall** | **4.03/5** | **Opus (weighted)** |
+| Risk Profile | 3.50/5 | Sonnet (risk) + video context + hands-on |
+| **Overall** | **4.10/5** | **Opus (weighted)** |
 
 **Verdict:** Extract Components
 
@@ -156,14 +156,12 @@ Learn from the approach, implement with Docker instead of E2B.
 The ecosystem fit is exceptional (4.80/5) — this skill fills critical gaps and creates powerful combinations. But the risk profile (3.25/5) — no tests, single maintainer, E2B lock-in — makes full adoption premature. Extract the core sandbox CLI, skip browser automation (redundant with agent-browser), add a test suite, and integrate with fork-terminal + PRP workflows.
 
 **Concrete next steps:**
-1. Extract core modules (sandbox, commands, files) to `.claude/skills/agent-sandboxes/`
-2. Adapt SKILL.md to extracted feature set
+1. ~~Extract core modules (sandbox, commands, files) to `.claude/skills/agent-sandboxes/`~~ **Done** (2026-02-09)
+2. ~~Adapt SKILL.md to extracted feature set~~ **Done** (2026-02-09)
 3. Add pytest suite for extracted modules (use E2B mocks)
 4. Set up E2B API key with budget limits
 5. Integrate with fork-terminal for multi-model sandbox orchestration
-6. Keep `prompts/` as reference for workflow patterns (don't install)
-
-**Estimated effort:** 4-8 hours for extraction + integration, 2-3 days for test suite.
+6. Keep reference `prompts/full_stack/` as inspiration (don't install)
 
 ## Integration Checklist
 
@@ -218,8 +216,8 @@ The plan-build-host-test workflow is described as "a powerful agentic prompt tha
 | Ecosystem Fit (Novelty) | 5/5 | 5/5 | Confirmed — video demonstrates genuinely novel multi-model parallel sandbox execution at scale. |
 | Adoption Cost | 3/5 | 3.5/5 | Video demonstrates working end-to-end flows across 3 CLI agents. Less integration risk than code-only analysis suggested. |
 
-**Adjusted Risk Score:** 3.25 → 3.40/5 (marginal improvement from maintenance signals)
-**Adjusted Overall:** 3.98 → 4.03/5
+**Adjusted Risk Score:** 3.25 → 3.40/5 (marginal improvement from maintenance signals) → 3.50/5 (hands-on validation)
+**Adjusted Overall:** 3.98 → 4.03/5 → 4.10/5 (hands-on validation)
 
 ### Quotes Worth Noting
 
@@ -237,6 +235,39 @@ The video **strengthens the case for extraction** (Strategy B):
 2. **"Best of N" pattern** — this is a new workflow pattern we should adopt. Spin up N sandboxes with different models, compare results. Not currently possible in our ecosystem.
 3. **Creator commitment** — 100K subs, weekly cadence, public roadmap signals. The 2-commit git history is misleading; this is an active, invested creator. Fork is still recommended for stability, but upstream abandonment risk is lower than code-only analysis suggested.
 4. **Skip browser automation confirmed** — the video shows browser validation working but not as the core value prop. Sandbox execution + hosting is the main event.
+
+## Hands-On Validation (2026-02-09)
+
+Used the agent-sandbox-skill to test 5 extracted components (ruff-validator, ty-validator, meta-agent, team-builder, team-validator) in an E2B sandbox. 18/18 tests passed.
+
+### What Worked
+
+- **End-to-end workflow validated**: `init` → `exec` → `files upload/download` → `kill` lifecycle worked smoothly
+- **Cost**: ~$0.05 for full test run (~15 min at $0.13/hr) — well within budget
+- **E2B API key setup**: Straightforward — set `E2B_API_KEY` env var and go
+- **Python 3.11**: Pre-installed in default sandbox template, no setup needed
+- **File operations**: SDK-based `files.write` / `files.read` reliable for uploading test fixtures and downloading results
+- **Rich CLI output**: Clear status messages made it easy to follow execution
+
+### What the Evaluation Got Wrong
+
+| Assumption | Reality | Impact |
+|-----------|---------|--------|
+| uv/uvx pre-installed | **NOT pre-installed** — requires `curl -LsSf https://astral.sh/uv/install.sh \| sh` + PATH symlinks | Medium — adds ~30s setup per sandbox |
+| stderr visible on failures | `sbx exec` **swallows stderr on non-zero exit codes** — must redirect to file for debugging | High — silent failures until you learn the workaround |
+| Compound commands work | `--shell` flag **required** for `&&`, pipes, redirections (not documented prominently) | Medium — easy fix once known |
+| .env resolution works | 6-parent-dir traversal from `main.py` is **fragile** for non-standard nesting | Low — fixed in our extraction |
+
+### Score Adjustments
+
+| Dimension | Before | After | Reason |
+|-----------|--------|-------|--------|
+| Risk Profile | 3.40/5 | 3.50/5 | Validated workflow reduces adoption risk; quirks are documented and workaround-able |
+| Overall | 4.03/5 | 4.10/5 | Hands-on confirmation of core value; known issues are minor |
+
+### Verdict
+
+No change — **Extract Components** confirmed as correct strategy. Hands-on use validates the skill works for real agent workflows but doesn't eliminate structural risks (no tests, single maintainer, E2B lock-in). Extraction is now in progress with specific modules identified.
 
 ## Contradictions & Resolutions
 

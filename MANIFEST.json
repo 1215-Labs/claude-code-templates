@@ -135,6 +135,13 @@
         "description": "Standalone YouTube transcript downloader and transformer with skill-evaluator integration"
       },
       {
+        "name": "agent-sandboxes",
+        "path": ".claude/skills/agent-sandboxes",
+        "deployment": "global",
+        "status": "beta",
+        "description": "E2B sandbox CLI for isolated code execution in agent workflows"
+      },
+      {
         "name": "agent-teams",
         "path": ".claude/skills/agent-teams",
         "deployment": "global",

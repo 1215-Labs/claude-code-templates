@@ -144,3 +144,17 @@ Provenance tracking for components adopted from evaluated reference submodules.
 - **Status**: tested
 - **Tested**: 2026-02-09 via E2B sandbox (3/3 tests passed)
 - **Propagated To**: []
+
+### ADO-010: agent-sandboxes (extraction)
+
+- **Date**: 2026-02-09
+- **Source Repo**: references/agent-sandbox-skill
+- **Source File**: .claude/skills/agent-sandboxes/sandbox_cli/src/ (6 modules + main + pyproject)
+- **Target Location**: .claude/skills/agent-sandboxes/
+- **Adaptation**: extraction (browser removed, .env path fixed, pyproject trimmed, SKILL.md rewritten)
+- **Evaluation**: agent-sandbox-skill (4.10/5)
+- **Priority**: 1
+- **Status**: adopted
+- **Extracted**: 2026-02-09 — 3 modules (sandbox, files, commands), 3 command groups (sandbox, files, exec), main.py, pyproject.toml, SKILL.md, cookbook, prompt
+- **Skipped**: modules/browser.py (574 lines), commands/browser.py (514 lines), playwright dev dep
+- **Propagated To**: []

@@ -17,6 +17,7 @@ Central index of all .claude components for quick discovery.
 | Find patterns | `codebase-analyst` agent |
 | Create tests | `test-automator` agent |
 | Browser automation | `agent-browser` skill |
+| Sandbox execution | `agent-sandboxes` skill |
 | Fork terminal | `fork-terminal` skill |
 | Orchestrate tasks | `/orchestrate "task"` |
 | Spawn agent team | `/spawn-team "task"` |
@@ -152,10 +153,11 @@ Central index of all .claude components for quick discovery.
 | Command | `/obsidian-vault-sync` | Sync Obsidian vault between local filesystem and MinIO S3 |
 | Skill | `obsidian-context` | Shared knowledge base (16 services, 8 domains, MinIO buckets, glossary) |
 
-### Browser & Terminal Automation
+### Browser, Terminal & Sandbox Automation
 | Type | Component | Purpose |
 |------|-----------|---------|
 | Skill | `agent-browser` | Vercel agent-browser CLI for headless automation |
+| Skill | `agent-sandboxes` | E2B sandbox CLI for isolated code execution in agent workflows |
 | Skill | `fork-terminal` | Fork terminal to new window with Claude/Codex/Gemini (dual-mode) |
 
 ### Orchestration
@@ -239,7 +241,7 @@ Multi-step workflows for complex tasks:
 |------|-------|----------|
 | Agents | 16 | `.claude/agents/` |
 | Commands | 41 | `.claude/commands/` |
-| Skills | 16 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
+| Skills | 17 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
 | Hooks | 20 (16 command + 4 prompt) | `.claude/hooks/` |
 | Examples | 4 | `.mcp.json` + `examples/settings/` |
@@ -315,8 +317,9 @@ Multi-step workflows for complex tasks:
 | `team-builder` | team-validator | /spawn-team | agent-teams |
 | `team-validator` | team-builder | /spawn-team | agent-teams |
 | **Skills** |
-| `agent-browser` | — | — | fork-terminal |
-| `fork-terminal` | context-manager | /orchestrate | agent-browser, multi-model-orchestration |
+| `agent-browser` | — | — | fork-terminal, agent-sandboxes |
+| `agent-sandboxes` | test-automator, debugger, deployment-engineer | — | fork-terminal, agent-browser |
+| `fork-terminal` | context-manager | /orchestrate | agent-browser, agent-sandboxes, multi-model-orchestration |
 | `multi-model-orchestration` | — | /orchestrate | fork-terminal, skill-evaluator |
 | `skill-evaluator` | codebase-analyst | — | fork-terminal, multi-model-orchestration |
 | `reference-distill` | — | /reference-distill | skill-evaluator, repo-equip-engine, repo-optimize-engine, fork-terminal |

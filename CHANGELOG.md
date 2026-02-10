@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-09] extract: Extract agent-sandboxes skill from reference, update evaluation with hands-on findings (156b5be)
 [2026-02-09] test: Test 5 extracted components in E2B sandbox — 18/18 passed (dd18ce0)
 [2026-02-09] add: Add agent-sandbox-skill reference submodule and evaluation reports (47832cd)
 [2026-02-09] add: Add standalone youtube-transcript skill with skill-evaluator integration (1998621)
