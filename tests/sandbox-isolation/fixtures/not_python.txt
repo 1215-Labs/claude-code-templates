@@ -1,0 +1,2 @@
+This is a text file, not Python.
+It should be skipped by both validators.

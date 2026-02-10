@@ -75,7 +75,8 @@ Provenance tracking for components adopted from evaluated reference submodules.
 - **Adaptation**: frontmatter (UV shebang removed, hooks.json entry added)
 - **Evaluation**: claude-code-hooks-mastery (3.50/5)
 - **Priority**: 2
-- **Status**: adopted
+- **Status**: tested
+- **Tested**: 2026-02-09 via E2B sandbox (5/5 tests passed)
 - **Propagated To**: []
 
 ### ADO-005: ty-validator
@@ -87,7 +88,8 @@ Provenance tracking for components adopted from evaluated reference submodules.
 - **Adaptation**: frontmatter (UV shebang removed, hooks.json entry added)
 - **Evaluation**: claude-code-hooks-mastery (3.50/5)
 - **Priority**: 2
-- **Status**: adopted
+- **Status**: tested
+- **Tested**: 2026-02-09 via E2B sandbox (5/5 tests passed)
 - **Propagated To**: []
 
 ### ADO-006: status-line-context (PRP)
@@ -113,7 +115,8 @@ Provenance tracking for components adopted from evaluated reference submodules.
 - **Adaptation**: frontmatter (added category, related, updated tools and description)
 - **Evaluation**: claude-code-hooks-mastery (3.50/5)
 - **Priority**: 3
-- **Status**: adopted
+- **Status**: tested
+- **Tested**: 2026-02-09 via E2B sandbox (2/2 tests passed)
 - **Propagated To**: []
 
 ### ADO-008: team-builder
@@ -125,7 +128,8 @@ Provenance tracking for components adopted from evaluated reference submodules.
 - **Adaptation**: frontmatter (added category, related, tools list; removed hooks section)
 - **Evaluation**: claude-code-hooks-mastery (3.50/5)
 - **Priority**: 3
-- **Status**: adopted
+- **Status**: tested
+- **Tested**: 2026-02-09 via E2B sandbox (2/2 tests passed)
 - **Propagated To**: []
 
 ### ADO-009: team-validator
@@ -137,5 +141,6 @@ Provenance tracking for components adopted from evaluated reference submodules.
 - **Adaptation**: frontmatter (added category, related; converted disallowedTools to tools allow-list)
 - **Evaluation**: claude-code-hooks-mastery (3.50/5)
 - **Priority**: 3
-- **Status**: adopted
+- **Status**: tested
+- **Tested**: 2026-02-09 via E2B sandbox (3/3 tests passed)
 - **Propagated To**: []

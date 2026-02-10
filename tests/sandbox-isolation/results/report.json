@@ -1,0 +1,121 @@
+{
+  "timestamp": "2026-02-10T04:32:18.671557+00:00",
+  "environment": "E2B sandbox (fullstack-vue-fastapi-node22)",
+  "summary": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0,
+    "errors": 0,
+    "pass_rate": "100.0%"
+  },
+  "results": [
+    {
+      "name": "clean file -> allow",
+      "component": "ruff-validator",
+      "status": "PASS",
+      "detail": "rc=0, output={}"
+    },
+    {
+      "name": "lint errors -> block",
+      "component": "ruff-validator",
+      "status": "PASS",
+      "detail": "rc=0, output={'decision': 'block', 'reason': 'Lint check failed:\\nF401 [*] `os` imported but unused\\n --> tests/fixtures/bad_lint.py:1:8\\n  |\\n1 | import os\\n  |        ^^\\n2 | import sys\\n3 | import json\\n  |\\nhelp: Remove unused import: `os`\\n\\nF401 [*] `sys` imported but unused\\n --> tests/fixtures/bad_lint.py:2:8\\n  |\\n1 | import os\\n2 | import sys\\n  |        ^^^\\n3 | import json\\n  |\\nhelp: Remove unused import: `sys`\\n\\nF401 [*] `json` imported but unused\\n --> tests/fixtures/bad_lint.py:3:8\\n  |\\n1 | import os\\n2 | import sys\\n3 | import json\\n  |        ^^^^\\n4 |\\n5 | def bad_fu'}"
+    },
+    {
+      "name": "non-.py -> skip",
+      "component": "ruff-validator",
+      "status": "PASS",
+      "detail": "rc=0, output={}"
+    },
+    {
+      "name": "empty stdin -> allow",
+      "component": "ruff-validator",
+      "status": "PASS",
+      "detail": "rc=0, output={}"
+    },
+    {
+      "name": "missing uvx -> graceful",
+      "component": "ruff-validator",
+      "status": "PASS",
+      "detail": "rc=0, output={}"
+    },
+    {
+      "name": "clean file -> allow",
+      "component": "ty-validator",
+      "status": "PASS",
+      "detail": "rc=0, output={}"
+    },
+    {
+      "name": "type errors -> block",
+      "component": "ty-validator",
+      "status": "PASS",
+      "detail": "rc=0, output={'decision': 'block', 'reason': 'Type check failed:\\nerror[invalid-assignment]: Object of type `int` is not assignable to `str`\\n --> tests/fixtures/bad_types.py:5:9\\n  |\\n5 | result: str = add(1, 2)\\n  |         ---   ^^^^^^^^^ Incompatible value of type `int`\\n  |         |\\n  |         Declared type\\n6 | x: int = \"not an int\"\\n  |\\ninfo: rule `invalid-assignment` is enabled by default\\n\\nerror[invalid-assignment]: Object of type `Literal[\"not an int\"]` is not assignable to `int`\\n --> tests/fixtures/bad_types.py:6:4\\n  |\\n5 | result: str = add(1, 2)\\n6 | x: i'}"
+    },
+    {
+      "name": "non-.py -> skip",
+      "component": "ty-validator",
+      "status": "PASS",
+      "detail": "rc=0, output={}"
+    },
+    {
+      "name": "empty stdin -> allow",
+      "component": "ty-validator",
+      "status": "PASS",
+      "detail": "rc=0, output={}"
+    },
+    {
+      "name": "missing uvx -> graceful",
+      "component": "ty-validator",
+      "status": "PASS",
+      "detail": "rc=0, output={}"
+    },
+    {
+      "name": "frontmatter schema",
+      "component": "meta-agent",
+      "status": "PASS",
+      "detail": "all checks passed"
+    },
+    {
+      "name": "body sections",
+      "component": "meta-agent",
+      "status": "PASS",
+      "detail": "all checks passed"
+    },
+    {
+      "name": "frontmatter schema",
+      "component": "team-builder",
+      "status": "PASS",
+      "detail": "all checks passed"
+    },
+    {
+      "name": "body sections",
+      "component": "team-builder",
+      "status": "PASS",
+      "detail": "all checks passed"
+    },
+    {
+      "name": "frontmatter schema",
+      "component": "team-validator",
+      "status": "PASS",
+      "detail": "all checks passed"
+    },
+    {
+      "name": "body sections",
+      "component": "team-validator",
+      "status": "PASS",
+      "detail": "all checks passed"
+    },
+    {
+      "name": "no write/edit tools (read-only)",
+      "component": "team-validator",
+      "status": "PASS",
+      "detail": "all checks passed"
+    },
+    {
+      "name": "ruff/ty registered correctly",
+      "component": "hooks.json",
+      "status": "PASS",
+      "detail": "both registered with Write|Edit matcher"
+    }
+  ]
+}
