@@ -103,6 +103,31 @@ cat MANIFEST.json | python3 -c "import sys,json; d=json.load(sys.stdin); [print(
 
 Save snapshot to `/tmp/skill-eval-ecosystem-snapshot.txt`.
 
+#### Creator Video Context (optional)
+
+If the reference submodule has associated YouTube videos (check for `VIDEOS.md` in the
+submodule root, or accept URLs from the user), download and transform them to enrich the
+evaluation with author intent, design rationale, and maintenance signals.
+
+```bash
+# For each video URL found or provided:
+uv run .claude/skills/youtube-transcript/tools/yt_download.py "<video-url>" \
+  --output-dir /tmp/skill-eval-{name}-transcripts
+
+# Transform with claude_context style for dense, structured output:
+uv run .claude/skills/youtube-transcript/tools/yt_transform.py \
+  /tmp/skill-eval-{name}-transcripts/<title> claude_context
+```
+
+Append the transformed content to the ecosystem snapshot under a `## Creator Video Context`
+section. This gives the ecosystem-fit and risk-adoption agents access to:
+- Author's design intent and rationale
+- Known limitations mentioned in video
+- Maintenance philosophy and future plans
+- Use cases or patterns not documented in code
+
+See the `youtube-transcript` skill SKILL.md for full integration details.
+
 ### Step 3: Create Output Directory
 
 ```bash
