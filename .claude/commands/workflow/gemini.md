@@ -33,7 +33,7 @@ allowed-tools:
 Read the agent definition at `.claude/agents/gemini-delegator.md` and follow its complete instructions to:
 
 1. **Classify** the task type from the user's request above
-2. **Check prerequisites** (Gemini CLI installed, GEMINI_API_KEY set or OAuth configured)
+2. **Check prerequisites** (Gemini CLI installed)
 3. **Gather context** relevant to the task (files, directories, PR info)
 4. **Construct** a structured Gemini prompt
 5. **Fork** execution to a new terminal via `fork_terminal.py`

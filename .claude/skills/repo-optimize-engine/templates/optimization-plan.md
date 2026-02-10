@@ -16,6 +16,8 @@ Template used by `/repo-optimize` Phase 2 to present the synthesized plan to the
 - `{COMMAND_BLOCKERS}`, `{DOCS_BLOCKERS}` - Blocker descriptions
 - `{CONFIG_TASK_ROWS}`, `{COMMAND_TASK_ROWS}`, `{DOCS_TASK_ROWS}` - Filled table rows
 - `{PRP_ROWS}` - Rows for deferred PRPs (may be empty)
+- `{MCP_SERVER_ROWS}` - MCP server recommendation rows (may be empty if no ecosystem matches)
+- `{PLUGIN_ROWS}` - Plugin recommendation rows (may be empty if no ecosystem matches)
 
 ## Plan Format
 
@@ -54,6 +56,18 @@ Template used by `/repo-optimize` Phase 2 to present the synthesized plan to the
 | PRP | Why Complex | Effort Est |
 |-----|-------------|------------|
 {PRP_ROWS}
+
+### Ecosystem Recommendations (manual install)
+
+#### MCP Servers
+| MCP Server | Why | Install |
+|---|---|---|
+{MCP_SERVER_ROWS}
+
+#### Plugins
+| Plugin | Why | Install |
+|---|---|---|
+{PLUGIN_ROWS}
 
 ## Execution Timeline
 

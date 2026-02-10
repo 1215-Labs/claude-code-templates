@@ -34,7 +34,7 @@ allowed-tools:
 Read the agent definition at `.claude/agents/codex-delegator.md` and follow its complete instructions to:
 
 1. **Classify** the task type from the user's request above
-2. **Check prerequisites** (Codex CLI installed, OPENAI_API_KEY set)
+2. **Check prerequisites** (Codex CLI installed)
 3. **Gather context** relevant to the task (files, PR info, CI status)
 4. **Construct** a structured Codex prompt
 5. **Fork** execution to a new terminal via `fork_terminal.py`

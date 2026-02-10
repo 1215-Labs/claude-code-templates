@@ -16,6 +16,22 @@
 - **Decision**: Created `reference-distill` skill + `/reference-distill` command as a 5-phase workflow: parse eval reports, plan extractions with multi-model agents (Gemini Pro + Codex), adapt to our conventions, register in MANIFEST/REGISTRY, and track provenance in adoptions.md. Hybrid execution: direct for simple adaptations (1-3 effort points), PRP generation for complex ones (4+ points).
 - **Alternatives**: (1) Manual extraction — error-prone and inconsistent, (2) Full automation without PRPs — too risky for complex convention conversions, (3) Single-model approach — misses Gemini's 1M context advantage for extraction planning.
 
+### DEC-004: Merge ecosystem recommendations into repo-equip and repo-optimize
+
+- **Date**: 2026-02-10
+- **Context**: The `claude-automation-recommender` plugin skill recommends MCP servers and plugins, but `repo-equip` and `repo-optimize` had no knowledge of these categories. Users had to run two separate tools.
+- **Decision**: Merged the recommender's ecosystem signal-to-recommendation mappings (18 MCP servers, 13 plugins) directly into `repo-equip-engine` SKILL.md and wired them through both command workflows. Changes span 7 files — all additive, no existing content modified. Used Codex-delegate-then-Gemini-validate pipeline.
+- **Alternatives**: (1) Wrapper command chaining recommender → repo-equip — added complexity without integration, (2) Rule-based suggestion — too loose, no enforcement.
+
+### DEC-005: Fix delegator agent API key gates
+
+- **Date**: 2026-02-10
+- **Context**: Both `codex-delegator.md` and `gemini-delegator.md` had Step 2 prerequisite checks that tested for API keys (`OPENAI_API_KEY`, `GEMINI_API_KEY`) and instructed the Sonnet agent to abort if missing. Both Codex and Gemini authenticate via OAuth (GPT+ and Google respectively), not necessarily API keys. The false gate caused the Codex delegator to go off-script — it bypassed `codex_task_executor.py` (which has `--full-auto`) and ran bare `codex exec` without write permissions.
+- **Decision**: Removed API key checks from both delegator agents. Added explicit notes: "Do NOT check for API keys — the user may be authenticated via OAuth. If auth errors occur, they will appear in the output log." Also added model capacity fallback guidance to the Gemini delegator (use `--model auto` on 429 errors). Updated `/codex` and `/gemini` command files to remove API key prerequisite references.
+- **Alternatives**: (1) Make API key check non-blocking (warn but continue) — still misleading to the Sonnet agent, (2) Add OAuth detection — overcomplicated, let the CLI handle its own auth.
+- **Files changed**: `codex-delegator.md`, `gemini-delegator.md`, `codex.md`, `gemini.md`, `codex-cli.md` cookbook
+- **Root cause detail**: The Sonnet delegator agent, when encountering the "MISSING" API key result, improvised its own Codex invocation instead of following Step 5. The improvised command lacked `--full-auto`, causing Codex to run in read-only sandbox mode. Codex still completed the task (produced correct diffs) but couldn't write files.
+
 ### DEC-003: Adopt patterns from claude-code-hooks-mastery
 
 - **Date**: 2026-02-09

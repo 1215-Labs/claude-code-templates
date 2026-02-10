@@ -72,6 +72,53 @@ These signal the need for new, repo-specific components:
 | External APIs with complex responses | Interpretation commands |
 | Configuration with many knobs | Status/audit commands |
 
+### Ecosystem: MCP Server Signals
+
+Match detected external service integrations to MCP server recommendations. These are advisory — the user installs them manually via `claude mcp add`.
+
+| Codebase Signal | MCP Server | Install | Value |
+|-----------------|-----------|---------|-------|
+| Popular npm packages (React, Vue, Express, FastAPI, etc.) | context7 | `claude mcp add context7 -- npx -y @upstash/context7-mcp@latest` | Live docs instead of stale training data |
+| React/Vue/Next.js frontend | Playwright MCP | `claude mcp add playwright -- npx @anthropic-ai/mcp-playwright@latest` | Browser automation, UI testing, screenshots |
+| `@supabase/supabase-js` in deps | Supabase MCP | `claude mcp add supabase` | Direct DB queries, auth, storage |
+| `pg` or `postgres` in deps | PostgreSQL MCP | `claude mcp add postgres` | Query, schema inspection, data analysis |
+| GitHub remote in `.git/config` | GitHub MCP | `claude mcp add github` | Issues, PRs, Actions, releases |
+| `.linear` files or `ABC-123` issue refs | Linear MCP | `claude mcp add linear` | Issue tracking, sprint management |
+| `@aws-sdk/*` in deps | AWS MCP | `claude mcp add aws` | Cloud resource management |
+| `@sentry/*` in deps | Sentry MCP | `claude mcp add sentry` | Error investigation, root cause analysis |
+| `docker-compose.yml` present | Docker MCP | `claude mcp add docker` | Container management, logs |
+| Slack webhook URLs in code | Slack MCP | `claude mcp add slack` | Team notifications, incident response |
+| `wrangler.toml` or Cloudflare deps | Cloudflare MCP | `claude mcp add cloudflare` | Workers, Pages, R2, D1 |
+| `vercel.json` or Vercel deps | Vercel MCP | `claude mcp add vercel` | Deployment configuration |
+| K8s manifests or Helm charts | Kubernetes MCP | `claude mcp add kubernetes` | Cluster management, pod operations |
+| Notion workspace references | Notion MCP | `claude mcp add notion` | Documentation, knowledge base |
+| Neon serverless Postgres | Neon MCP | `claude mcp add neon` | Serverless database operations |
+| Turso/libSQL usage | Turso MCP | `claude mcp add turso` | Edge database operations |
+| GitLab remote | GitLab MCP | `claude mcp add gitlab` | GitLab issues, MRs, pipelines |
+| Datadog integration | Datadog MCP | `claude mcp add datadog` | APM, logs, metrics |
+
+**Team sharing tip**: Check `.mcp.json` into git so the entire team gets the same MCP servers.
+
+### Ecosystem: Plugin Signals
+
+Match detected tech stack and workflow patterns to plugin recommendations. Users install via `claude plugin install <name>`.
+
+| Codebase Signal | Plugin | What It Adds |
+|-----------------|--------|-------------|
+| PR-based workflow (GitHub PRs) | pr-review-toolkit | Specialized review agents (code, tests, types) |
+| Git commits needed | commit-commands | `/commit`, `/commit-push-pr` commands |
+| React/Vue/Angular frontend | frontend-design | Production UI generation skill |
+| Automation rules needed | hookify | Hook creation from conversation patterns |
+| TypeScript project | typescript-lsp | TypeScript LSP integration |
+| Python project | pyright-lsp | Python LSP integration |
+| Go project | gopls-lsp | Go LSP integration |
+| Rust project | rust-analyzer-lsp | Rust LSP integration |
+| C/C++ project | clangd-lsp | C/C++ LSP integration |
+| Java project | jdtls-lsp | Java LSP integration |
+| Security-sensitive code (auth, payments) | security-guidance | Security warnings on edit |
+| Learning/onboarding context | explanatory-output-style | Educational code insights |
+| Building Claude Code plugins | plugin-dev | Skills for creating skills, hooks, commands |
+
 ## Gap Detection Heuristics
 
 ### CLI Wrapper Signals

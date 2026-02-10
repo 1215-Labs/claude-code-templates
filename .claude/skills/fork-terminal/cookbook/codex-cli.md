@@ -114,7 +114,7 @@ codex exec --full-auto --skip-git-repo-check -m gpt-5.3-codex "Use /playwright t
 |-------|----------|
 | "Upgrade to gpt-5.2?" prompt | Use `exec` subcommand (non-interactive) |
 | "Not inside trusted directory" | Add `--skip-git-repo-check` |
-| Command hangs | Check if API key is valid, use timeout |
+| Command hangs | Check auth (GPT+ OAuth or API key), use timeout |
 | Model not available | Fall back to next model in chain |
 
 ## Mode: PRP Execution

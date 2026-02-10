@@ -225,6 +225,7 @@ Used during Phase 2 synthesis to prioritize upgrade tasks:
 - Gap Detection Heuristics (CLI wrapper, context skill, workflow command signals)
 - Complexity Scoring (simple 1-3 vs complex 4+)
 - All Templates (context skill, command, skill priorities, MANIFEST entries, CLAUDE.md section)
+- Ecosystem MCP Server and Plugin Signal tables (detection patterns for external tooling)
 - Re-Run Detection logic
 
 **Added by repo-optimize-engine** (new):

@@ -199,6 +199,14 @@ Apply the task graph generation rules from `repo-optimize-engine`:
 
 Use dynamic task generation: skip task slots that aren't needed. If no context skill is needed, remove the T1 blocker from commands.
 
+### Ecosystem Recommendations
+
+Using the `repo-equip-engine` skill's Ecosystem MCP Server Signals and Plugin Signals tables, cross-reference findings from both analysis docs to identify ecosystem recommendations. These are NOT tasks for the agent team — they go in the plan as advisory items for the user to install manually.
+
+**MCP Servers**: Match detected external service integrations (from Gemini's needs analysis and Codex's coverage gaps) against the MCP Server Signals table.
+
+**Plugins**: Match detected tech stack and workflow patterns against the Plugin Signals table.
+
 ### Present Plan
 
 1. Read the plan template: `.claude/skills/repo-optimize-engine/templates/optimization-plan.md`
@@ -347,6 +355,13 @@ Read the validation results from docs-finalizer (T9). Present:
 | PRP | Purpose | Next Step |
 |-----|---------|-----------|
 | PRPs/{REPO_NAME}-{feature}.md | {purpose} | `/prp-claude-code-execute "PRPs/{file}"` |
+
+## Ecosystem Recommendations (manual install)
+
+| Type | Name | Why | Install |
+|------|------|-----|---------|
+| MCP Server | {name} | {reason from analysis} | `claude mcp add {name}` |
+| Plugin | {name} | {reason from analysis} | `claude plugin install {name}` |
 
 ## Next Steps
 1. Run `/all_skills` in {REPO_NAME} to verify installed components

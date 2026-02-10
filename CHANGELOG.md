@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-10] merge: Merge ecosystem recommendations into repo-equip/optimize, fix delegator auth gates (86840b0)
 [2026-02-10] add: Add gemini-delegator agent, /gemini command, and task executor (0849360)
 [2026-02-09] add: Add codex-delegator agent, /codex command, and task executor (63d5aad)
 [2026-02-09] extract: Extract agent-sandboxes skill from reference, update evaluation with hands-on findings (156b5be)

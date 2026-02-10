@@ -67,6 +67,14 @@ Perform a comprehensive needs analysis across six areas. Read as many files as n
 - Configuration files and their formats
 - Scripts in bin/, package.json scripts, Makefile targets
 
+### 7. Ecosystem Integrations
+- External services: databases (Supabase, PostgreSQL, Neon, Turso), cloud (AWS, Cloudflare, Vercel), monitoring (Sentry, Datadog), communication (Slack, Notion)
+- Package dependencies that suggest MCP server opportunities (check package.json, pyproject.toml, go.mod for client libraries)
+- CI/CD and DevOps tooling (GitHub Actions, Docker, Kubernetes)
+- Issue tracking (Linear, Jira references)
+- Documentation/knowledge management tools
+- Existing `.mcp.json` configuration (note what's already configured)
+
 ## Mode-Specific Instructions
 
 ### If MODE is greenfield:
@@ -170,6 +178,15 @@ Write your findings to docs/optimization/{REPO_NAME}-needs.md using this exact f
 | Script | Purpose | Location |
 |--------|---------|----------|
 | [name] | [purpose] | [path] |
+
+## Ecosystem Integrations
+
+| Service/Tool | Detection Source | Usage Pattern |
+|---|---|---|
+| [e.g., Supabase] | [@supabase/supabase-js in package.json] | [Auth + database] |
+| [e.g., GitHub] | [GitHub remote in .git/config] | [Issues, PRs, CI] |
+
+[Note any existing .mcp.json configuration.]
 
 ## Recommendations
 

@@ -72,6 +72,8 @@ Based on the repo's tech stack, determine what SHOULD be configured vs what IS:
 - MCP server code (@modelcontextprotocol) → needs mcp-backend-engineer
 - CLI with subcommands → needs wrapper commands
 - Domain terminology → needs context skill with glossary
+- External service dependencies → needs MCP server recommendations (check for database clients, cloud SDKs, monitoring tools, communication APIs in dependencies)
+- Language-specific tooling → needs plugin recommendations (check for TypeScript, Python, Go, Rust, C/C++, Java)
 
 ### 4. Quality Issues
 
@@ -174,6 +176,8 @@ Write your audit to docs/optimization/{REPO_NAME}-audit.md using this exact form
 | Need (from tech stack) | Expected Component | Status |
 |------------------------|--------------------|--------|
 | [e.g., TypeScript] | type-checker agent | Missing / Present / Stale |
+| PostgreSQL client | PostgreSQL MCP server | Not configured |
+| TypeScript project | typescript-lsp plugin | Not installed |
 
 ## Quality Issues
 

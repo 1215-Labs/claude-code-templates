@@ -49,19 +49,19 @@ Analyze the input and classify it into one of these task types:
 
 ## Step 2: Check Prerequisites
 
-Before proceeding, verify:
+Before proceeding, verify Gemini CLI is installed:
 
 ```bash
 # Check Gemini CLI is installed
 which gemini >/dev/null 2>&1 && echo "OK" || echo "MISSING"
-
-# Check API key is set (starts with "AI")
-echo "${GEMINI_API_KEY:0:4}" 2>/dev/null | grep -q "." && echo "OK" || echo "CHECK AUTH"
 ```
 
-If Gemini CLI is missing, report and abort with install instructions:
+If Gemini CLI is missing, report the issue and abort with install instructions:
 - Gemini CLI: `npm install -g @google/gemini-cli`
-- API key: Set `GEMINI_API_KEY` environment variable, or run `gemini` interactively once to complete OAuth
+
+**Authentication**: Gemini handles its own authentication (Google OAuth or API key). Do NOT check for `GEMINI_API_KEY` — the user may be authenticated via Google OAuth. If Gemini encounters auth errors at runtime, they will appear in the output log.
+
+**Model capacity**: If using a specific model (e.g., `gemini-3-pro-preview`) and it returns 429/RESOURCE_EXHAUSTED, retry with `--model auto` which routes to whichever model has available capacity.
 
 ## Step 3: Package Context
 

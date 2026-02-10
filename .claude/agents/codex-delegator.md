@@ -54,19 +54,17 @@ Analyze the input and classify it into one of these task types:
 
 ## Step 2: Check Prerequisites
 
-Before proceeding, verify:
+Before proceeding, verify Codex CLI is installed:
 
 ```bash
 # Check Codex CLI is installed
 which codex >/dev/null 2>&1 && echo "OK" || echo "MISSING"
-
-# Check API key is set
-echo "${OPENAI_API_KEY:0:4}" | grep -q "sk-" && echo "OK" || echo "MISSING"
 ```
 
-If either check fails, report the issue and abort with install instructions:
+If Codex CLI is missing, report the issue and abort with install instructions:
 - Codex CLI: `npm install -g @openai/codex`
-- API key: Set `OPENAI_API_KEY` environment variable
+
+**Authentication**: Codex handles its own authentication (GPT+ OAuth or API key). Do NOT check for `OPENAI_API_KEY` — the user may be authenticated via their GPT+ account. If Codex encounters auth errors at runtime, they will appear in the output log.
 
 ## Step 3: Package Context
 

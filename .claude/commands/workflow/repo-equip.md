@@ -73,6 +73,7 @@ Use the **Explore subagent** with "thorough" thoroughness to analyze the target 
 - **Key workflows**: Build commands, test commands, deploy commands, lint commands (from package.json scripts, Makefile targets, CI config)
 - **Pain points**: TODOs, FIXMEs, missing tests, no CI, no docs, large files without documentation
 - **Output formats**: Any structured output (tables, JSON, status codes, colored terminal output, health checks)
+- **Ecosystem integrations**: External services used (databases, cloud providers, monitoring, communication tools). Check package.json dependencies, config files (wrangler.toml, vercel.json, .linear), CI/CD references, Docker Compose service names, `.mcp.json` if present
 - **Domain terminology**: Specialized terms, glossaries, jargon in comments or docs
 
 If `FOCUS_HINT` is provided, weight exploration toward that area.
@@ -164,6 +165,16 @@ For each gap, score complexity using the `repo-equip-engine` skill:
 - **Simple** (score 1-3): Build inline during Phase 4
 - **Complex** (score 4+): Generate a PRP document in `PRPs/`
 
+### Ecosystem — MCP Servers & Plugins (manual install)
+
+Using the `repo-equip-engine` skill's Ecosystem MCP Server Signals and Plugin Signals tables, match detected integrations to recommendations:
+
+**MCP Servers**: Cross-reference Subagent A's ecosystem integrations against the MCP Server Signals table. List matches with install commands.
+
+**Plugins**: Cross-reference Subagent A's tech stack against the Plugin Signals table. List matches.
+
+These are advisory — user installs them manually after reviewing. If the target repo already has a `.mcp.json`, note which recommended servers are already configured.
+
 ## Phase 3: Present Plan & Confirm
 
 Present the equipment plan to the user in a structured format:
@@ -183,6 +194,14 @@ Present the equipment plan to the user in a structured format:
 
 ### Complex (will generate PRP)
 {TABLE: PRP | Purpose | Why complex}
+
+## Ecosystem Recommendations (manual install)
+
+### MCP Servers
+{TABLE: MCP Server | Why | Install Command}
+
+### Plugins
+{TABLE: Plugin | Why | Install Command}
 
 ## Actions Summary
 - {N} existing components documented
@@ -305,6 +324,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 3. **Recommended Workflows** section with common use cases
 4. **How They Work** section explaining the AI enhancement layer
 5. **General-Purpose Commands** subsection listing universal commands
+6. **Ecosystem Setup** subsection (if ecosystem recommendations were generated) listing recommended MCP servers with install commands and recommended plugins with install commands
 
 If re-running (section already exists), replace everything between `## Claude Code Commands` and the next `##` heading (or end of file).
 
