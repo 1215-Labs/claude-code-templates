@@ -214,7 +214,7 @@ uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py PRPs/distill-foo
 uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py PRPs/distill-foo.md -m gpt-5.3-codex
 
 # Via fork terminal (user watches in new window)
-python3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex-prp \
+python3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex-prp --auto-close \
   "uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py PRPs/distill-foo.md"
 ```
 
@@ -248,8 +248,8 @@ uv run .claude/skills/fork-terminal/tools/codex_task_executor.py /tmp/prompt.txt
 # Dry run (show command without executing)
 uv run .claude/skills/fork-terminal/tools/codex_task_executor.py /tmp/prompt.txt -n foo --dry-run
 
-# Via fork terminal (user watches in new window)
-python3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex-task \
+# Via fork terminal (user watches in new window, auto-closes when done)
+python3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex-task --auto-close \
   "uv run .claude/skills/fork-terminal/tools/codex_task_executor.py /tmp/prompt.txt -n foo"
 ```
 
@@ -284,8 +284,8 @@ uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/prompt.tx
 # Dry run (show command without executing)
 uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/prompt.txt -n foo --dry-run
 
-# Via fork terminal (user watches in new window)
-python3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini-task \
+# Via fork terminal (user watches in new window, auto-closes when done)
+python3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini-task --auto-close \
   "uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/prompt.txt -n foo"
 ```
 

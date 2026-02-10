@@ -54,13 +54,15 @@ def _generate_log_filename(tool: str = "fork") -> str:
     return f"/tmp/fork_{tool}_{timestamp}.log"
 
 
-def fork_terminal(command: str, log_output: bool = False, tool_name: str = "fork") -> str:
+def fork_terminal(command: str, log_output: bool = False, tool_name: str = "fork", auto_close: bool = False) -> str:
     """Open a new Terminal window and run the specified command.
 
     Args:
         command: The command to execute in the new terminal
         log_output: If True, tee output to a log file
         tool_name: Name of the tool for log file naming (e.g., 'codex', 'gemini')
+        auto_close: If True, close the terminal window when the command finishes.
+                    If False (default), keep an interactive shell open after completion.
 
     Returns:
         Status message indicating the terminal was launched
@@ -122,14 +124,19 @@ def fork_terminal(command: str, log_output: bool = False, tool_name: str = "fork
         # Build full command with env exports and optional logging
         full_command = f"{env_prefix}cd '{cwd}' && {command}{log_suffix}"
 
+        # When auto_close is False, keep an interactive shell after the command finishes.
+        # When True, the terminal closes automatically when the command exits.
+        shell_suffix = "" if auto_close else "; exec bash"
+        bash_cmd = f"{full_command}{shell_suffix}"
+
         # Supported terminal emulators in priority order
         terminals = [
-            ("gnome-terminal", ["gnome-terminal", "--", "bash", "-c", f"{full_command}; exec bash"]),
-            ("konsole", ["konsole", "-e", "bash", "-c", f"{full_command}; exec bash"]),
-            ("xfce4-terminal", ["xfce4-terminal", "-e", f"bash -c \"{full_command}; exec bash\""]),
-            ("alacritty", ["alacritty", "-e", "bash", "-c", f"{full_command}; exec bash"]),
-            ("kitty", ["kitty", "bash", "-c", f"{full_command}; exec bash"]),
-            ("xterm", ["xterm", "-e", "bash", "-c", f"{full_command}; exec bash"]),
+            ("gnome-terminal", ["gnome-terminal", "--", "bash", "-c", bash_cmd]),
+            ("konsole", ["konsole", "-e", "bash", "-c", bash_cmd]),
+            ("xfce4-terminal", ["xfce4-terminal", "-e", f"bash -c \"{bash_cmd}\""]),
+            ("alacritty", ["alacritty", "-e", "bash", "-c", bash_cmd]),
+            ("kitty", ["kitty", "bash", "-c", bash_cmd]),
+            ("xterm", ["xterm", "-e", "bash", "-c", bash_cmd]),
         ]
 
         for terminal_name, cmd_array in terminals:
@@ -152,6 +159,7 @@ if __name__ == "__main__":
     parser.add_argument("command", nargs="*", help="Command to execute")
     parser.add_argument("--log", "-l", action="store_true", help="Log output to file")
     parser.add_argument("--tool", "-t", default="fork", help="Tool name for log file")
+    parser.add_argument("--auto-close", action="store_true", help="Close terminal when command finishes")
 
     args = parser.parse_args()
 
@@ -159,7 +167,8 @@ if __name__ == "__main__":
         output = fork_terminal(
             " ".join(args.command),
             log_output=args.log,
-            tool_name=args.tool
+            tool_name=args.tool,
+            auto_close=args.auto_close
         )
         print(output)
     else:
