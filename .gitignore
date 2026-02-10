@@ -25,5 +25,8 @@ __pycache__/
 # Binary/reference files
 *.pdf
 
+# Transcripts (video/session dumps)
+transcripts/
+
 # Local sync state
 .claude/reference-sync.local.md

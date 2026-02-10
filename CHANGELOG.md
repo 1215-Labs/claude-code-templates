@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-09] add: Add agent-sandbox-skill reference submodule and evaluation reports (47832cd)
 [2026-02-09] add: Add standalone youtube-transcript skill with skill-evaluator integration (1998621)
 [2026-02-09] add: Add Codex PRP execution methodology and fix stale --ephemeral references (1e50eb0)
 [2026-02-09] mark: Mark 4 PRPs as adopted in adoptions.md, update tasks (523f45a)
