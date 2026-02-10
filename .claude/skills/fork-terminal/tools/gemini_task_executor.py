@@ -174,6 +174,10 @@ def main():
         print("\n[DRY RUN] Exiting without executing.")
         sys.exit(0)
 
+    # Clean stale output files from previous runs to prevent collisions
+    for stale in [done_file, response_file]:
+        Path(stale).unlink(missing_ok=True)
+
     # Initialize log file
     Path(log_file).write_text(
         f"# Gemini Task Executor — {args.task_name}\n"
@@ -184,9 +188,10 @@ def main():
     start_time = time.time()
 
     # Build full shell command with API key export and tee
+    # pipefail ensures we get Gemini's exit code, not tee's (always 0)
     gemini_api_key = os.environ.get("GEMINI_API_KEY", "")
     env_export = f"export GEMINI_API_KEY='{gemini_api_key}' && " if gemini_api_key else ""
-    shell_cmd = f"{env_export}{gemini_cmd} 2>&1 | tee -a '{log_file}'"
+    shell_cmd = f"set -o pipefail; {env_export}{gemini_cmd} 2>&1 | tee -a '{log_file}'"
 
     print(f"\n{'=' * 60}")
     print(f"Starting Gemini with {args.model}")

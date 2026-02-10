@@ -129,6 +129,10 @@ def main():
         print("\n[DRY RUN] Exiting without executing.")
         sys.exit(0)
 
+    # Clean stale output files from previous runs to prevent collisions
+    for stale in [done_file, summary_file]:
+        Path(stale).unlink(missing_ok=True)
+
     # Initialize log file
     Path(log_file).write_text(
         f"# Codex Task Executor — {args.task_name}\n"
@@ -139,7 +143,9 @@ def main():
     start_time = time.time()
 
     # Build shell command: pipe prompt via stdin, tee output
-    shell_cmd = " ".join(f"'{p}'" if " " in p else p for p in cmd_parts)
+    # pipefail ensures we get Codex's exit code, not tee's (always 0)
+    shell_cmd = "set -o pipefail; "
+    shell_cmd += " ".join(f"'{p}'" if " " in p else p for p in cmd_parts)
     shell_cmd += f" - < '{prompt_path}'"
     shell_cmd += f" 2>&1 | tee -a '{log_file}'"
 

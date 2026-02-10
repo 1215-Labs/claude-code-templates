@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-10] fix: Fix executor reliability: pipefail for exit codes, stale file cleanup on retry (45c1bb1)
 [2026-02-10] add: Add delegation pipeline operational guide from Gemini validation run (b70ee95)
 [2026-02-10] merge: Merge ecosystem recommendations into repo-equip/optimize, fix delegator auth gates (86840b0)
 [2026-02-10] add: Add gemini-delegator agent, /gemini command, and task executor (0849360)
