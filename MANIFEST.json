@@ -320,6 +320,13 @@
         "deployment": "global",
         "status": "beta",
         "description": "Read-only validation agent for verifying task completion in agent teams"
+      },
+      {
+        "name": "codex-delegator",
+        "path": ".claude/agents/codex-delegator.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Delegate tasks to Codex CLI with monitoring, sandbox validation, and result summarization"
       }
     ],
     "commands": [
@@ -616,6 +623,13 @@
         "deployment": "global",
         "status": "beta",
         "description": "Download and transform YouTube video transcripts"
+      },
+      {
+        "name": "workflow/codex",
+        "path": ".claude/commands/workflow/codex.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Delegate tasks to Codex CLI with monitoring and result summary"
       }
     ],
     "workflows": [

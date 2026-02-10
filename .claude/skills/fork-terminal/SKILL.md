@@ -234,6 +234,39 @@ cat /tmp/codex-prp-{name}-done.json         # Check completion
 cat /tmp/codex-prp-{name}-report.json       # Read results
 ```
 
+### Generic Task Execution via Codex
+
+Execute arbitrary tasks using Codex with monitoring (used by the `codex-delegator` agent):
+
+```bash
+# Execute a task with prompt file
+uv run .claude/skills/fork-terminal/tools/codex_task_executor.py /tmp/codex-task-foo-prompt.txt -n foo
+
+# With specific model
+uv run .claude/skills/fork-terminal/tools/codex_task_executor.py /tmp/prompt.txt -n foo -m gpt-5.1-codex-mini
+
+# Dry run (show command without executing)
+uv run .claude/skills/fork-terminal/tools/codex_task_executor.py /tmp/prompt.txt -n foo --dry-run
+
+# Via fork terminal (user watches in new window)
+python3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex-task \
+  "uv run .claude/skills/fork-terminal/tools/codex_task_executor.py /tmp/prompt.txt -n foo"
+```
+
+**Output files** (under `/tmp/codex-task-{name}-*`):
+| File | Purpose |
+|------|---------|
+| `-output.log` | Full terminal output via tee |
+| `-summary.md` | Codex's self-reported summary (written by Codex) |
+| `-done.json` | Completion flag with exit code, model, duration |
+
+**Monitoring:**
+```bash
+cat /tmp/codex-task-{name}-done.json 2>/dev/null   # Check completion
+cat /tmp/codex-task-{name}-summary.md 2>/dev/null   # Read summary
+tail -f /tmp/codex-task-{name}-output.log            # Live output
+```
+
 ## Dependencies
 
 ### Check Dependencies

@@ -71,6 +71,7 @@ Invoke agents by name when you need specialized help:
 | `meta-agent` | Generate new sub-agent configs from descriptions |
 | `team-builder` | Single-task engineering execution in agent teams |
 | `team-validator` | Read-only task validation in agent teams |
+| `codex-delegator` | Delegate tasks to Codex CLI with monitoring |
 
 **Example**: "Use the `debugger` agent to investigate this error..."
 
@@ -118,6 +119,7 @@ Skills provide reusable expertise. Key skills:
 | `/repo-equip` | Equip any repo with matching components |
 | `/repo-optimize` | Deep multi-model repo optimization with agent team |
 | `/all_skills` | List available skills |
+| `/codex` | Delegate tasks to Codex CLI with monitoring |
 | `/coderabbit-helper` | Analyze CodeRabbit suggestions |
 
 ### PRP Commands
@@ -183,7 +185,7 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  COMMANDS (invoke directly)                              │
 │  /onboarding  /quick-prime  /deep-prime  /repo-equip     │
 │  /code-review  /ui-review  /rca  /orchestrate            │
-│  /spawn-team  /repo-optimize                             │
+│  /spawn-team  /repo-optimize  /codex                     │
 │  /sync-reference  /coderabbit-helper  /all_skills        │
 │  /remember  /forget  /memory                             │
 │  /mac-health  /mac-diff  /mac-status  /mac-discover      │
@@ -195,7 +197,8 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  lsp-navigator  context-manager  library-researcher      │
 │  technical-researcher  deployment-engineer               │
 │  mcp-backend-engineer  n8n-mcp-tester                    │
-│  meta-agent  team-builder  team-validator                 │
+│  meta-agent  team-builder  team-validator                │
+│  codex-delegator                                         │
 ├──────────────────────────────────────────────────────────┤
 │  SKILLS (reference for patterns)                         │
 │  lsp-symbol-navigation  lsp-dependency-analysis          │

@@ -20,6 +20,7 @@ Central index of all .claude components for quick discovery.
 | Sandbox execution | `agent-sandboxes` skill |
 | Fork terminal | `fork-terminal` skill |
 | Orchestrate tasks | `/orchestrate "task"` |
+| Delegate to Codex | `/codex "task"` or `codex-delegator` agent |
 | Spawn agent team | `/spawn-team "task"` |
 | Evaluate a skill/plugin | `skill-evaluator` skill |
 | Equip a repo with components | `/repo-equip "/path/to/repo"` |
@@ -173,6 +174,8 @@ Central index of all .claude components for quick discovery.
 | Command | `/reference-distill` | Extract and integrate high-ROI patterns from evaluated references |
 | Command | `/repo-equip` | Analyze a repo and equip it with matching Claude Code components |
 | Command | `/repo-optimize` | Multi-model repo optimization with agent team execution |
+| Agent | `codex-delegator` | Delegate tasks to Codex CLI with monitoring, sandbox validation, and result summarization |
+| Command | `/codex` | Delegate tasks to Codex CLI via slash command with monitoring |
 
 ### Hook Development
 | Type | Component | Purpose |
@@ -239,8 +242,8 @@ Multi-step workflows for complex tasks:
 
 | Type | Count | Location |
 |------|-------|----------|
-| Agents | 16 | `.claude/agents/` |
-| Commands | 41 | `.claude/commands/` |
+| Agents | 17 | `.claude/agents/` |
+| Commands | 42 | `.claude/commands/` |
 | Skills | 17 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
 | Hooks | 20 (16 command + 4 prompt) | `.claude/hooks/` |
@@ -316,6 +319,7 @@ Multi-step workflows for complex tasks:
 | `meta-agent` | code-reviewer, debugger, test-automator | /repo-equip | reference-distill |
 | `team-builder` | team-validator | /spawn-team | agent-teams |
 | `team-validator` | team-builder | /spawn-team | agent-teams |
+| `codex-delegator` | code-reviewer, debugger, test-automator | /codex, /orchestrate | fork-terminal, agent-sandboxes, multi-model-orchestration |
 | **Skills** |
 | `agent-browser` | — | — | fork-terminal, agent-sandboxes |
 | `agent-sandboxes` | test-automator, debugger, deployment-engineer | — | fork-terminal, agent-browser |

@@ -4,9 +4,9 @@ Create a new Codex CLI agent to execute the command.
 
 ## Variables
 
-DEFAULT_MODEL: gpt-5.2-codex
-HEAVY_MODEL: gpt-5.2-codex
-BASE_MODEL: gpt-5.2-codex
+DEFAULT_MODEL: gpt-5.3-codex
+HEAVY_MODEL: gpt-5.3-codex
+BASE_MODEL: gpt-5.3-codex
 FAST_MODEL: gpt-5.1-codex-mini
 
 ## Codex Strengths
@@ -19,7 +19,7 @@ FAST_MODEL: gpt-5.1-codex-mini
 ## Fallback Chain
 
 If the primary model fails, try models in this order:
-1. gpt-5.2-codex (default)
+1. gpt-5.3-codex (default)
 2. gpt-5.1-codex-max (fallback)
 3. gpt-4o (emergency fallback)
 
@@ -43,17 +43,17 @@ codex exec --full-auto --skip-git-repo-check -m MODEL "PROMPT"
 
 **Basic execution:**
 ```bash
-codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex "analyze this codebase and summarize the architecture"
+codex exec --full-auto --skip-git-repo-check -m gpt-5.3-codex "analyze this codebase and summarize the architecture"
 ```
 
 **With output logging:**
 ```bash
-codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex "PROMPT" 2>&1 | tee /tmp/fork_codex_$(date +%s).log
+codex exec --full-auto --skip-git-repo-check -m gpt-5.3-codex "PROMPT" 2>&1 | tee /tmp/fork_codex_$(date +%s).log
 ```
 
 **With custom working directory:**
 ```bash
-codex exec --full-auto --skip-git-repo-check -C /path/to/dir -m gpt-5.2-codex "PROMPT"
+codex exec --full-auto --skip-git-repo-check -C /path/to/dir -m gpt-5.3-codex "PROMPT"
 ```
 
 ## Mode: Interactive
@@ -70,7 +70,7 @@ codex --full-auto --skip-git-repo-check -m MODEL "PROMPT"
 
 **Interactive session:**
 ```bash
-codex --full-auto --skip-git-repo-check -m gpt-5.2-codex "help me refactor the authentication module"
+codex --full-auto --skip-git-repo-check -m gpt-5.3-codex "help me refactor the authentication module"
 ```
 
 ## Installed Codex Skills
@@ -95,17 +95,17 @@ to leverage their capabilities (e.g., "use the /playwright skill to test the for
 
 **Fix CI with skill:**
 ```bash
-codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex "Use /gh-fix-ci to diagnose and fix the failing GitHub Actions workflow"
+codex exec --full-auto --skip-git-repo-check -m gpt-5.3-codex "Use /gh-fix-ci to diagnose and fix the failing GitHub Actions workflow"
 ```
 
 **Security review with skill:**
 ```bash
-codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex "Use /security-best-practices to review src/auth/ for vulnerabilities"
+codex exec --full-auto --skip-git-repo-check -m gpt-5.3-codex "Use /security-best-practices to review src/auth/ for vulnerabilities"
 ```
 
 **E2E testing with skill:**
 ```bash
-codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex "Use /playwright to write E2E tests for the login flow"
+codex exec --full-auto --skip-git-repo-check -m gpt-5.3-codex "Use /playwright to write E2E tests for the login flow"
 ```
 
 ## Known Issues & Solutions
