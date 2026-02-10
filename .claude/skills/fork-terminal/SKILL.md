@@ -267,6 +267,42 @@ cat /tmp/codex-task-{name}-summary.md 2>/dev/null   # Read summary
 tail -f /tmp/codex-task-{name}-output.log            # Live output
 ```
 
+### Generic Task Execution via Gemini
+
+Execute exploration/analysis tasks using Gemini with structured JSON output (used by the `gemini-delegator` agent):
+
+```bash
+# Execute a task with prompt file
+uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/gemini-task-foo-prompt.txt -n foo
+
+# With specific model
+uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/prompt.txt -n foo -m gemini-3-pro-preview
+
+# With additional directories for multi-directory exploration
+uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/prompt.txt -n foo -I src/ -I lib/
+
+# Dry run (show command without executing)
+uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/prompt.txt -n foo --dry-run
+
+# Via fork terminal (user watches in new window)
+python3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini-task \
+  "uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/prompt.txt -n foo"
+```
+
+**Output files** (under `/tmp/gemini-task-{name}-*`):
+| File | Purpose |
+|------|---------|
+| `-output.log` | Full terminal output via tee |
+| `-response.json` | Parsed structured JSON (response, stats, error) |
+| `-done.json` | Completion flag with exit code, model, duration, tokens |
+
+**Monitoring:**
+```bash
+cat /tmp/gemini-task-{name}-done.json 2>/dev/null       # Check completion
+cat /tmp/gemini-task-{name}-response.json 2>/dev/null    # Read structured response
+tail -f /tmp/gemini-task-{name}-output.log                # Live output
+```
+
 ## Dependencies
 
 ### Check Dependencies

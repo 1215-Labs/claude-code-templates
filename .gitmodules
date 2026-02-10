@@ -31,3 +31,6 @@
 [submodule "references/agent-sandbox-skill"]
 	path = references/agent-sandbox-skill
 	url = git@github.com:disler/agent-sandbox-skill.git
+[submodule "references/gemini-cli"]
+	path = references/gemini-cli
+	url = git@github.com:google-gemini/gemini-cli.git

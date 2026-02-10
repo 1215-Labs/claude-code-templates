@@ -29,6 +29,8 @@ Quick reference for using the `.claude` folder components.
 
 ```
 /orchestrate "task"       # Delegate to Gemini/Codex via forked terminals
+/gemini "task"            # Delegate exploration/analysis to Gemini CLI
+/codex "task"             # Delegate implementation to Codex CLI
 ```
 
 ### Agent Teams (Experimental)
@@ -72,6 +74,7 @@ Invoke agents by name when you need specialized help:
 | `team-builder` | Single-task engineering execution in agent teams |
 | `team-validator` | Read-only task validation in agent teams |
 | `codex-delegator` | Delegate tasks to Codex CLI with monitoring |
+| `gemini-delegator` | Delegate exploration/analysis to Gemini CLI |
 
 **Example**: "Use the `debugger` agent to investigate this error..."
 
@@ -120,6 +123,7 @@ Skills provide reusable expertise. Key skills:
 | `/repo-optimize` | Deep multi-model repo optimization with agent team |
 | `/all_skills` | List available skills |
 | `/codex` | Delegate tasks to Codex CLI with monitoring |
+| `/gemini` | Delegate exploration/analysis to Gemini CLI |
 | `/coderabbit-helper` | Analyze CodeRabbit suggestions |
 
 ### PRP Commands
@@ -185,7 +189,7 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  COMMANDS (invoke directly)                              │
 │  /onboarding  /quick-prime  /deep-prime  /repo-equip     │
 │  /code-review  /ui-review  /rca  /orchestrate            │
-│  /spawn-team  /repo-optimize  /codex                     │
+│  /spawn-team  /repo-optimize  /codex  /gemini             │
 │  /sync-reference  /coderabbit-helper  /all_skills        │
 │  /remember  /forget  /memory                             │
 │  /mac-health  /mac-diff  /mac-status  /mac-discover      │
@@ -198,7 +202,7 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  technical-researcher  deployment-engineer               │
 │  mcp-backend-engineer  n8n-mcp-tester                    │
 │  meta-agent  team-builder  team-validator                │
-│  codex-delegator                                         │
+│  codex-delegator  gemini-delegator                       │
 ├──────────────────────────────────────────────────────────┤
 │  SKILLS (reference for patterns)                         │
 │  lsp-symbol-navigation  lsp-dependency-analysis          │
