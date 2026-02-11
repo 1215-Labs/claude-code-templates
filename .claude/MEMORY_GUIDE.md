@@ -289,6 +289,47 @@ Global files at `~/.claude/memory/` can be edited the same way.
 
 Project memory lives in `.claude/memory/` and should be committed to git. Session logs in `.claude/memory/sessions/` are optional — commit them if you want session history in the repo, or add `sessions/` to `.gitignore` if you don't.
 
+## Comparison with OpenClaw
+
+This memory system is based on patterns from [OpenClaw](https://github.com/openclaw/openclaw)'s memory architecture (documented in `docs/exploration/openclaw-architecture.md`, Part VIII). Here's how they compare.
+
+### Parity — What We Match
+
+| Capability | OpenClaw | This System |
+|---|---|---|
+| File-based daily logs | `memory/YYYY-MM-DD.md` | `sessions/YYYY-MM-DD.md` |
+| Curated long-term memory | Single `MEMORY.md` | Split across 6 typed files (decisions, tasks, profile, etc.) |
+| Pre-compaction disk flush | `memory-flush.ts` in agent runtime | `PreCompact` prompt hook + dedup guard |
+| Flush dedup guard | Token threshold + cycle tracking | 60s cooldown via `precompact-guard.py` |
+| Bootstrap loader at start | `before_agent_start` hook | `memory-loader.py` with priority tiers |
+| Auto-capture at session end | Regex triggers → categorize → store | Stop prompt hook with category tags |
+| Keyword search (BM25) | SQLite FTS5 | SQLite FTS5 via `memory-search.py` |
+
+### Gaps — Where OpenClaw Is Ahead
+
+| Capability | OpenClaw | Gap |
+|---|---|---|
+| **Vector search** | sqlite-vec embeddings, hybrid BM25+vector (0.7/0.3 weighting) | We have FTS5 keyword only — no semantic similarity |
+| **Embedding cascade** | Auto-selects: local GGUF → OpenAI → Gemini → Voyage with caching | No embedding support |
+| **Plugin system** | Slot-based memory plugins (core, LanceDB), hot-swappable backends | Single implementation, no plugin API |
+| **Session transcript indexing** | Full conversations chunked (400 tokens, 80 overlap) into SQLite | Session summaries only |
+| **File watching** | Real-time inotify with 1500ms debounce | Reindex on each search call |
+| **Configurable thresholds** | Dozens of tunable params (`memorySearch.*`, `compaction.*`) | Hardcoded constants |
+
+### Advantages — Where We're Ahead
+
+| Capability | This System | OpenClaw |
+|---|---|---|
+| **Two-tier memory** | Global (`~/.claude/memory/`) + project (`.claude/memory/`) with auto-routing | Single directory, no global/project split |
+| **Auto-classification** | `/remember` routes by keyword analysis to 6 typed files | Manual categorization or regex triggers |
+| **Priority-based loading** | P0/P1/P2 tiers ensure critical facts always load within budget | Loads by recency, no priority system |
+| **Memory commands** | `/remember`, `/forget`, `/memory` with status, search, init, prune | No user-facing CLI commands |
+| **Secret scanning** | 13 patterns block credentials from being stored | Not addressed |
+
+### Summary
+
+The 3 highest-value OpenClaw patterns have been adopted: pre-compaction flush, auto-capture with category tags, and FTS5 search. The main remaining gap is **vector search** (semantic similarity via embeddings), which would improve recall for fuzzy queries but requires an embedding provider. Everything else OpenClaw has beyond this (plugins, file watching, QMD daemon) solves scale problems that don't apply to small memory directories.
+
 ## See Also
 
 - [USER_GUIDE.md](USER_GUIDE.md) — Quick reference for all `.claude/` components
