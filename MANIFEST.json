@@ -806,12 +806,30 @@
         "description": "Verify subagent completed its assigned task"
       },
       {
-        "name": "context-preserve",
+        "name": "precompact-guard",
+        "path": ".claude/hooks/precompact-guard.py",
+        "event": "PreCompact",
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "Dedup guard: skip memory flush if one happened within 60s cooldown"
+      },
+      {
+        "name": "memory-flush",
         "event": "PreCompact",
         "type": "prompt",
         "deployment": "global",
         "status": "production",
-        "description": "Preserve critical context before compaction"
+        "description": "Flush memories to disk before compaction (OpenClaw Pattern 2)"
+      },
+      {
+        "name": "memory-search",
+        "path": ".claude/hooks/memory-search.py",
+        "event": null,
+        "type": "command",
+        "deployment": "global",
+        "status": "production",
+        "description": "SQLite FTS5 ranked search sidecar for memory files"
       },
       {
         "name": "teammate-idle-gate",
