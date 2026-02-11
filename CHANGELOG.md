@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-11] add: Add comprehensive test suite for OpenClaw memory patterns (57 tests) (f5b018a)
 [2026-02-11] document: Document OpenClaw memory patterns: PreCompact flush, FTS5 search, category tags (d7098be)
 [2026-02-11] add: Add OpenClaw memory adoption patterns: PreCompact flush, FTS5 search, category tags (dd32923)
 [2026-02-11] update: Update tasks and add session log for 2026-02-11 (cd6a0a9)
