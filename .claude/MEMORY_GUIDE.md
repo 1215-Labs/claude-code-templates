@@ -29,8 +29,9 @@ That's it. The hooks handle loading at session start and prompting you to save a
 
 1. **SessionStart** — `memory-loader.py` runs once, reads all memory files, injects a summary into Claude's context (up to ~2000 tokens)
 2. **During session** — Use `/remember`, `/forget`, `/memory` to manage stored knowledge
-3. **Stop** — A hook prompts Claude to review the session for anything worth remembering, writes to the appropriate files, and creates a session log
-4. **SessionEnd** — `memory-distill.py` creates a stub session log if the Stop hook didn't write one (safety net)
+3. **PreCompact** — When context is about to be compacted, `precompact-guard.py` checks for recent flushes (60s cooldown), then a prompt hook flushes unsaved memories to disk before they're lost
+4. **Stop** — A hook prompts Claude to review the session for anything worth remembering, writes to the appropriate files, and creates a session log
+5. **SessionEnd** — `memory-distill.py` creates a stub session log if the Stop hook didn't write one (safety net)
 
 ### Priority-Based Loading
 
@@ -83,7 +84,7 @@ Global memory is created by `/remember` when it classifies input as personal rat
 - **Alternatives**: What was considered
 ```
 
-**Session logs** follow a template:
+**Session logs** follow a template with category tags:
 
 ```markdown
 # Session 2026-02-07
@@ -92,11 +93,27 @@ Global memory is created by `/remember` when it classifies input as personal rat
 2-3 sentences of what was accomplished
 
 ## Key Changes
-- Files and features changed
+- [DECISION] Chose JWT over sessions for auth
+- [FACT] API rate limit is 100 req/min
+- [CONTEXT] Refactored auth middleware in src/auth/
 
 ## Open Items
-- Anything left unfinished
+- [CONTEXT] Rate limiting tests not yet written
 ```
+
+### Category Tags
+
+Both the Stop hook and PreCompact flush tag entries for structured retrieval:
+
+| Tag | When to Use |
+|-----|-------------|
+| `[DECISION]` | Architectural or design choices made |
+| `[PREFERENCE]` | User preferences discovered |
+| `[FACT]` | Important facts or constraints learned |
+| `[ENTITY]` | People, projects, URLs worth tracking |
+| `[CONTEXT]` | Current task state, progress, blockers |
+
+Tags make session logs scannable and improve FTS5 search results (see Search below).
 
 ## Commands
 
@@ -138,7 +155,7 @@ Section headings are preserved — only content is removed.
 ```
 /memory                     # Summary table: files, sizes, token counts, dates
 /memory "status"            # Detailed health check with budget breakdown
-/memory "search typescript" # Cross-file search with line numbers
+/memory "search typescript" # Ranked FTS5 search (falls back to grep)
 /memory "init"              # Create directories and starter templates
 /memory "prune"             # Remove old session logs (keeps 10 most recent)
 ```
@@ -157,11 +174,20 @@ The memory system runs without manual intervention through hooks defined in `.cl
 
 If the memory directories don't exist, the hook silently skips — no errors, no setup required.
 
+### On PreCompact (Mid-Session Memory Flush)
+
+When context is about to be compacted (long sessions), a two-stage hook fires:
+
+1. **`precompact-guard.py`** — Checks if a memory flush already happened within the last 60 seconds. If so, injects a `FLUSH_ALREADY_DONE` system message to prevent duplicate writes.
+2. **Prompt hook** — Instructs Claude to write unsaved memories to `.claude/memory/sessions/YYYY-MM-DD.md` with category tags, then preserve critical context in the compaction summary.
+
+This is the highest-value pattern — it ensures memories survive even when context is compressed mid-session. Based on OpenClaw's pre-compaction memory flush pattern.
+
 ### On Stop
 
 A prompt-based hook asks Claude to:
 1. Review the session for memory-worthy information
-2. Write new entries to the appropriate files (with timestamps)
+2. Write new entries to the appropriate files (with timestamps and category tags)
 3. Create a session log in `.claude/memory/sessions/`
 4. Check for uncommitted changes
 
@@ -196,6 +222,22 @@ Total               1,320 tokens (of 2000 budget)
 If a file exceeds its per-file max, it's truncated from the end with a `[...truncated]` marker. The most important content should be at the top of each file.
 
 If total loaded content exceeds the budget, lower-priority files (P2 first, then P1) are dropped entirely.
+
+## Search
+
+### FTS5 Ranked Search
+
+The `/memory "search <term>"` command uses SQLite FTS5 for ranked keyword search across all memory files. This replaces simple grep with relevance-ranked results and highlighted snippets.
+
+The sidecar script (`memory-search.py`) can also be called directly:
+
+```
+uv run .claude/hooks/memory-search.py "auth middleware"
+```
+
+It indexes all `.md` files in both `~/.claude/memory/` and `.claude/memory/`, rebuilds the index on each call (fast — memory dirs are small), and returns results ranked by relevance. If FTS5 fails, the command falls back to grep.
+
+The FTS5 database (`.claude/memory/.memory-search.db`) is auto-generated and gitignored.
 
 ## Security
 
@@ -255,5 +297,7 @@ Project memory lives in `.claude/memory/` and should be committed to git. Sessio
 - `.claude/commands/workflow/remember.md` — `/remember` command source
 - `.claude/commands/workflow/forget.md` — `/forget` command source
 - `.claude/hooks/memory-loader.py` — Session start loader
+- `.claude/hooks/precompact-guard.py` — PreCompact dedup guard (60s cooldown)
+- `.claude/hooks/memory-search.py` — FTS5 ranked search sidecar
 - `.claude/hooks/memory-distill.py` — Session end fallback
 - `.claude/utils/memory.py` — Core utility functions

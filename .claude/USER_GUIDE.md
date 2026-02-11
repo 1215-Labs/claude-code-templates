@@ -179,6 +179,8 @@ These are Claude Code hooks that run automatically during tool use and session e
 | `lsp-type-validator` | PreToolUse | Blocks edits with type errors |
 | `session-init` | SessionStart | Initialize session context, check references |
 | `uncommitted-check` | Stop | Warn about uncommitted/unpushed changes |
+| `precompact-guard` | PreCompact | Skip memory flush if one happened within 60s |
+| `memory-flush` | PreCompact | Flush unsaved memories to disk before compaction |
 | `teammate-idle-gate` | TeammateIdle | Check for uncommitted changes + pending tasks |
 | `task-completed-gate` | TaskCompleted | Run build/lint before task completion |
 
@@ -235,6 +237,7 @@ Claude Code sessions are stateless by default. The persistent memory system save
 | `/remember "fact"` | Save a fact (auto-classified to the right file) |
 | `/forget "term"` | Remove entries by keyword or decision ID |
 | `/memory` | Check what's stored, token usage, health |
+| `/memory "search term"` | FTS5 ranked search across all memory files |
 
 Memory is two-tiered: **project memory** (`.claude/memory/`, git-tracked) for architecture and decisions, and **global memory** (`~/.claude/memory/`) for personal preferences that follow you across projects.
 

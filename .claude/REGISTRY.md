@@ -100,7 +100,9 @@ Central index of all .claude components for quick discovery.
 | Hook | `uncommitted-check` | Warn about uncommitted/unpushed changes on stop |
 | Hook | `security-guidance` | Scan edits for security anti-patterns (PreToolUse prompt) |
 | Hook | `subagent-verify` | Verify subagent completed its task (SubagentStop prompt) |
-| Hook | `context-preserve` | Preserve critical context before compaction (PreCompact prompt) |
+| Hook | `precompact-guard` | Skip memory flush if one happened within 60s cooldown |
+| Hook | `memory-flush` | Flush unsaved memories to disk before compaction (PreCompact prompt) |
+| Util | `memory-search.py` | SQLite FTS5 ranked search sidecar for memory files |
 | Command | `/remember` | Store facts, preferences, decisions in memory |
 | Command | `/forget` | Remove entries from memory |
 | Command | `/memory` | Status, search, init, prune memory |
