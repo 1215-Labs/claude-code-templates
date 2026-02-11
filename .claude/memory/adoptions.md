@@ -2,159 +2,24 @@
 
 Provenance tracking for components adopted from evaluated reference submodules.
 
-## How This File Is Used
-
-- **Written by**: `/reference-distill` (evaluation-to-integration engine)
-- **Read by**: `/repo-equip` and `/repo-optimize` to propagate adopted patterns to other repos
-- **Propagation**: After successful propagation, the `Propagated To` field is updated with the target repo name
-
-## ADO Numbering
-
-- Sequential: ADO-001, ADO-002, etc.
-- Never reuse numbers even if records are deleted
-- Parse this file for the highest existing number before appending
-
-## Status Values
-
-| Status | Meaning |
-|--------|---------|
-| `adopted` | Component extracted and integrated directly |
-| `deferred-to-prp` | Complex adaptation; PRP generated for later execution |
-| `propagated` | Successfully propagated to at least one other repo |
+- **Written by**: `/reference-distill`
+- **Read by**: `/repo-equip`, `/repo-optimize` for propagation
+- **Numbering**: Sequential ADO-NNN, never reuse
+- **Statuses**: `adopted` | `deferred-to-prp` | `propagated` | `tested`
 
 ## Records
 
-### ADO-001: dangerous-command-blocker (PRP)
+| ID | Component | Source | Target | Status | Propagated |
+|----|-----------|--------|--------|--------|------------|
+| ADO-001 | dangerous-command-blocker | hooks-mastery | `.claude/hooks/dangerous-command-blocker.py` | adopted (PRP, Codex 169s, 8/8) | — |
+| ADO-002 | prompt-validator | hooks-mastery | `.claude/hooks/prompt-validator.py` | adopted (PRP, Codex 158s, 6/6) | — |
+| ADO-003 | uv-hook-template | hooks-mastery | `.claude/skills/uv-hook-template/` | adopted (PRP, Codex 189s, 8/8) | — |
+| ADO-004 | ruff-validator | hooks-mastery | `.claude/hooks/ruff-validator.py` | tested (E2B 5/5) | — |
+| ADO-005 | ty-validator | hooks-mastery | `.claude/hooks/ty-validator.py` | tested (E2B 5/5) | — |
+| ADO-006 | status-line-context | hooks-mastery | `.claude/hooks/status-line-context.py` | adopted (PRP, Codex 157s, 7/7) | — |
+| ADO-007 | meta-agent | hooks-mastery | `.claude/agents/meta-agent.md` | tested (E2B 2/2) | — |
+| ADO-008 | team-builder | hooks-mastery | `.claude/agents/team-builder.md` | tested (E2B 2/2) | — |
+| ADO-009 | team-validator | hooks-mastery | `.claude/agents/team-validator.md` | tested (E2B 3/3) | — |
+| ADO-010 | agent-sandboxes | agent-sandbox-skill | `.claude/skills/agent-sandboxes/` | adopted (extracted, browser removed) | — |
 
-- **Date**: 2026-02-09
-- **Source Repo**: references/claude-code-hooks-mastery
-- **Source File**: .claude/hooks/pre_tool_use.py
-- **Target Location**: .claude/hooks/dangerous-command-blocker.py
-- **Adaptation**: convention-convert
-- **Evaluation**: claude-code-hooks-mastery (3.50/5)
-- **Priority**: 1
-- **Status**: adopted
-- **PRP**: PRPs/distill-dangerous-command-blocker.md
-- **Executed**: 2026-02-09 via Codex gpt-5.3-codex (169s, 8/8 tests)
-- **Propagated To**: []
-
-### ADO-002: prompt-validator (PRP)
-
-- **Date**: 2026-02-09
-- **Source Repo**: references/claude-code-hooks-mastery
-- **Source File**: .claude/hooks/user_prompt_submit.py
-- **Target Location**: .claude/hooks/prompt-validator.py
-- **Adaptation**: convention-convert
-- **Evaluation**: claude-code-hooks-mastery (3.50/5)
-- **Priority**: 1
-- **Status**: adopted
-- **PRP**: PRPs/distill-prompt-validator.md
-- **Executed**: 2026-02-09 via Codex gpt-5.3-codex (158s, 6/6 tests)
-- **Propagated To**: []
-
-### ADO-003: uv-hook-template (PRP)
-
-- **Date**: 2026-02-09
-- **Source Repo**: references/claude-code-hooks-mastery
-- **Source File**: (pattern — no single source file)
-- **Target Location**: .claude/skills/uv-hook-template/
-- **Adaptation**: full-rewrite
-- **Evaluation**: claude-code-hooks-mastery (3.50/5)
-- **Priority**: 1
-- **Status**: adopted
-- **PRP**: PRPs/distill-uv-hook-template.md
-- **Executed**: 2026-02-09 via Codex gpt-5.3-codex (189s, 8/8 tests)
-- **Propagated To**: []
-
-### ADO-004: ruff-validator
-
-- **Date**: 2026-02-09
-- **Source Repo**: references/claude-code-hooks-mastery
-- **Source File**: .claude/hooks/validators/ruff_validator.py
-- **Target Location**: .claude/hooks/ruff-validator.py
-- **Adaptation**: frontmatter (UV shebang removed, hooks.json entry added)
-- **Evaluation**: claude-code-hooks-mastery (3.50/5)
-- **Priority**: 2
-- **Status**: tested
-- **Tested**: 2026-02-09 via E2B sandbox (5/5 tests passed)
-- **Propagated To**: []
-
-### ADO-005: ty-validator
-
-- **Date**: 2026-02-09
-- **Source Repo**: references/claude-code-hooks-mastery
-- **Source File**: .claude/hooks/validators/ty_validator.py
-- **Target Location**: .claude/hooks/ty-validator.py
-- **Adaptation**: frontmatter (UV shebang removed, hooks.json entry added)
-- **Evaluation**: claude-code-hooks-mastery (3.50/5)
-- **Priority**: 2
-- **Status**: tested
-- **Tested**: 2026-02-09 via E2B sandbox (5/5 tests passed)
-- **Propagated To**: []
-
-### ADO-006: status-line-context (PRP)
-
-- **Date**: 2026-02-09
-- **Source Repo**: references/claude-code-hooks-mastery
-- **Source File**: .claude/status_lines/status_line_v6.py
-- **Target Location**: .claude/hooks/status-line-context.py
-- **Adaptation**: convention-convert
-- **Evaluation**: claude-code-hooks-mastery (3.50/5)
-- **Priority**: 3
-- **Status**: adopted
-- **PRP**: PRPs/distill-status-line-context.md
-- **Executed**: 2026-02-09 via Codex gpt-5.3-codex (157s, 7/7 tests)
-- **Propagated To**: []
-
-### ADO-007: meta-agent
-
-- **Date**: 2026-02-09
-- **Source Repo**: references/claude-code-hooks-mastery
-- **Source File**: .claude/agents/meta-agent.md
-- **Target Location**: .claude/agents/meta-agent.md
-- **Adaptation**: frontmatter (added category, related, updated tools and description)
-- **Evaluation**: claude-code-hooks-mastery (3.50/5)
-- **Priority**: 3
-- **Status**: tested
-- **Tested**: 2026-02-09 via E2B sandbox (2/2 tests passed)
-- **Propagated To**: []
-
-### ADO-008: team-builder
-
-- **Date**: 2026-02-09
-- **Source Repo**: references/claude-code-hooks-mastery
-- **Source File**: .claude/agents/team/builder.md
-- **Target Location**: .claude/agents/team-builder.md
-- **Adaptation**: frontmatter (added category, related, tools list; removed hooks section)
-- **Evaluation**: claude-code-hooks-mastery (3.50/5)
-- **Priority**: 3
-- **Status**: tested
-- **Tested**: 2026-02-09 via E2B sandbox (2/2 tests passed)
-- **Propagated To**: []
-
-### ADO-009: team-validator
-
-- **Date**: 2026-02-09
-- **Source Repo**: references/claude-code-hooks-mastery
-- **Source File**: .claude/agents/team/validator.md
-- **Target Location**: .claude/agents/team-validator.md
-- **Adaptation**: frontmatter (added category, related; converted disallowedTools to tools allow-list)
-- **Evaluation**: claude-code-hooks-mastery (3.50/5)
-- **Priority**: 3
-- **Status**: tested
-- **Tested**: 2026-02-09 via E2B sandbox (3/3 tests passed)
-- **Propagated To**: []
-
-### ADO-010: agent-sandboxes (extraction)
-
-- **Date**: 2026-02-09
-- **Source Repo**: references/agent-sandbox-skill
-- **Source File**: .claude/skills/agent-sandboxes/sandbox_cli/src/ (6 modules + main + pyproject)
-- **Target Location**: .claude/skills/agent-sandboxes/
-- **Adaptation**: extraction (browser removed, .env path fixed, pyproject trimmed, SKILL.md rewritten)
-- **Evaluation**: agent-sandbox-skill (4.10/5)
-- **Priority**: 1
-- **Status**: adopted
-- **Extracted**: 2026-02-09 — 3 modules (sandbox, files, commands), 3 command groups (sandbox, files, exec), main.py, pyproject.toml, SKILL.md, cookbook, prompt
-- **Skipped**: modules/browser.py (574 lines), commands/browser.py (514 lines), playwright dev dep
-- **Propagated To**: []
+All sourced from `references/` submodules. ADO-001–009 eval: hooks-mastery 3.50/5. ADO-010 eval: agent-sandbox-skill 4.10/5. All dated 2026-02-09.
