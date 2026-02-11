@@ -124,13 +124,46 @@ PROMPT_EOF
 
 ## Step 5: Fork Execution
 
+### Single Task
+
 ```bash
 python3 .claude/skills/fork-terminal/tools/fork_terminal.py \
   --log --tool gemini-task \
-  "uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/gemini-task-{slug}-prompt.txt -n {slug} -m {model}"
+  "uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/gemini-task-{slug}-prompt.txt -n {slug} -m {model} --auth-mode oauth"
 ```
 
 If `--include-directories` detected in Step 3, add `-I dir1 -I dir2` to the executor command.
+
+### Parallel Tasks (max 2 concurrent)
+
+When forking multiple tasks, **stagger launches by 30-60 seconds** to avoid quota saturation:
+
+```bash
+# First task — immediate
+python3 .claude/skills/fork-terminal/tools/fork_terminal.py \
+  --log --tool gemini-task \
+  "uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/gemini-task-{slug1}-prompt.txt -n {slug1} -m {model}"
+
+# Second task — delayed 30s
+python3 .claude/skills/fork-terminal/tools/fork_terminal.py \
+  --log --tool gemini-task --delay 30 \
+  "uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/gemini-task-{slug2}-prompt.txt -n {slug2} -m {model}"
+```
+
+**Concurrency rules:**
+- Max 2 concurrent Gemini forks (free OAuth quota bottleneck)
+- Stagger by 30-60s to avoid thundering herd on `cloudcode-pa.googleapis.com`
+- Prefer `gemini-2.5-flash` for parallel tasks (more reliable than `auto` which routes to preview models)
+- If a third task is needed, wait for one fork to complete first
+
+### Executor Options
+
+| Flag | Purpose | Example |
+|------|---------|---------|
+| `--auth-mode` | Auth method: oauth, api-key, vertex-ai | `--auth-mode api-key` |
+| `--fallback-models` | Comma-separated fallback on 429 | `--fallback-models gemini-2.5-flash` |
+| `--retry-delay` | Seconds between retries | `--retry-delay 15` |
+| `--max-retries` | Max retries per model | `--max-retries 2` |
 
 Report to the caller what was forked:
 - Task type and model selected
@@ -162,6 +195,16 @@ MONITORING PROCEDURE:
 - Do NOT read the full output.log every iteration (wastes context)
 - If reporting to a user (command mode), show a brief progress note every 60 seconds
 - If reporting to a parent agent (sub-agent mode), stay silent during polling
+
+**Error-aware monitoring:**
+When done.json appears, check the `error_type` field:
+- `null` → success, proceed to Step 7
+- `QUOTA_EXHAUSTED` / `MODEL_CAPACITY` → executor already retried with fallback; if still failed, suggest: wait 60s, try `--auth-mode api-key`, or use `gemini-2.5-flash` explicitly
+- `AUTH_FAILED` → check GEMINI_API_KEY or re-authenticate with `gemini` interactively
+- `TIMEOUT` → increase `--timeout`, or simplify the prompt
+- `CLI_NOT_FOUND` → `npm install -g @google/gemini-cli`
+
+Also check `retries_used` — if > 0, note the retry count in the report.
 
 ## Step 7: Summarize Results
 

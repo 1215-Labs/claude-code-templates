@@ -268,6 +268,44 @@ When a forked agent completes, read results progressively:
 
 This preserves Opus context while getting necessary information.
 
+## Quota Management
+
+### Rate Limits by Auth Method
+
+| Auth Method | RPM | RPD | Endpoint |
+|---|---|---|---|
+| OAuth (free) | 60 | 1,000 | `cloudcode-pa.googleapis.com` |
+| API Key (free) | 10 | 250 | `generativelanguage.googleapis.com` |
+| Vertex AI (express) | dynamic | dynamic | `{region}-aiplatform.googleapis.com` |
+
+### Concurrency Guidelines
+
+- **Max 2 concurrent Gemini forks** with free OAuth
+- **Stagger parallel launches by 30-60s** to avoid thundering herd
+- The `cloudcode-pa` endpoint has concurrency constraints beyond RPM
+- Prefer `gemini-2.5-flash` for parallel tasks (preview models are more capacity-constrained)
+
+### Error Recovery
+
+The executor has built-in retry with model fallback:
+1. Primary model fails with 429 → retry up to `--max-retries` times
+2. Exhausted retries → fall back to next model in `--fallback-models` chain
+3. All models exhausted → report structured error in `done.json`
+
+The orchestrator should:
+- Read `error_type` from `done.json` to decide next action
+- On `QUOTA_EXHAUSTED`: wait 60s, then retry with a different auth mode or model
+- On `MODEL_CAPACITY`: the specific model is overloaded, switch to `gemini-2.5-flash`
+- Never retry more than 3 times total from the orchestrator level
+
+### Auth Mode Selection
+
+| Scenario | Auth Mode | Flag |
+|---|---|---|
+| Default (has OAuth tokens) | oauth | `--auth-mode oauth` |
+| Sandbox / no OAuth | api-key | `--auth-mode api-key` |
+| High throughput needed | vertex-ai | `--auth-mode vertex-ai` |
+
 ## Anti-Patterns
 
 ### Don't Fork for Simple Tasks

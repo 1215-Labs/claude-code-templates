@@ -53,7 +53,6 @@ Manual fallback order:
 
 - Always use `--approval-mode yolo` for automatic tool approvals (more explicit than `-y`)
 - For the --model argument, use DEFAULT_MODEL if not specified. If 'fast' is requested, use FAST_MODEL. If 'heavy' is requested, use HEAVY_MODEL.
-- IMPORTANT: Ensure GEMINI_API_KEY is exported before running the command
 
 ## Mode: Non-Interactive (Default)
 
@@ -62,7 +61,7 @@ Use the `-p` flag (prompt mode) for autonomous execution.
 ### Command Template
 
 ```bash
-export GEMINI_API_KEY="${GEMINI_API_KEY}" && gemini -p "PROMPT" --model MODEL --approval-mode yolo
+gemini -p "PROMPT" --model MODEL --approval-mode yolo
 ```
 
 ### Examples
@@ -269,17 +268,56 @@ gemini -p "PROMPT" --approval-mode yolo
 
 ## Authentication
 
-Gemini CLI supports two authentication methods:
+Gemini CLI supports three authentication methods, each routing to a different endpoint with separate quota pools.
 
-### 1. API Key (GEMINI_API_KEY)
+### 1. OAuth (Default — Google Account)
+If `~/.gemini/settings.json` has `security.auth.selectedType: "oauth-personal"` and cached tokens exist in `~/.gemini/oauth_creds.json`, OAuth is used automatically.
+
+- **Endpoint**: `cloudcode-pa.googleapis.com`
+- **Quota**: 60 RPM / 1,000 RPD (free tier)
+- **Note**: OAuth takes precedence over API key when cached tokens exist
+
 ```bash
-export GEMINI_API_KEY="your-key-here" && gemini -p "PROMPT" --model MODEL --approval-mode yolo
+gemini -p "PROMPT" --model MODEL --approval-mode yolo
 ```
 
-### 2. OAuth (Google Account)
-If using OAuth authentication, run `gemini` interactively first to complete the OAuth flow, then forked terminals will use the stored tokens.
+### 2. API Key (GEMINI_API_KEY)
+Routes to AI Studio endpoint with separate quota. Only works when **no cached OAuth tokens** exist (e.g., in E2B sandboxes) OR when OAuth creds are cleared.
 
-Note: Check `~/.gemini/settings.json` for `security.auth.selectedType` to see which method is configured.
+- **Endpoint**: `generativelanguage.googleapis.com`
+- **Quota**: 10 RPM / 250 RPD (free tier), higher with paid tier
+- **Models**: Flash only on free tier
+
+```bash
+export GEMINI_API_KEY="your-key-here" && gemini -p "PROMPT" --model gemini-2.5-flash --approval-mode yolo
+```
+
+### 3. Vertex AI
+Routes to Google Cloud Vertex AI. Overrides both OAuth and API key when `GOOGLE_GENAI_USE_VERTEXAI=true` is set.
+
+- **Endpoint**: `{region}-aiplatform.googleapis.com`
+- **Quota**: Dynamic shared (highest ceiling)
+- **Setup**: Requires GCP project with Vertex AI API enabled
+
+```bash
+export GOOGLE_GENAI_USE_VERTEXAI=true
+export GOOGLE_CLOUD_PROJECT="your-project"
+export GOOGLE_CLOUD_LOCATION="us-central1"
+export GOOGLE_API_KEY="your-vertex-api-key"
+gemini -p "PROMPT" --model gemini-2.5-flash --approval-mode yolo
+```
+
+### Credential Precedence
+1. `GOOGLE_GENAI_USE_VERTEXAI=true` → Vertex AI (always wins)
+2. Cached OAuth in `~/.gemini/oauth_creds.json` → OAuth endpoint
+3. `GEMINI_API_KEY` → AI Studio endpoint (only if no OAuth cache)
+
+### Per-Project Auth via `.gemini/.env`
+Gemini CLI auto-loads env vars from `.gemini/.env` (searches up from cwd, then `~/.gemini/.env`):
+```
+# .gemini/.env
+GEMINI_API_KEY=your-key-here
+```
 
 ## Known Issues & Solutions
 
@@ -298,5 +336,6 @@ Note: Check `~/.gemini/settings.json` for `security.auth.selectedType` to see wh
 
 Do NOT use these deprecated patterns:
 - `-y` flag alone - Use `--approval-mode yolo` for clarity
-- Running without explicit API key - Always export GEMINI_API_KEY
 - Omitting `--output-format json` for automated tasks - Always use it for parseable output
+- Running 5+ parallel forks - Max 2 concurrent, stagger by 30-60s
+- Assuming `GEMINI_API_KEY` overrides OAuth - It does NOT when cached tokens exist
