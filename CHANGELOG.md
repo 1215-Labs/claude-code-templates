@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-11] add: Add OpenClaw architecture deep-dive with memory adoption guide (2519443)
 [2026-02-10] prune: Prune memory files and resolve health check issues (200% → 89% budget) (3dbd9c0)
 [2026-02-10] add: Add --auto-close flag to fork_terminal.py so task executor windows close when done (9064ac1)
 [2026-02-10] fix: Fix executor reliability: pipefail for exit codes, stale file cleanup on retry (45c1bb1)

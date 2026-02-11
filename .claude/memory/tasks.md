@@ -14,3 +14,4 @@ _(Cleared 2026-02-10. See decisions.md and adoptions.md for details.)_
 ## Notes
 - [2026-02-10] Session resumed on branch main
 - [2026-02-10] Pruned 10 completed tasks + 8 duplicate session-resume notes
+- [2026-02-11] Session resumed on branch main
