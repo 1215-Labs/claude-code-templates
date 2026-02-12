@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-11] fix: Fix exploration doc: VPS at 148.230.95.154, not Supabase cloud (4ff402c)
 [2026-02-11] add: Add hybrid vector+keyword search prototype and obsidian vector patterns exploration (54d9089)
 [2026-02-11] sync: Sync Gemini fork-terminal updates: model catalog, defaults, doc consistency (36f519a)
 [2026-02-11] integrate: Integrate Gemini lab findings: retry/fallback executor, auth modes, quota management (843b868)

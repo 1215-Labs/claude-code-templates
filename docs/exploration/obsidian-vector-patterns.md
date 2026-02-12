@@ -6,11 +6,12 @@ Exploration of pgvector infrastructure in `obsidian-ecosystem-hub` for potential
 
 | Component | Details |
 |-----------|---------|
-| Database | PostgreSQL 16 with pgvector extension |
-| Hosting | Supabase cloud (`wilpayvbjaimkrskwowb.supabase.co`) |
+| Database | PostgreSQL 16 with pgvector 0.8.1 |
+| Hosting | Hostinger VPS (`148.230.95.154`), Docker container `postgres-vector` on port 5432 |
 | Embedding model | OpenAI `text-embedding-3-small` (1536 dimensions) |
-| Vector count | ~133K stored vectors |
+| Databases | `obsidian_agent`, `obsidian_brain`, `langfuse`, `flowise`, `property_monitor` |
 | Services using it | obsidian-brain (GraphRAG), backend_rag_pipeline (indexer) |
+| SSH access | `ssh obsidian-vps` (configured in `~/.ssh/config`) |
 
 ---
 
@@ -341,11 +342,17 @@ RAG_PIPELINE_ID=memory-files-pipeline
 ### Connection Details
 
 ```
-Host: wilpayvbjaimkrskwowb.supabase.co
-Port: 6543 (pooler)
-Driver: postgresql+asyncpg
-Auth: service role key required (RLS enabled)
-Extension: pgvector already loaded
+Host: 148.230.95.154 (Hostinger VPS, ssh alias: obsidian-vps)
+Port: 5432 (direct, requires SSH tunnel from WSL)
+Driver: postgresql:// (psycopg) or postgresql+asyncpg:// (asyncpg)
+Auth: postgres / obsidian-brain-2024 (from /root/stack/.env on VPS)
+Extension: pgvector 0.8.1 installed in obsidian_agent and obsidian_brain databases
 ```
 
-The `SUPABASE_URL` and database connection string are available in the obsidian-ecosystem-hub `.env` files. The `OPENAI_API_KEY` is available in the WSL environment.
+**SSH tunnel for local access:**
+```bash
+ssh -f -N -L 15432:localhost:5432 obsidian-vps
+DATABASE_URL="postgresql://postgres:obsidian-brain-2024@localhost:15432/obsidian_brain"
+```
+
+Note: The Supabase cloud instance (`wilpayvbjaimkrskwowb.supabase.co`) is for the **Karaoke project**, not the obsidian/memory system. The `OPENAI_API_KEY` is available in the WSL environment.
