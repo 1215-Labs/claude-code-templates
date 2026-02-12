@@ -239,6 +239,24 @@ It indexes all `.md` files in both `~/.claude/memory/` and `.claude/memory/`, re
 
 The FTS5 database (`.claude/memory/.memory-search.db`) is auto-generated and gitignored.
 
+### Hybrid Search (FTS5 + pgvector)
+
+For semantic similarity beyond keyword matching, the hybrid search script combines FTS5 keyword results with pgvector vector search using OpenAI embeddings.
+
+```
+uv run .claude/hooks/memory-search-hybrid.py "query"              # hybrid (vector + keyword)
+uv run .claude/hooks/memory-search-hybrid.py --keyword-only "q"   # FTS5 only (no DB needed)
+uv run .claude/hooks/memory-search-hybrid.py --vector-only "q"    # pgvector only
+uv run .claude/hooks/memory-search-hybrid.py --index              # index memory files
+uv run .claude/hooks/memory-search-hybrid.py --status             # show index stats
+```
+
+Results are merged using a 0.7 vector / 0.3 keyword weighting (per OpenClaw's recommended ratio). When `DATABASE_URL` is not set, it gracefully falls back to keyword-only search.
+
+**Requirements**: `DATABASE_URL` (PostgreSQL with pgvector) and `OPENAI_API_KEY` (for text-embedding-3-small embeddings). The script creates a dedicated `memory_embeddings` table with an HNSW index for fast cosine similarity search.
+
+**Chunking**: Memory files are chunked at 800 characters (~200 tokens) with 100-char overlap. Content-hash caching skips re-embedding unchanged files.
+
 ## Security
 
 ### Secret Detection
@@ -309,8 +327,8 @@ This memory system is based on patterns from [OpenClaw](https://github.com/openc
 
 | Capability | OpenClaw | Gap |
 |---|---|---|
-| **Vector search** | sqlite-vec embeddings, hybrid BM25+vector (0.7/0.3 weighting) | We have FTS5 keyword only — no semantic similarity |
-| **Embedding cascade** | Auto-selects: local GGUF → OpenAI → Gemini → Voyage with caching | No embedding support |
+| **Vector search** | sqlite-vec embeddings, hybrid BM25+vector (0.7/0.3 weighting) | `memory-search-hybrid.py` provides pgvector + FTS5 hybrid (alpha) |
+| **Embedding cascade** | Auto-selects: local GGUF → OpenAI → Gemini → Voyage with caching | Single provider (OpenAI text-embedding-3-small) |
 | **Plugin system** | Slot-based memory plugins (core, LanceDB), hot-swappable backends | Single implementation, no plugin API |
 | **Session transcript indexing** | Full conversations chunked (400 tokens, 80 overlap) into SQLite | Session summaries only |
 | **File watching** | Real-time inotify with 1500ms debounce | Reindex on each search call |
@@ -328,7 +346,7 @@ This memory system is based on patterns from [OpenClaw](https://github.com/openc
 
 ### Summary
 
-The 3 highest-value OpenClaw patterns have been adopted: pre-compaction flush, auto-capture with category tags, and FTS5 search. The main remaining gap is **vector search** (semantic similarity via embeddings), which would improve recall for fuzzy queries but requires an embedding provider. Everything else OpenClaw has beyond this (plugins, file watching, QMD daemon) solves scale problems that don't apply to small memory directories.
+The 4 highest-value OpenClaw patterns have been adopted: pre-compaction flush, auto-capture with category tags, FTS5 search, and hybrid vector+keyword search. The hybrid search prototype (`memory-search-hybrid.py`) uses pgvector on Supabase with OpenAI embeddings, merging results at 0.7/0.3 vector/keyword weighting — matching OpenClaw's approach. Remaining gaps (plugin system, session transcript indexing, file watching) solve scale problems that don't apply to small memory directories.
 
 ## See Also
 
@@ -340,5 +358,7 @@ The 3 highest-value OpenClaw patterns have been adopted: pre-compaction flush, a
 - `.claude/hooks/memory-loader.py` — Session start loader
 - `.claude/hooks/precompact-guard.py` — PreCompact dedup guard (60s cooldown)
 - `.claude/hooks/memory-search.py` — FTS5 ranked search sidecar
+- `.claude/hooks/memory-search-hybrid.py` — Hybrid FTS5 + pgvector search (alpha)
 - `.claude/hooks/memory-distill.py` — Session end fallback
 - `.claude/utils/memory.py` — Core utility functions
+- `docs/exploration/obsidian-vector-patterns.md` — pgvector infrastructure analysis

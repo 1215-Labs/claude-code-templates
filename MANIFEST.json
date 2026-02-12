@@ -832,6 +832,15 @@
         "description": "SQLite FTS5 ranked search sidecar for memory files"
       },
       {
+        "name": "memory-search-hybrid",
+        "path": ".claude/hooks/memory-search-hybrid.py",
+        "event": null,
+        "type": "command",
+        "deployment": "global",
+        "status": "alpha",
+        "description": "Hybrid FTS5 keyword + pgvector semantic search (0.7/0.3 weighting)"
+      },
+      {
         "name": "teammate-idle-gate",
         "path": ".claude/hooks/teammate-idle-gate.py",
         "event": "TeammateIdle",
