@@ -34,3 +34,9 @@
 [submodule "references/gemini-cli"]
 	path = references/gemini-cli
 	url = git@github.com:google-gemini/gemini-cli.git
+[submodule "references/langchain"]
+	path = references/langchain
+	url = git@github.com:langchain-ai/langchain.git
+[submodule "references/langgraph"]
+	path = references/langgraph
+	url = git@github.com:langchain-ai/langgraph.git

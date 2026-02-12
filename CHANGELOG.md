@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-12] add: Add LangChain/LangGraph evaluation with self-improving agent mesh architecture (909656a)
 [2026-02-11] add: Add /repo-audit command and INDEX.md progressive disclosure (a87ef83)
 [2026-02-11] prune: Prune decisions.md (756→398 tokens) and register obsidian-deploy command (2b233cd)
 [2026-02-11] fix: Fix exploration doc: VPS at 148.230.95.154, not Supabase cloud (4ff402c)
