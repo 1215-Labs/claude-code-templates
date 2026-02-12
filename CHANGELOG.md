@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-02-11] sync: Sync Gemini fork-terminal updates: model catalog, defaults, doc consistency (36f519a)
 [2026-02-11] integrate: Integrate Gemini lab findings: retry/fallback executor, auth modes, quota management (843b868)
 [2026-02-11] add: Add OpenClaw comparison section to MEMORY_GUIDE.md (182c783)
 [2026-02-11] add: Add comprehensive test suite for OpenClaw memory patterns (57 tests) (f5b018a)

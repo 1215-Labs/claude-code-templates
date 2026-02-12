@@ -12,6 +12,7 @@ import platform
 import shutil
 import subprocess
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -54,7 +55,7 @@ def _generate_log_filename(tool: str = "fork") -> str:
     return f"/tmp/fork_{tool}_{timestamp}.log"
 
 
-def fork_terminal(command: str, log_output: bool = False, tool_name: str = "fork", auto_close: bool = False) -> str:
+def fork_terminal(command: str, log_output: bool = False, tool_name: str = "fork", auto_close: bool = False, delay: int = 0) -> str:
     """Open a new Terminal window and run the specified command.
 
     Args:
@@ -63,10 +64,15 @@ def fork_terminal(command: str, log_output: bool = False, tool_name: str = "fork
         tool_name: Name of the tool for log file naming (e.g., 'codex', 'gemini')
         auto_close: If True, close the terminal window when the command finishes.
                     If False (default), keep an interactive shell open after completion.
+        delay: Seconds to wait before launching (for staggered parallel forks)
 
     Returns:
         Status message indicating the terminal was launched
     """
+    if delay > 0:
+        print(f"Waiting {delay}s before launching fork...")
+        time.sleep(delay)
+
     system = platform.system()
     cwd = os.getcwd()
 
@@ -160,6 +166,7 @@ if __name__ == "__main__":
     parser.add_argument("--log", "-l", action="store_true", help="Log output to file")
     parser.add_argument("--tool", "-t", default="fork", help="Tool name for log file")
     parser.add_argument("--auto-close", action="store_true", help="Close terminal when command finishes")
+    parser.add_argument("--delay", "-d", type=int, default=0, help="Seconds to wait before launching (for staggered forks)")
 
     args = parser.parse_args()
 
@@ -168,7 +175,8 @@ if __name__ == "__main__":
             " ".join(args.command),
             log_output=args.log,
             tool_name=args.tool,
-            auto_close=args.auto_close
+            auto_close=args.auto_close,
+            delay=args.delay,
         )
         print(output)
     else:

@@ -62,9 +62,9 @@ digraph when_to_orchestrate {
 
 | I need to... | Fork to | Model | Output Location |
 |--------------|---------|-------|-----------------|
-| Explore large codebase | Gemini | gemini-3-flash-preview | docs/exploration/ |
+| Explore large codebase | Gemini | gemini-2.5-flash | docs/exploration/ |
 | Understand architecture | Gemini | gemini-3-pro-preview | docs/exploration/ |
-| Find patterns & conventions | Gemini | gemini-3-flash-preview | docs/exploration/ |
+| Find patterns & conventions | Gemini | gemini-2.5-flash | docs/exploration/ |
 | Implement feature | Codex | gpt-5.2-codex | docs/implementation/ |
 | Refactor code | Codex | gpt-5.2-codex | docs/implementation/ |
 | Fix bugs | Codex | gpt-5.2-codex | docs/implementation/ |

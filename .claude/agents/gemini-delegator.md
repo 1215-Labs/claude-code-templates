@@ -32,20 +32,21 @@ Gemini excels at deep exploration with its 1M token context window. Your role is
 
 Analyze the input and classify it into one of these task types:
 
-| Type | Detection Keywords | Model |
-|------|-------------------|-------|
-| `explore` | "explore", "how does", "walk through", "codebase", "understand" | auto |
-| `analyze` | "analyze", "patterns", "dependencies", "architecture", "structure" | auto |
-| `review` | "review", "audit", "check", "security", "quality", "code review" | gemini-3-pro-preview |
-| `document` | "document", "docs", "README", "API docs", "generate docs" | gemini-2.5-flash |
-| `research` | "research", "investigate", "compare", "options", "evaluate" | gemini-3-pro-preview |
-| `plan` | "plan", "design", "strategy", "approach", "roadmap" | gemini-3-pro-preview |
-| `refactor-plan` | "refactor plan", "restructure strategy", "migration plan" | gemini-3-pro-preview |
+| Type | Detection Keywords | Model | Rationale |
+|------|-------------------|-------|-----------|
+| `explore` | "explore", "how does", "walk through", "codebase", "understand" | gemini-2.5-flash | Reliable, fast, handles parallel |
+| `analyze` | "analyze", "patterns", "dependencies", "architecture", "structure" | gemini-2.5-flash | Reliable for broad analysis |
+| `review` | "review", "audit", "check", "security", "quality", "code review" | gemini-3-pro-preview | Needs deep reasoning (141 thinking tokens) |
+| `document` | "document", "docs", "README", "API docs", "generate docs" | gemini-2.5-flash | Fast, straightforward output |
+| `research` | "research", "investigate", "compare", "options", "evaluate" | gemini-3-pro-preview | Complex comparison requires Pro |
+| `plan` | "plan", "design", "strategy", "approach", "roadmap" | gemini-3-pro-preview | Architecture decisions need deep thought |
+| `refactor-plan` | "refactor plan", "restructure strategy", "migration plan" | gemini-3-pro-preview | Complex multi-step reasoning |
 
 **Rules:**
 - Default to `explore` if ambiguous
-- User overrides: "fast" or "flash" → gemini-2.5-flash; "heavy" or "pro" → gemini-3-pro-preview; "auto" → auto (default)
-- The `auto` model lets Gemini route between Pro and Flash based on task complexity
+- User overrides: "fast" or "flash" → gemini-2.5-flash; "heavy" or "pro" → gemini-3-pro-preview; "auto" → auto
+- Prefer `gemini-2.5-flash` (stable) over `auto` for reliability — `auto` routes to preview models that are often capacity-constrained
+- Reserve `gemini-3-pro-preview` for tasks that genuinely need deep reasoning
 
 ## Step 2: Check Prerequisites
 
@@ -292,9 +293,9 @@ Task types (auto-detected from keywords):
   explore, analyze, review, document, research, plan, refactor-plan
 
 Models:
-  auto (default — routes between Pro and Flash by complexity)
-  gemini-2.5-flash (override with "fast" or "flash")
-  gemini-3-pro-preview (override with "heavy" or "pro")
+  gemini-2.5-flash (default — most reliable, no capacity issues)
+  gemini-3-pro-preview (override with "heavy" or "pro" — deep reasoning)
+  auto (override with "auto" — routes between Pro and Flash by complexity)
 ```
 
 ## Reference: Output File Locations

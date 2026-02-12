@@ -4,9 +4,9 @@ Create a new Gemini CLI agent to execute the command.
 
 ## Variables
 
-DEFAULT_MODEL: gemini-3-pro-preview
+DEFAULT_MODEL: gemini-2.5-flash
 HEAVY_MODEL: gemini-3-pro-preview
-BASE_MODEL: gemini-3-pro-preview
+BASE_MODEL: gemini-2.5-flash
 FAST_MODEL: gemini-2.5-flash
 AUTO_MODEL: auto
 
@@ -18,41 +18,79 @@ AUTO_MODEL: auto
 - Use Pro for: Complex multi-step reasoning, architecture decisions
 - Built-in auto-routing: `auto` model picks Pro or Flash based on task complexity
 
-## Model Selection
+## Available Models (as of Feb 2026)
 
-| Task | Model | Alias |
-|------|-------|-------|
-| Quick exploration | gemini-2.5-flash | `flash` |
-| Auto-routed (default) | auto | `auto` |
-| Codebase analysis | gemini-3-flash-preview | `flash` (preview) |
-| Complex reasoning | gemini-3-pro-preview | `pro` |
-| Architecture review | gemini-3-pro-preview | `pro` |
-| Cheapest / simple | gemini-2.5-flash-lite | `flash-lite` |
+| Model ID | Alias | Status | Latency | Best For |
+|---|---|---|---|---|
+| `auto` | — | Active | varies | Let Gemini route by complexity |
+| `gemini-3-pro-preview` | `pro` | Active | ~6s | Complex reasoning, architecture review |
+| `gemini-3-flash-preview` | `flash` | Active | ~3s | Quick analysis (often capacity-constrained) |
+| `gemini-2.5-pro` | — | Stable | ~5s | Full Pro, non-preview |
+| `gemini-2.5-flash` | — | Stable | ~2s | **Most reliable**, best for parallel/delegated tasks |
+| `gemini-2.5-flash-lite` | `flash-lite` | Stable | ~2s | Cheapest, simple tasks |
+| `gemini-2.5-flash-image` | — | Stable | — | Image generation |
+| `gemini-2.5-pro-preview-tts` | — | Stable | — | Text-to-speech |
+| `gemini-2.0-flash` | — | **Deprecated** (EOL Mar 31 2026) | — | Avoid |
+| `gemini-2.0-flash-lite` | — | **Deprecated** | — | Avoid |
+
+### Model Selection Guide
+
+| Task | Model | Why |
+|------|-------|-----|
+| Delegated exploration (default) | `gemini-2.5-flash` | Most reliable, no capacity issues |
+| Parallel tasks | `gemini-2.5-flash` | Stable capacity even with 2 concurrent |
+| Complex reasoning | `gemini-3-pro-preview` | Deeper thinking (141 thinking tokens vs 25) |
+| Architecture review | `gemini-3-pro-preview` | Best reasoning quality |
+| Auto-routed | `auto` | Routes by complexity, has built-in fallback |
+| Cheapest / simple | `gemini-2.5-flash-lite` | Lowest token cost |
 
 ### Model Aliases
 
-Gemini CLI supports short aliases for model selection:
+Gemini CLI supports short aliases:
 
 | Alias | Resolves To | Best For |
 |-------|------------|---------|
-| `auto` | Routes between Pro/Flash | Default — let Gemini decide |
+| `auto` | Routes between Pro/Flash | Let Gemini decide (has built-in fallback) |
 | `pro` | gemini-3-pro-preview | Complex reasoning, architecture |
-| `flash` | gemini-3-flash-preview | Quick analysis, file discovery |
+| `flash` | gemini-3-flash-preview | Quick analysis (capacity-constrained) |
 | `flash-lite` | gemini-2.5-flash-lite | Cheapest, simple tasks |
+
+**Note**: `gemini-2.5-flash` (stable) has no alias — use the full ID. It is more reliable than `flash` (which resolves to `gemini-3-flash-preview`).
 
 ## Fallback Chain
 
-Gemini CLI has **built-in model fallback** with error classification (quota, auth, transient). Models fall back automatically.
+### Built-in (auto model)
 
-Manual fallback order:
-1. gemini-3-pro-preview (default)
-2. gemini-3-flash-preview (fallback)
-3. gemini-2.5-flash (emergency fallback)
+The `auto` model has built-in fallback: if `gemini-3-flash-preview` is capacity-exhausted, it falls back to `gemini-2.5-flash-lite`. Discovered empirically — not documented.
+
+### Executor fallback (gemini_task_executor.py)
+
+The executor adds a second layer of retry/fallback via `--fallback-models`:
+
+```
+Primary model (e.g., auto) → retry up to --max-retries times
+  ↓ still failing (429)
+Fallback model (e.g., gemini-2.5-flash) → retry up to --max-retries times
+  ↓ still failing
+Report structured error in done.json
+```
+
+Default fallback chain: `auto` → `gemini-2.5-flash`
+
+### Recommended fallback chains by use case
+
+| Use Case | Primary | Fallback | Flag |
+|---|---|---|---|
+| General (default) | `auto` | `gemini-2.5-flash` | `--fallback-models gemini-2.5-flash` |
+| Reliability-first | `gemini-2.5-flash` | `gemini-2.5-flash-lite` | `--fallback-models gemini-2.5-flash-lite` |
+| Quality-first | `gemini-3-pro-preview` | `gemini-2.5-flash` | `--fallback-models gemini-2.5-flash` |
+| Parallel tasks | `gemini-2.5-flash` | (none needed) | `--fallback-models ""` |
 
 ## Instructions
 
 - Always use `--approval-mode yolo` for automatic tool approvals (more explicit than `-y`)
 - For the --model argument, use DEFAULT_MODEL if not specified. If 'fast' is requested, use FAST_MODEL. If 'heavy' is requested, use HEAVY_MODEL.
+- IMPORTANT: Ensure GEMINI_API_KEY is exported before running the command
 
 ## Mode: Non-Interactive (Default)
 
@@ -61,7 +99,7 @@ Use the `-p` flag (prompt mode) for autonomous execution.
 ### Command Template
 
 ```bash
-gemini -p "PROMPT" --model MODEL --approval-mode yolo
+export GEMINI_API_KEY="${GEMINI_API_KEY}" && gemini -p "PROMPT" --model MODEL --approval-mode yolo
 ```
 
 ### Examples
