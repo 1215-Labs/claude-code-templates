@@ -107,6 +107,13 @@
         "description": "Scoring rubrics, freshness criteria, and task graph generation for multi-model repo optimization"
       },
       {
+        "name": "repo-audit-engine",
+        "path": ".claude/skills/repo-audit-engine",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Alignment scoring, layer detection, prompt templates, and unified JSON schema for multi-layer repo auditing"
+      },
+      {
         "name": "obsidian-context",
         "path": ".claude/skills/obsidian-context",
         "deployment": "global",
@@ -623,6 +630,13 @@
         "deployment": "global",
         "status": "beta",
         "description": "Multi-model repo optimization with Gemini + Codex analysis and 3-agent team execution"
+      },
+      {
+        "name": "workflow/repo-audit",
+        "path": ".claude/commands/workflow/repo-audit.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Multi-layer repo alignment audit (docs-to-code, internal consistency, code-to-deploy) via forked Gemini + Codex"
       },
       {
         "name": "workflow/spawn-team",

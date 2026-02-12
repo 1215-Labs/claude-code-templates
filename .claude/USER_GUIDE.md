@@ -97,6 +97,7 @@ Skills provide reusable expertise. Key skills:
 | `youtube-transcript` | Standalone YouTube transcript downloader/transformer with skill-evaluator integration |
 | `repo-equip-engine` | Matching heuristics and templates for `/repo-equip` |
 | `repo-optimize-engine` | Scoring rubrics and task graph generation for `/repo-optimize` |
+| `repo-audit-engine` | Alignment scoring, layer detection, prompt templates for `/repo-audit` |
 | `mac-manage-context` | Shared knowledge base for `/mac-*` commands |
 | `cbass-context` | Shared knowledge base for `/cbass-*` commands |
 | `obsidian-context` | Shared knowledge base for `/obsidian-*` commands |
@@ -121,6 +122,7 @@ Skills provide reusable expertise. Key skills:
 | `/reference-distill` | Extract high-ROI patterns from evaluated references |
 | `/repo-equip` | Equip any repo with matching components |
 | `/repo-optimize` | Deep multi-model repo optimization with agent team |
+| `/repo-audit` | Multi-layer alignment audit (docs, code, deploy) |
 | `/all_skills` | List available skills |
 | `/codex` | Delegate tasks to Codex CLI with monitoring |
 | `/gemini` | Delegate exploration/analysis to Gemini CLI |
@@ -191,7 +193,8 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  COMMANDS (invoke directly)                              │
 │  /onboarding  /quick-prime  /deep-prime  /repo-equip     │
 │  /code-review  /ui-review  /rca  /orchestrate            │
-│  /spawn-team  /repo-optimize  /codex  /gemini             │
+│  /spawn-team  /repo-optimize  /repo-audit                 │
+│  /codex  /gemini                                         │
 │  /sync-reference  /coderabbit-helper  /all_skills        │
 │  /remember  /forget  /memory                             │
 │  /mac-health  /mac-diff  /mac-status  /mac-discover      │
@@ -214,7 +217,7 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  reference-distill  uv-hook-template                     │
 │  youtube-transcript                                      │
 │  repo-equip-engine                                       │
-│  repo-optimize-engine                                    │
+│  repo-optimize-engine  repo-audit-engine                  │
 │  mac-manage-context  cbass-context  obsidian-context      │
 │  skill-router  agent-teams                               │
 │  n8n-* (7 template skills)                               │

@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Repo Audit Layer Output",
+  "description": "Unified output schema for all repo-audit fork results. All forks (Gemini, Codex, Sonnet fallback) must emit this format.",
+  "type": "object",
+  "required": ["layer", "executive_summary", "score", "grade", "total_issues", "by_severity", "findings"],
+  "properties": {
+    "layer": {
+      "type": "string",
+      "enum": ["docs-to-code", "internal-consistency", "code-to-deploy"],
+      "description": "Which audit layer this result covers"
+    },
+    "executive_summary": {
+      "type": "string",
+      "description": "2-3 sentence summary of findings for this layer"
+    },
+    "score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Alignment score out of 100"
+    },
+    "grade": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D", "F"],
+      "description": "Letter grade based on score"
+    },
+    "total_issues": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of issues found"
+    },
+    "by_severity": {
+      "type": "object",
+      "required": ["HIGH", "MEDIUM", "LOW"],
+      "properties": {
+        "HIGH": { "type": "integer", "minimum": 0 },
+        "MEDIUM": { "type": "integer", "minimum": 0 },
+        "LOW": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "gating_issues": {
+      "type": "array",
+      "description": "Issues that cap overall grade at C regardless of score",
+      "items": {
+        "type": "object",
+        "required": ["issue", "evidence"],
+        "properties": {
+          "issue": { "type": "string" },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "category", "description", "status"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["HIGH", "MEDIUM", "LOW"]
+          },
+          "category": {
+            "type": "string",
+            "description": "Finding category (e.g., 'stale-doc', 'dead-code', 'broken-import', 'deploy-mismatch')"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of the finding"
+          },
+          "source_path": {
+            "type": "string",
+            "description": "File path where the issue originates"
+          },
+          "source_line": {
+            "type": "integer",
+            "description": "Line number in source file (if applicable)"
+          },
+          "claim": {
+            "type": "string",
+            "description": "What the documentation/config claims (docs-to-code layer)"
+          },
+          "reality": {
+            "type": "string",
+            "description": "What actually exists in the codebase"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["VERIFIED", "STALE", "INACCURATE", "PARTIAL", "MISSING", "ORPHANED", "BROKEN", "MISMATCH"],
+            "description": "Verification status of the finding"
+          },
+          "reproduction_command": {
+            "type": "string",
+            "description": "Command to reproduce/verify this finding (internal-consistency layer)"
+          },
+          "fix_suggestion": {
+            "type": "string",
+            "description": "Suggested fix or remediation"
+          }
+        }
+      }
+    },
+    "index_md_status": {
+      "type": "string",
+      "enum": ["present_and_accurate", "present_with_issues", "missing", "not_applicable"],
+      "description": "Status of .claude/INDEX.md validation (docs-to-code layer only)"
+    },
+    "index_md_findings": {
+      "type": "array",
+      "description": "Specific INDEX.md validation results (docs-to-code layer only)",
+      "items": {
+        "type": "object",
+        "required": ["check", "passed"],
+        "properties": {
+          "check": { "type": "string" },
+          "passed": { "type": "boolean" },
+          "details": { "type": "string" }
+        }
+      }
+    },
+    "evidence_index": {
+      "type": "array",
+      "description": "List of key files inspected during this audit layer",
+      "items": { "type": "string" }
+    },
+    "scoring_breakdown": {
+      "type": "array",
+      "description": "Per-criterion score breakdown",
+      "items": {
+        "type": "object",
+        "required": ["criterion", "points_possible", "points_awarded"],
+        "properties": {
+          "criterion": { "type": "string" },
+          "points_possible": { "type": "integer" },
+          "points_awarded": { "type": "integer" },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

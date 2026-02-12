@@ -25,6 +25,7 @@ See [REGISTRY.md](REGISTRY.md) for complete component catalog and [USER_GUIDE.md
 | Quick context | `/quick-prime` |
 | Deep context | `/deep-prime "area" "focus"` |
 | Code review | `/code-review` |
+| Audit repo alignment | `/repo-audit "/path/to/repo"` |
 | Debug issue | `/rca "error"` |
 | Find patterns | `codebase-analyst` agent |
 | Check types | `type-checker` agent |

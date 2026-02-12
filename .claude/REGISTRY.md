@@ -29,6 +29,7 @@ Central index of all .claude components for quick discovery.
 | Build UV hooks | `uv-hook-template` skill |
 | View context usage in status line | `status-line-context` hook (Notification) |
 | Optimize a repo (deep) | `/repo-optimize "/path/to/repo"` |
+| Audit repo alignment | `/repo-audit "/path/to/repo"` |
 | Generate a new agent | `meta-agent` agent |
 | Skill priorities (auto) | `skill-router` skill (SessionStart) |
 | Remember a fact | `/remember "fact"` |
@@ -174,11 +175,13 @@ Central index of all .claude components for quick discovery.
 | Skill | `repo-equip-engine` | Matching heuristics and templates for automated repo equipment |
 | Skill | `reference-distill` | Evaluation-to-integration engine: parse evals, extract, adapt, track provenance |
 | Skill | `repo-optimize-engine` | Freshness scoring, task graph generation for multi-model repo optimization |
+| Skill | `repo-audit-engine` | Alignment scoring, layer detection, prompt templates for multi-layer repo auditing |
 | Skill | `skill-router` | Proactive skill invocation with per-repo priority lists |
 | Command | `/orchestrate` | Quick orchestration via forked terminals |
 | Command | `/reference-distill` | Extract and integrate high-ROI patterns from evaluated references |
 | Command | `/repo-equip` | Analyze a repo and equip it with matching Claude Code components |
 | Command | `/repo-optimize` | Multi-model repo optimization with agent team execution |
+| Command | `/repo-audit` | Multi-layer alignment audit (docs, code, deploy) via Gemini + Codex |
 | Agent | `codex-delegator` | Delegate tasks to Codex CLI with monitoring, sandbox validation, and result summarization |
 | Agent | `gemini-delegator` | Delegate exploration/analysis tasks to Gemini CLI with structured JSON parsing |
 | Command | `/codex` | Delegate tasks to Codex CLI via slash command with monitoring |
@@ -250,8 +253,8 @@ Multi-step workflows for complex tasks:
 | Type | Count | Location |
 |------|-------|----------|
 | Agents | 18 | `.claude/agents/` |
-| Commands | 43 | `.claude/commands/` |
-| Skills | 17 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
+| Commands | 44 | `.claude/commands/` |
+| Skills | 18 global + 7 template | `.claude/skills/` + `templates/n8n/skills/` |
 | Rules | 1 | `.claude/rules/` |
 | Hooks | 20 (16 command + 4 prompt) | `.claude/hooks/` |
 | Examples | 4 | `.mcp.json` + `examples/settings/` |
@@ -297,7 +300,8 @@ Multi-step workflows for complex tasks:
                               /repo-equip    /prp-claude-code-execute
                                     │
                                     ↓
-                              /repo-optimize
+                              /repo-optimize ←─── /repo-audit
+                                                   (alignment check)
 
                     AGENT TEAMS (EXPERIMENTAL)
                     ==========================
@@ -337,6 +341,7 @@ Multi-step workflows for complex tasks:
 | `reference-distill` | — | /reference-distill | skill-evaluator, repo-equip-engine, repo-optimize-engine, fork-terminal |
 | `repo-equip-engine` | — | /repo-equip | skill-evaluator, multi-model-orchestration, reference-distill |
 | `repo-optimize-engine` | — | /repo-optimize | repo-equip-engine, multi-model-orchestration, agent-teams, fork-terminal |
+| `repo-audit-engine` | — | /repo-audit | repo-optimize-engine, multi-model-orchestration, fork-terminal |
 | `agent-teams` | — | /spawn-team | multi-model-orchestration, fork-terminal |
 | `lsp-symbol-navigation` | codebase-analyst | /deep-prime | lsp-dependency-analysis, lsp-type-safety-check |
 | `lsp-type-safety-check` | code-reviewer | /code-review | lsp-symbol-navigation |
@@ -442,4 +447,5 @@ All commands reference: obsidian-context skill
 | `/deep-prime` | feature-development | Deep dive before coding |
 | `/code-review` | code-quality | Pre-merge validation |
 | `/rca` | bug-investigation | Debugging issues |
+| `/repo-audit` | — (generates report) | Pre-release alignment check |
 | `/spawn-team` | agent-team-coordination | Parallel team work |
