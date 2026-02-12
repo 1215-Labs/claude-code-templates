@@ -562,6 +562,13 @@
         "description": "Sync Obsidian vault between local filesystem and MinIO S3"
       },
       {
+        "name": "obsidian/obsidian-deploy",
+        "path": ".claude/commands/obsidian/obsidian-deploy.md",
+        "deployment": "global",
+        "status": "beta",
+        "description": "Guided VPS deployment with pre-flight checks, rsync, deploy.sh, and health verification"
+      },
+      {
         "name": "mac-manage/mac-health",
         "path": ".claude/commands/mac-manage/mac-health.md",
         "deployment": "global",

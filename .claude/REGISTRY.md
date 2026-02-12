@@ -51,6 +51,7 @@ Central index of all .claude components for quick discovery.
 | Obsidian env validation | `/obsidian-env-check` |
 | Obsidian Caddy reload | `/obsidian-caddy-reload` |
 | Obsidian vault sync | `/obsidian-vault-sync "push"` |
+| Obsidian deploy | `/obsidian-deploy "obsidian-agent"` |
 
 ## By Category
 
@@ -155,6 +156,7 @@ Central index of all .claude components for quick discovery.
 | Command | `/obsidian-env-check` | Validate required environment variables in .env |
 | Command | `/obsidian-caddy-reload` | Reload Caddy reverse proxy configuration |
 | Command | `/obsidian-vault-sync` | Sync Obsidian vault between local filesystem and MinIO S3 |
+| Command | `/obsidian-deploy` | Guided deployment with pre-flight checks, rsync, deploy.sh, health verify |
 | Skill | `obsidian-context` | Shared knowledge base (16 services, 8 domains, MinIO buckets, glossary) |
 
 ### Browser, Terminal & Sandbox Automation
@@ -342,7 +344,7 @@ Multi-step workflows for complex tasks:
 | `n8n-*` (7 skills) | n8n-mcp-tester | — | (inter-related) |
 | `mac-manage-context` | — | /mac-health, /mac-diff, /mac-status, /mac-discover, /mac-restore | — |
 | `cbass-context` | — | /cbass-status, /cbass-logs, /cbass-deploy | — |
-| `obsidian-context` | — | /obsidian-status, /obsidian-health, /obsidian-restart, /obsidian-logs, /obsidian-env-check, /obsidian-caddy-reload, /obsidian-vault-sync | — |
+| `obsidian-context` | — | /obsidian-status, /obsidian-health, /obsidian-restart, /obsidian-logs, /obsidian-env-check, /obsidian-caddy-reload, /obsidian-vault-sync, /obsidian-deploy | — |
 
 ### n8n Skills Relationships
 
@@ -421,6 +423,9 @@ All commands reference: cbass-context skill
          ├──→ /obsidian-restart "<service>" ──→ restart + verify
          └──→ /rca "<issue>" ──→ deep root cause analysis
 
+/obsidian-deploy ──→ full deployment (rsync + deploy.sh + health)
+         ├──→ /obsidian-env-check ──→ validate .env (pre-flight)
+         └──→ /obsidian-health ──→ verify after deploy
 /obsidian-env-check ──→ validate .env before deploy
 /obsidian-caddy-reload ──→ reload Caddy after Caddyfile changes
 /obsidian-vault-sync ──→ sync vault (push/pull/sync/watch)
