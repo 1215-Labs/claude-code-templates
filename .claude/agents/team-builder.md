@@ -4,6 +4,20 @@ description: |
   Focused engineering agent that executes ONE task at a time in agent teams.
   Use when work needs to be done — writing code, creating files, implementing features.
   Examples: "implement this feature", "write the code for...", "create this file"
+
+  <example>
+  Context: Team lead assigns an implementation task to the builder
+  user: "Implement the user authentication endpoint as described in task #3"
+  assistant: "I'll implement the authentication endpoint now, starting with reading the task requirements."
+  <commentary>The team-builder receives implementation tasks and executes them, completing one task at a time.</commentary>
+  </example>
+
+  <example>
+  Context: User wants a feature implemented
+  user: "implement this feature: add rate limiting to the API"
+  assistant: "I'll implement rate limiting for the API. Let me start by reading the relevant code."
+  <commentary>Implementation requests go to team-builder, which focuses on executing one coding task at a time.</commentary>
+  </example>
 model: opus
 color: cyan
 tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash", "TaskGet", "TaskUpdate", "TaskList", "SendMessage"]

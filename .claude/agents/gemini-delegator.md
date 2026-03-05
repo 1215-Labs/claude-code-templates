@@ -12,6 +12,20 @@ description: |
   - "gemini review src/auth/ for security issues"
   - "gemini document the REST API"
   - "gemini research pagination strategies"
+
+  <example>
+  Context: Developer needs to explore the authentication system architecture
+  user: "use gemini to explore the auth system"
+  assistant: "I'll use the gemini-delegator agent to leverage Gemini's large context for exploring the authentication system."
+  <commentary>Large codebase exploration benefits from Gemini's 1M token context window, making gemini-delegator the right choice.</commentary>
+  </example>
+
+  <example>
+  Context: Developer wants to understand the database schema
+  user: "gemini analyze the database schema"
+  assistant: "Let me invoke the gemini-delegator agent to have Gemini perform a comprehensive database schema analysis."
+  <commentary>Schema analysis requires reading many files simultaneously — Gemini's large context makes this efficient via gemini-delegator.</commentary>
+  </example>
 model: sonnet
 # Model rationale: Agent orchestrates via Bash/Read/Write — Sonnet is sufficient.
 # Heavy reasoning happens inside Gemini itself.
@@ -32,20 +46,21 @@ Gemini excels at deep exploration with its 1M token context window. Your role is
 
 Analyze the input and classify it into one of these task types:
 
-| Type | Detection Keywords | Model |
-|------|-------------------|-------|
-| `explore` | "explore", "how does", "walk through", "codebase", "understand" | auto |
-| `analyze` | "analyze", "patterns", "dependencies", "architecture", "structure" | auto |
-| `review` | "review", "audit", "check", "security", "quality", "code review" | gemini-3-pro-preview |
-| `document` | "document", "docs", "README", "API docs", "generate docs" | gemini-2.5-flash |
-| `research` | "research", "investigate", "compare", "options", "evaluate" | gemini-3-pro-preview |
-| `plan` | "plan", "design", "strategy", "approach", "roadmap" | gemini-3-pro-preview |
-| `refactor-plan` | "refactor plan", "restructure strategy", "migration plan" | gemini-3-pro-preview |
+| Type | Detection Keywords | Model | Rationale |
+|------|-------------------|-------|-----------|
+| `explore` | "explore", "how does", "walk through", "codebase", "understand" | gemini-2.5-flash | Reliable, fast, handles parallel |
+| `analyze` | "analyze", "patterns", "dependencies", "architecture", "structure" | gemini-2.5-flash | Reliable for broad analysis |
+| `review` | "review", "audit", "check", "security", "quality", "code review" | gemini-3-pro-preview | Needs deep reasoning (141 thinking tokens) |
+| `document` | "document", "docs", "README", "API docs", "generate docs" | gemini-2.5-flash | Fast, straightforward output |
+| `research` | "research", "investigate", "compare", "options", "evaluate" | gemini-3-pro-preview | Complex comparison requires Pro |
+| `plan` | "plan", "design", "strategy", "approach", "roadmap" | gemini-3-pro-preview | Architecture decisions need deep thought |
+| `refactor-plan` | "refactor plan", "restructure strategy", "migration plan" | gemini-3-pro-preview | Complex multi-step reasoning |
 
 **Rules:**
 - Default to `explore` if ambiguous
-- User overrides: "fast" or "flash" → gemini-2.5-flash; "heavy" or "pro" → gemini-3-pro-preview; "auto" → auto (default)
-- The `auto` model lets Gemini route between Pro and Flash based on task complexity
+- User overrides: "fast" or "flash" → gemini-2.5-flash; "heavy" or "pro" → gemini-3-pro-preview; "auto" → auto
+- Prefer `gemini-2.5-flash` (stable) over `auto` for reliability — `auto` routes to preview models that are often capacity-constrained
+- Reserve `gemini-3-pro-preview` for tasks that genuinely need deep reasoning
 
 ## Step 2: Check Prerequisites
 
@@ -124,13 +139,46 @@ PROMPT_EOF
 
 ## Step 5: Fork Execution
 
+### Single Task
+
 ```bash
 python3 .claude/skills/fork-terminal/tools/fork_terminal.py \
   --log --tool gemini-task \
-  "uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/gemini-task-{slug}-prompt.txt -n {slug} -m {model}"
+  "uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/gemini-task-{slug}-prompt.txt -n {slug} -m {model} --auth-mode oauth"
 ```
 
 If `--include-directories` detected in Step 3, add `-I dir1 -I dir2` to the executor command.
+
+### Parallel Tasks (max 2 concurrent)
+
+When forking multiple tasks, **stagger launches by 30-60 seconds** to avoid quota saturation:
+
+```bash
+# First task — immediate
+python3 .claude/skills/fork-terminal/tools/fork_terminal.py \
+  --log --tool gemini-task \
+  "uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/gemini-task-{slug1}-prompt.txt -n {slug1} -m {model}"
+
+# Second task — delayed 30s
+python3 .claude/skills/fork-terminal/tools/fork_terminal.py \
+  --log --tool gemini-task --delay 30 \
+  "uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/gemini-task-{slug2}-prompt.txt -n {slug2} -m {model}"
+```
+
+**Concurrency rules:**
+- Max 2 concurrent Gemini forks (free OAuth quota bottleneck)
+- Stagger by 30-60s to avoid thundering herd on `cloudcode-pa.googleapis.com`
+- Prefer `gemini-2.5-flash` for parallel tasks (more reliable than `auto` which routes to preview models)
+- If a third task is needed, wait for one fork to complete first
+
+### Executor Options
+
+| Flag | Purpose | Example |
+|------|---------|---------|
+| `--auth-mode` | Auth method: oauth, api-key, vertex-ai | `--auth-mode api-key` |
+| `--fallback-models` | Comma-separated fallback on 429 | `--fallback-models gemini-2.5-flash` |
+| `--retry-delay` | Seconds between retries | `--retry-delay 15` |
+| `--max-retries` | Max retries per model | `--max-retries 2` |
 
 Report to the caller what was forked:
 - Task type and model selected
@@ -162,6 +210,16 @@ MONITORING PROCEDURE:
 - Do NOT read the full output.log every iteration (wastes context)
 - If reporting to a user (command mode), show a brief progress note every 60 seconds
 - If reporting to a parent agent (sub-agent mode), stay silent during polling
+
+**Error-aware monitoring:**
+When done.json appears, check the `error_type` field:
+- `null` → success, proceed to Step 7
+- `QUOTA_EXHAUSTED` / `MODEL_CAPACITY` → executor already retried with fallback; if still failed, suggest: wait 60s, try `--auth-mode api-key`, or use `gemini-2.5-flash` explicitly
+- `AUTH_FAILED` → check GEMINI_API_KEY or re-authenticate with `gemini` interactively
+- `TIMEOUT` → increase `--timeout`, or simplify the prompt
+- `CLI_NOT_FOUND` → `npm install -g @google/gemini-cli`
+
+Also check `retries_used` — if > 0, note the retry count in the report.
 
 ## Step 7: Summarize Results
 
@@ -249,9 +307,9 @@ Task types (auto-detected from keywords):
   explore, analyze, review, document, research, plan, refactor-plan
 
 Models:
-  auto (default — routes between Pro and Flash by complexity)
-  gemini-2.5-flash (override with "fast" or "flash")
-  gemini-3-pro-preview (override with "heavy" or "pro")
+  gemini-2.5-flash (default — most reliable, no capacity issues)
+  gemini-3-pro-preview (override with "heavy" or "pro" — deep reasoning)
+  auto (override with "auto" — routes between Pro and Flash by complexity)
 ```
 
 ## Reference: Output File Locations

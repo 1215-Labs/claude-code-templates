@@ -23,6 +23,9 @@ __pycache__/
 *.pyc
 .venv/
 
+# Memory search index (auto-generated)
+.claude/memory/.memory-search.db
+
 # Binary/reference files
 *.pdf
 

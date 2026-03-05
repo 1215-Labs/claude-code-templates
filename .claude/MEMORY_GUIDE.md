@@ -29,8 +29,9 @@ That's it. The hooks handle loading at session start and prompting you to save a
 
 1. **SessionStart** — `memory-loader.py` runs once, reads all memory files, injects a summary into Claude's context (up to ~2000 tokens)
 2. **During session** — Use `/remember`, `/forget`, `/memory` to manage stored knowledge
-3. **Stop** — A hook prompts Claude to review the session for anything worth remembering, writes to the appropriate files, and creates a session log
-4. **SessionEnd** — `memory-distill.py` creates a stub session log if the Stop hook didn't write one (safety net)
+3. **PreCompact** — When context is about to be compacted, `precompact-guard.py` checks for recent flushes (60s cooldown), then a prompt hook flushes unsaved memories to disk before they're lost
+4. **Stop** — A hook prompts Claude to review the session for anything worth remembering, writes to the appropriate files, and creates a session log
+5. **SessionEnd** — `memory-distill.py` creates a stub session log if the Stop hook didn't write one (safety net)
 
 ### Priority-Based Loading
 
@@ -83,7 +84,7 @@ Global memory is created by `/remember` when it classifies input as personal rat
 - **Alternatives**: What was considered
 ```
 
-**Session logs** follow a template:
+**Session logs** follow a template with category tags:
 
 ```markdown
 # Session 2026-02-07
@@ -92,11 +93,27 @@ Global memory is created by `/remember` when it classifies input as personal rat
 2-3 sentences of what was accomplished
 
 ## Key Changes
-- Files and features changed
+- [DECISION] Chose JWT over sessions for auth
+- [FACT] API rate limit is 100 req/min
+- [CONTEXT] Refactored auth middleware in src/auth/
 
 ## Open Items
-- Anything left unfinished
+- [CONTEXT] Rate limiting tests not yet written
 ```
+
+### Category Tags
+
+Both the Stop hook and PreCompact flush tag entries for structured retrieval:
+
+| Tag | When to Use |
+|-----|-------------|
+| `[DECISION]` | Architectural or design choices made |
+| `[PREFERENCE]` | User preferences discovered |
+| `[FACT]` | Important facts or constraints learned |
+| `[ENTITY]` | People, projects, URLs worth tracking |
+| `[CONTEXT]` | Current task state, progress, blockers |
+
+Tags make session logs scannable and improve FTS5 search results (see Search below).
 
 ## Commands
 
@@ -138,7 +155,7 @@ Section headings are preserved — only content is removed.
 ```
 /memory                     # Summary table: files, sizes, token counts, dates
 /memory "status"            # Detailed health check with budget breakdown
-/memory "search typescript" # Cross-file search with line numbers
+/memory "search typescript" # Ranked FTS5 search (falls back to grep)
 /memory "init"              # Create directories and starter templates
 /memory "prune"             # Remove old session logs (keeps 10 most recent)
 ```
@@ -157,11 +174,20 @@ The memory system runs without manual intervention through hooks defined in `.cl
 
 If the memory directories don't exist, the hook silently skips — no errors, no setup required.
 
+### On PreCompact (Mid-Session Memory Flush)
+
+When context is about to be compacted (long sessions), a two-stage hook fires:
+
+1. **`precompact-guard.py`** — Checks if a memory flush already happened within the last 60 seconds. If so, injects a `FLUSH_ALREADY_DONE` system message to prevent duplicate writes.
+2. **Prompt hook** — Instructs Claude to write unsaved memories to `.claude/memory/sessions/YYYY-MM-DD.md` with category tags, then preserve critical context in the compaction summary.
+
+This is the highest-value pattern — it ensures memories survive even when context is compressed mid-session. Based on OpenClaw's pre-compaction memory flush pattern.
+
 ### On Stop
 
 A prompt-based hook asks Claude to:
 1. Review the session for memory-worthy information
-2. Write new entries to the appropriate files (with timestamps)
+2. Write new entries to the appropriate files (with timestamps and category tags)
 3. Create a session log in `.claude/memory/sessions/`
 4. Check for uncommitted changes
 
@@ -196,6 +222,40 @@ Total               1,320 tokens (of 2000 budget)
 If a file exceeds its per-file max, it's truncated from the end with a `[...truncated]` marker. The most important content should be at the top of each file.
 
 If total loaded content exceeds the budget, lower-priority files (P2 first, then P1) are dropped entirely.
+
+## Search
+
+### FTS5 Ranked Search
+
+The `/memory "search <term>"` command uses SQLite FTS5 for ranked keyword search across all memory files. This replaces simple grep with relevance-ranked results and highlighted snippets.
+
+The sidecar script (`memory-search.py`) can also be called directly:
+
+```
+uv run .claude/hooks/memory-search.py "auth middleware"
+```
+
+It indexes all `.md` files in both `~/.claude/memory/` and `.claude/memory/`, rebuilds the index on each call (fast — memory dirs are small), and returns results ranked by relevance. If FTS5 fails, the command falls back to grep.
+
+The FTS5 database (`.claude/memory/.memory-search.db`) is auto-generated and gitignored.
+
+### Hybrid Search (FTS5 + pgvector)
+
+For semantic similarity beyond keyword matching, the hybrid search script combines FTS5 keyword results with pgvector vector search using OpenAI embeddings.
+
+```
+uv run .claude/hooks/memory-search-hybrid.py "query"              # hybrid (vector + keyword)
+uv run .claude/hooks/memory-search-hybrid.py --keyword-only "q"   # FTS5 only (no DB needed)
+uv run .claude/hooks/memory-search-hybrid.py --vector-only "q"    # pgvector only
+uv run .claude/hooks/memory-search-hybrid.py --index              # index memory files
+uv run .claude/hooks/memory-search-hybrid.py --status             # show index stats
+```
+
+Results are merged using a 0.7 vector / 0.3 keyword weighting (per OpenClaw's recommended ratio). When `DATABASE_URL` is not set, it gracefully falls back to keyword-only search.
+
+**Requirements**: `DATABASE_URL` (PostgreSQL with pgvector) and `OPENAI_API_KEY` (for text-embedding-3-small embeddings). The script creates a dedicated `memory_embeddings` table with an HNSW index for fast cosine similarity search.
+
+**Chunking**: Memory files are chunked at 800 characters (~200 tokens) with 100-char overlap. Content-hash caching skips re-embedding unchanged files.
 
 ## Security
 
@@ -247,6 +307,47 @@ Global files at `~/.claude/memory/` can be edited the same way.
 
 Project memory lives in `.claude/memory/` and should be committed to git. Session logs in `.claude/memory/sessions/` are optional — commit them if you want session history in the repo, or add `sessions/` to `.gitignore` if you don't.
 
+## Comparison with OpenClaw
+
+This memory system is based on patterns from [OpenClaw](https://github.com/openclaw/openclaw)'s memory architecture (documented in `docs/exploration/openclaw-architecture.md`, Part VIII). Here's how they compare.
+
+### Parity — What We Match
+
+| Capability | OpenClaw | This System |
+|---|---|---|
+| File-based daily logs | `memory/YYYY-MM-DD.md` | `sessions/YYYY-MM-DD.md` |
+| Curated long-term memory | Single `MEMORY.md` | Split across 6 typed files (decisions, tasks, profile, etc.) |
+| Pre-compaction disk flush | `memory-flush.ts` in agent runtime | `PreCompact` prompt hook + dedup guard |
+| Flush dedup guard | Token threshold + cycle tracking | 60s cooldown via `precompact-guard.py` |
+| Bootstrap loader at start | `before_agent_start` hook | `memory-loader.py` with priority tiers |
+| Auto-capture at session end | Regex triggers → categorize → store | Stop prompt hook with category tags |
+| Keyword search (BM25) | SQLite FTS5 | SQLite FTS5 via `memory-search.py` |
+
+### Gaps — Where OpenClaw Is Ahead
+
+| Capability | OpenClaw | Gap |
+|---|---|---|
+| **Vector search** | sqlite-vec embeddings, hybrid BM25+vector (0.7/0.3 weighting) | `memory-search-hybrid.py` provides pgvector + FTS5 hybrid (alpha) |
+| **Embedding cascade** | Auto-selects: local GGUF → OpenAI → Gemini → Voyage with caching | Single provider (OpenAI text-embedding-3-small) |
+| **Plugin system** | Slot-based memory plugins (core, LanceDB), hot-swappable backends | Single implementation, no plugin API |
+| **Session transcript indexing** | Full conversations chunked (400 tokens, 80 overlap) into SQLite | Session summaries only |
+| **File watching** | Real-time inotify with 1500ms debounce | Reindex on each search call |
+| **Configurable thresholds** | Dozens of tunable params (`memorySearch.*`, `compaction.*`) | Hardcoded constants |
+
+### Advantages — Where We're Ahead
+
+| Capability | This System | OpenClaw |
+|---|---|---|
+| **Two-tier memory** | Global (`~/.claude/memory/`) + project (`.claude/memory/`) with auto-routing | Single directory, no global/project split |
+| **Auto-classification** | `/remember` routes by keyword analysis to 6 typed files | Manual categorization or regex triggers |
+| **Priority-based loading** | P0/P1/P2 tiers ensure critical facts always load within budget | Loads by recency, no priority system |
+| **Memory commands** | `/remember`, `/forget`, `/memory` with status, search, init, prune | No user-facing CLI commands |
+| **Secret scanning** | 13 patterns block credentials from being stored | Not addressed |
+
+### Summary
+
+The 4 highest-value OpenClaw patterns have been adopted: pre-compaction flush, auto-capture with category tags, FTS5 search, and hybrid vector+keyword search. The hybrid search prototype (`memory-search-hybrid.py`) uses pgvector on Supabase with OpenAI embeddings, merging results at 0.7/0.3 vector/keyword weighting — matching OpenClaw's approach. Remaining gaps (plugin system, session transcript indexing, file watching) solve scale problems that don't apply to small memory directories.
+
 ## See Also
 
 - [USER_GUIDE.md](USER_GUIDE.md) — Quick reference for all `.claude/` components
@@ -255,5 +356,9 @@ Project memory lives in `.claude/memory/` and should be committed to git. Sessio
 - `.claude/commands/workflow/remember.md` — `/remember` command source
 - `.claude/commands/workflow/forget.md` — `/forget` command source
 - `.claude/hooks/memory-loader.py` — Session start loader
+- `.claude/hooks/precompact-guard.py` — PreCompact dedup guard (60s cooldown)
+- `.claude/hooks/memory-search.py` — FTS5 ranked search sidecar
+- `.claude/hooks/memory-search-hybrid.py` — Hybrid FTS5 + pgvector search (alpha)
 - `.claude/hooks/memory-distill.py` — Session end fallback
 - `.claude/utils/memory.py` — Core utility functions
+- `docs/exploration/obsidian-vector-patterns.md` — pgvector infrastructure analysis

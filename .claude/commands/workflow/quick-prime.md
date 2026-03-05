@@ -22,7 +22,19 @@ allowed-tools:
 
 You need to quickly understand this codebase. Follow these steps:
 
-## Step 1: Read Project Documentation
+## Step 1: Read Project Context (Progressive Disclosure)
+
+### Check for INDEX.md First
+
+1. Check if `.claude/INDEX.md` exists (use Glob for `.claude/INDEX.md`)
+   - **If INDEX.md exists**: Read it — this is the lightweight entry point (~40-80 lines)
+     - It contains Quick Facts, Documentation Map, Critical Paths, and Anti-Patterns
+     - Do NOT read deeper docs from the Documentation Map yet — only on-demand for specific tasks
+     - Use the Critical Paths section to understand code flow (skip Step 2 tree exploration)
+     - Use Quick Facts for tech stack detection (skip Step 3)
+   - **If INDEX.md does NOT exist**: Fall back to reading CLAUDE.md + README.md (below)
+
+### Fallback: Read Documentation Directly
 
 1. **Read CLAUDE.md** for development guidelines and patterns
 2. **Read README.md** for project overview and setup

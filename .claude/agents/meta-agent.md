@@ -4,6 +4,20 @@ description: |
   Generates new Claude Code sub-agent configuration files from descriptions.
   Use this proactively when the user asks to create a new sub-agent.
   Examples: "create an agent for...", "I need an agent that...", "generate an agent"
+
+  <example>
+  Context: User wants to create a new sub-agent for code review
+  user: "create an agent that reviews code for quality issues"
+  assistant: "I'll use the meta-agent to generate a code review agent configuration file."
+  <commentary>User requesting new agent creation triggers meta-agent to generate the agent configuration.</commentary>
+  </example>
+
+  <example>
+  Context: User needs an automated test runner agent
+  user: "I need an agent that generates unit tests for my code"
+  assistant: "I'll use the meta-agent to create a test generation agent with the appropriate tools and prompt."
+  <commentary>User describes agent functionality they need, so meta-agent creates the configuration.</commentary>
+  </example>
 model: opus
 color: cyan
 tools: ["Write", "Read", "Glob", "Grep", "WebFetch"]

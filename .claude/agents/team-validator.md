@@ -4,8 +4,22 @@ description: |
   Read-only validation agent that checks if a task was completed successfully.
   Use after a builder finishes to verify work meets acceptance criteria.
   Examples: "validate this work", "check if the task is done correctly"
-model: opus
+
+  <example>
+  Context: Team lead asks to validate a completed implementation
+  user: "validate this work against the spec"
+  assistant: "I'll read the implementation and check it against the acceptance criteria."
+  <commentary>After a builder finishes work, the team-validator reviews it for correctness against the spec.</commentary>
+  </example>
+
+  <example>
+  Context: User wants to check if a task was completed correctly
+  user: "check if the task is done correctly"
+  assistant: "Let me validate the implementation by checking it against the task requirements."
+  <commentary>Validation requests trigger team-validator to perform read-only review of completed work.</commentary>
+  </example>
 color: yellow
+model: inherit
 tools: ["Read", "Glob", "Grep", "Bash", "TaskGet", "TaskUpdate", "TaskList", "SendMessage"]
 category: orchestration
 related:

@@ -3,12 +3,12 @@
 Security pattern checker for Claude Code PreToolUse hooks.
 
 Reads tool input from stdin JSON, checks for 9 security anti-patterns,
-tracks shown warnings per session to avoid repetition, and exits with
-code 2 (blocking) on first occurrence or 0 on repeat/no match.
+tracks shown warnings per session to avoid repetition, and outputs
+structured JSON to control blocking (deny) or pass-through (allow).
 
 Input: JSON on stdin with keys: session_id, tool_name, tool_input
-Output: Warning message on stdout (if pattern detected)
-Exit codes: 0 = allow, 2 = block (security issue found)
+Output: JSON on stdout with hookSpecificOutput.permissionDecision and systemMessage
+Exit codes: 0 always (structured JSON output controls block/allow)
 """
 
 import json
@@ -154,8 +154,14 @@ def main():
         lines.append(f"  * {m['label']}")
         lines.append(f"    -> {m['guidance']}\n")
     lines.append("Review and confirm this is intentional before proceeding.")
-    print("\n".join(lines))
-    sys.exit(2)
+    result = {
+        "hookSpecificOutput": {
+            "permissionDecision": "deny"
+        },
+        "systemMessage": "\n".join(lines)
+    }
+    print(json.dumps(result))
+    sys.exit(0)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 ---
 name: skill-router
-description: Proactive skill invocation engine — reads per-repo priority lists and enforces a 1% threshold for skill activation
+description: "This skill should be used when proactively routing to the most relevant skill — reads per-repo priority lists and enforces a 1% threshold for skill activation before any task."
 version: 1.0.0
 category: orchestration
 user-invocable: false

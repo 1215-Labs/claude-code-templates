@@ -31,7 +31,16 @@ allowed-tools:
 **IMPORTANT**: Launch these explorations as PARALLEL subagents to preserve main agent context for synthesis and task execution.
 
 ### Subagent 1: Project Guidelines Explorer
-Use the **Explore subagent** with "medium" thoroughness to extract from CLAUDE.md:
+Use the **Explore subagent** with "medium" thoroughness:
+
+**If `.claude/INDEX.md` exists (preferred path):**
+- Read INDEX.md for Quick Facts, Critical Paths, and Anti-Patterns
+- Check the Documentation Map for docs relevant to the area "$1"
+- Read ONLY those matching docs (don't load all docs)
+- Return a structured summary of conventions relevant to "$1"
+
+**Otherwise (fallback):**
+Extract from CLAUDE.md:
 - `## Overview` - Project purpose
 - `## Project Structure` - Directory layout
 - `## Where to Look` - Task-to-location mapping (critical for finding relevant files)

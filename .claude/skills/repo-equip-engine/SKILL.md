@@ -1,6 +1,6 @@
 ---
 name: repo-equip-engine
-description: Matching heuristics, gap detection, complexity scoring, and templates for automated component integration into target repos
+description: "This skill should be used when the /repo-equip command needs matching heuristics, gap detection, complexity scoring, and templates for automated component integration into target repos."
 version: 1.0.0
 category: orchestration
 user-invocable: false

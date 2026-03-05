@@ -1,6 +1,6 @@
 ---
 name: multi-model-orchestration
-description: Use when facing large codebase exploration, complex implementation tasks, or when your context would benefit from delegating to Gemini (1M context) or Codex (SWE-bench leader)
+description: "This skill should be used when the user asks to \"use Gemini\", \"delegate to Codex\", \"explore with a large context model\", or faces tasks that benefit from delegating to Gemini (1M context) or Codex (SWE-bench leader)."
 version: 1.0.0
 category: orchestration
 user-invocable: true
@@ -62,9 +62,9 @@ digraph when_to_orchestrate {
 
 | I need to... | Fork to | Model | Output Location |
 |--------------|---------|-------|-----------------|
-| Explore large codebase | Gemini | gemini-3-flash-preview | docs/exploration/ |
+| Explore large codebase | Gemini | gemini-2.5-flash | docs/exploration/ |
 | Understand architecture | Gemini | gemini-3-pro-preview | docs/exploration/ |
-| Find patterns & conventions | Gemini | gemini-3-flash-preview | docs/exploration/ |
+| Find patterns & conventions | Gemini | gemini-2.5-flash | docs/exploration/ |
 | Implement feature | Codex | gpt-5.2-codex | docs/implementation/ |
 | Refactor code | Codex | gpt-5.2-codex | docs/implementation/ |
 | Fix bugs | Codex | gpt-5.2-codex | docs/implementation/ |
@@ -267,6 +267,44 @@ When a forked agent completes, read results progressively:
 4. **Deep dive Raw Findings** - Only if needed
 
 This preserves Opus context while getting necessary information.
+
+## Quota Management
+
+### Rate Limits by Auth Method
+
+| Auth Method | RPM | RPD | Endpoint |
+|---|---|---|---|
+| OAuth (free) | 60 | 1,000 | `cloudcode-pa.googleapis.com` |
+| API Key (free) | 10 | 250 | `generativelanguage.googleapis.com` |
+| Vertex AI (express) | dynamic | dynamic | `{region}-aiplatform.googleapis.com` |
+
+### Concurrency Guidelines
+
+- **Max 2 concurrent Gemini forks** with free OAuth
+- **Stagger parallel launches by 30-60s** to avoid thundering herd
+- The `cloudcode-pa` endpoint has concurrency constraints beyond RPM
+- Prefer `gemini-2.5-flash` for parallel tasks (preview models are more capacity-constrained)
+
+### Error Recovery
+
+The executor has built-in retry with model fallback:
+1. Primary model fails with 429 → retry up to `--max-retries` times
+2. Exhausted retries → fall back to next model in `--fallback-models` chain
+3. All models exhausted → report structured error in `done.json`
+
+The orchestrator should:
+- Read `error_type` from `done.json` to decide next action
+- On `QUOTA_EXHAUSTED`: wait 60s, then retry with a different auth mode or model
+- On `MODEL_CAPACITY`: the specific model is overloaded, switch to `gemini-2.5-flash`
+- Never retry more than 3 times total from the orchestrator level
+
+### Auth Mode Selection
+
+| Scenario | Auth Mode | Flag |
+|---|---|---|
+| Default (has OAuth tokens) | oauth | `--auth-mode oauth` |
+| Sandbox / no OAuth | api-key | `--auth-mode api-key` |
+| High throughput needed | vertex-ai | `--auth-mode vertex-ai` |
 
 ## Anti-Patterns
 

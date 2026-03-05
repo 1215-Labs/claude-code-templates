@@ -4,9 +4,9 @@ Create a new Gemini CLI agent to execute the command.
 
 ## Variables
 
-DEFAULT_MODEL: gemini-3-pro-preview
+DEFAULT_MODEL: gemini-2.5-flash
 HEAVY_MODEL: gemini-3-pro-preview
-BASE_MODEL: gemini-3-pro-preview
+BASE_MODEL: gemini-2.5-flash
 FAST_MODEL: gemini-2.5-flash
 AUTO_MODEL: auto
 
@@ -18,36 +18,73 @@ AUTO_MODEL: auto
 - Use Pro for: Complex multi-step reasoning, architecture decisions
 - Built-in auto-routing: `auto` model picks Pro or Flash based on task complexity
 
-## Model Selection
+## Available Models (as of Feb 2026)
 
-| Task | Model | Alias |
-|------|-------|-------|
-| Quick exploration | gemini-2.5-flash | `flash` |
-| Auto-routed (default) | auto | `auto` |
-| Codebase analysis | gemini-3-flash-preview | `flash` (preview) |
-| Complex reasoning | gemini-3-pro-preview | `pro` |
-| Architecture review | gemini-3-pro-preview | `pro` |
-| Cheapest / simple | gemini-2.5-flash-lite | `flash-lite` |
+| Model ID | Alias | Status | Latency | Best For |
+|---|---|---|---|---|
+| `auto` | — | Active | varies | Let Gemini route by complexity |
+| `gemini-3-pro-preview` | `pro` | Active | ~6s | Complex reasoning, architecture review |
+| `gemini-3-flash-preview` | `flash` | Active | ~3s | Quick analysis (often capacity-constrained) |
+| `gemini-2.5-pro` | — | Stable | ~5s | Full Pro, non-preview |
+| `gemini-2.5-flash` | — | Stable | ~2s | **Most reliable**, best for parallel/delegated tasks |
+| `gemini-2.5-flash-lite` | `flash-lite` | Stable | ~2s | Cheapest, simple tasks |
+| `gemini-2.5-flash-image` | — | Stable | — | Image generation |
+| `gemini-2.5-pro-preview-tts` | — | Stable | — | Text-to-speech |
+| `gemini-2.0-flash` | — | **Deprecated** (EOL Mar 31 2026) | — | Avoid |
+| `gemini-2.0-flash-lite` | — | **Deprecated** | — | Avoid |
+
+### Model Selection Guide
+
+| Task | Model | Why |
+|------|-------|-----|
+| Delegated exploration (default) | `gemini-2.5-flash` | Most reliable, no capacity issues |
+| Parallel tasks | `gemini-2.5-flash` | Stable capacity even with 2 concurrent |
+| Complex reasoning | `gemini-3-pro-preview` | Deeper thinking (141 thinking tokens vs 25) |
+| Architecture review | `gemini-3-pro-preview` | Best reasoning quality |
+| Auto-routed | `auto` | Routes by complexity, has built-in fallback |
+| Cheapest / simple | `gemini-2.5-flash-lite` | Lowest token cost |
 
 ### Model Aliases
 
-Gemini CLI supports short aliases for model selection:
+Gemini CLI supports short aliases:
 
 | Alias | Resolves To | Best For |
 |-------|------------|---------|
-| `auto` | Routes between Pro/Flash | Default — let Gemini decide |
+| `auto` | Routes between Pro/Flash | Let Gemini decide (has built-in fallback) |
 | `pro` | gemini-3-pro-preview | Complex reasoning, architecture |
-| `flash` | gemini-3-flash-preview | Quick analysis, file discovery |
+| `flash` | gemini-3-flash-preview | Quick analysis (capacity-constrained) |
 | `flash-lite` | gemini-2.5-flash-lite | Cheapest, simple tasks |
+
+**Note**: `gemini-2.5-flash` (stable) has no alias — use the full ID. It is more reliable than `flash` (which resolves to `gemini-3-flash-preview`).
 
 ## Fallback Chain
 
-Gemini CLI has **built-in model fallback** with error classification (quota, auth, transient). Models fall back automatically.
+### Built-in (auto model)
 
-Manual fallback order:
-1. gemini-3-pro-preview (default)
-2. gemini-3-flash-preview (fallback)
-3. gemini-2.5-flash (emergency fallback)
+The `auto` model has built-in fallback: if `gemini-3-flash-preview` is capacity-exhausted, it falls back to `gemini-2.5-flash-lite`. Discovered empirically — not documented.
+
+### Executor fallback (gemini_task_executor.py)
+
+The executor adds a second layer of retry/fallback via `--fallback-models`:
+
+```
+Primary model (e.g., auto) → retry up to --max-retries times
+  ↓ still failing (429)
+Fallback model (e.g., gemini-2.5-flash) → retry up to --max-retries times
+  ↓ still failing
+Report structured error in done.json
+```
+
+Default fallback chain: `auto` → `gemini-2.5-flash`
+
+### Recommended fallback chains by use case
+
+| Use Case | Primary | Fallback | Flag |
+|---|---|---|---|
+| General (default) | `auto` | `gemini-2.5-flash` | `--fallback-models gemini-2.5-flash` |
+| Reliability-first | `gemini-2.5-flash` | `gemini-2.5-flash-lite` | `--fallback-models gemini-2.5-flash-lite` |
+| Quality-first | `gemini-3-pro-preview` | `gemini-2.5-flash` | `--fallback-models gemini-2.5-flash` |
+| Parallel tasks | `gemini-2.5-flash` | (none needed) | `--fallback-models ""` |
 
 ## Instructions
 
@@ -269,17 +306,56 @@ gemini -p "PROMPT" --approval-mode yolo
 
 ## Authentication
 
-Gemini CLI supports two authentication methods:
+Gemini CLI supports three authentication methods, each routing to a different endpoint with separate quota pools.
 
-### 1. API Key (GEMINI_API_KEY)
+### 1. OAuth (Default — Google Account)
+If `~/.gemini/settings.json` has `security.auth.selectedType: "oauth-personal"` and cached tokens exist in `~/.gemini/oauth_creds.json`, OAuth is used automatically.
+
+- **Endpoint**: `cloudcode-pa.googleapis.com`
+- **Quota**: 60 RPM / 1,000 RPD (free tier)
+- **Note**: OAuth takes precedence over API key when cached tokens exist
+
 ```bash
-export GEMINI_API_KEY="your-key-here" && gemini -p "PROMPT" --model MODEL --approval-mode yolo
+gemini -p "PROMPT" --model MODEL --approval-mode yolo
 ```
 
-### 2. OAuth (Google Account)
-If using OAuth authentication, run `gemini` interactively first to complete the OAuth flow, then forked terminals will use the stored tokens.
+### 2. API Key (GEMINI_API_KEY)
+Routes to AI Studio endpoint with separate quota. Only works when **no cached OAuth tokens** exist (e.g., in E2B sandboxes) OR when OAuth creds are cleared.
 
-Note: Check `~/.gemini/settings.json` for `security.auth.selectedType` to see which method is configured.
+- **Endpoint**: `generativelanguage.googleapis.com`
+- **Quota**: 10 RPM / 250 RPD (free tier), higher with paid tier
+- **Models**: Flash only on free tier
+
+```bash
+export GEMINI_API_KEY="your-key-here" && gemini -p "PROMPT" --model gemini-2.5-flash --approval-mode yolo
+```
+
+### 3. Vertex AI
+Routes to Google Cloud Vertex AI. Overrides both OAuth and API key when `GOOGLE_GENAI_USE_VERTEXAI=true` is set.
+
+- **Endpoint**: `{region}-aiplatform.googleapis.com`
+- **Quota**: Dynamic shared (highest ceiling)
+- **Setup**: Requires GCP project with Vertex AI API enabled
+
+```bash
+export GOOGLE_GENAI_USE_VERTEXAI=true
+export GOOGLE_CLOUD_PROJECT="your-project"
+export GOOGLE_CLOUD_LOCATION="us-central1"
+export GOOGLE_API_KEY="your-vertex-api-key"
+gemini -p "PROMPT" --model gemini-2.5-flash --approval-mode yolo
+```
+
+### Credential Precedence
+1. `GOOGLE_GENAI_USE_VERTEXAI=true` → Vertex AI (always wins)
+2. Cached OAuth in `~/.gemini/oauth_creds.json` → OAuth endpoint
+3. `GEMINI_API_KEY` → AI Studio endpoint (only if no OAuth cache)
+
+### Per-Project Auth via `.gemini/.env`
+Gemini CLI auto-loads env vars from `.gemini/.env` (searches up from cwd, then `~/.gemini/.env`):
+```
+# .gemini/.env
+GEMINI_API_KEY=your-key-here
+```
 
 ## Known Issues & Solutions
 
@@ -298,5 +374,6 @@ Note: Check `~/.gemini/settings.json` for `security.auth.selectedType` to see wh
 
 Do NOT use these deprecated patterns:
 - `-y` flag alone - Use `--approval-mode yolo` for clarity
-- Running without explicit API key - Always export GEMINI_API_KEY
 - Omitting `--output-format json` for automated tasks - Always use it for parseable output
+- Running 5+ parallel forks - Max 2 concurrent, stagger by 30-60s
+- Assuming `GEMINI_API_KEY` overrides OAuth - It does NOT when cached tokens exist

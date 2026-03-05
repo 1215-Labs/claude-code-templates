@@ -17,6 +17,7 @@ allowed-tools:
   - Read
   - Write
   - Bash(python3 *)
+  - Bash(uv run *)
   - Glob
   - Grep
 ---
@@ -67,8 +68,16 @@ Show everything from Summary plus:
 
 ### "search <term>": Cross-file Search
 
-Search across ALL memory files (global + project + sessions) for the term.
-Use Grep to find matches. Display:
+**Primary method (FTS5 ranked search):**
+Run the FTS5 search sidecar for ranked results:
+```
+uv run .claude/hooks/memory-search.py "<term>"
+```
+This returns results ranked by relevance with highlighted snippets. Display the output directly.
+
+**Fallback (if FTS5 fails):**
+Search across ALL memory files (global + project + sessions) for the term using Grep.
+Display:
 - File path
 - Matching lines with context
 - Line numbers

@@ -22,10 +22,10 @@ This command provides quick context about the codebase. It's an alias for `/quic
 
 ## What It Does
 
-1. Reads README.md and CLAUDE.md
-2. Identifies tech stack and project structure
-3. Summarizes key conventions
-4. Provides getting started guidance
+1. Reads `.claude/INDEX.md` if present (preferred — lightweight progressive disclosure)
+2. Falls back to CLAUDE.md + README.md if no INDEX.md exists
+3. Identifies tech stack and project structure
+4. Summarizes key conventions and critical paths
 
 ## When to Use
 
