@@ -1,6 +1,6 @@
 ---
 name: repo-optimize-engine
-description: Scoring rubrics, freshness criteria, mode detection, task graph generation, and team templates for multi-model repo optimization
+description: "This skill should be used when the /repo-optimize command needs scoring rubrics, freshness criteria, mode detection, and task graph generation for multi-model repo optimization."
 version: 1.0.0
 category: orchestration
 user-invocable: false

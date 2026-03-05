@@ -1,6 +1,6 @@
 ---
 name: fork-terminal
-description: Fork terminal to new window with Claude Code, Codex CLI, Gemini CLI, or raw commands.
+description: "This skill should be used when the user asks to \"fork a terminal\", \"open a new Claude Code window\", \"split terminal\", or needs to launch Claude Code, Codex CLI, or Gemini CLI in a new terminal window."
 version: 2.0.0
 category: terminal
 context: fork

@@ -12,6 +12,20 @@ description: |
   - "gemini review src/auth/ for security issues"
   - "gemini document the REST API"
   - "gemini research pagination strategies"
+
+  <example>
+  Context: Developer needs to explore the authentication system architecture
+  user: "use gemini to explore the auth system"
+  assistant: "I'll use the gemini-delegator agent to leverage Gemini's large context for exploring the authentication system."
+  <commentary>Large codebase exploration benefits from Gemini's 1M token context window, making gemini-delegator the right choice.</commentary>
+  </example>
+
+  <example>
+  Context: Developer wants to understand the database schema
+  user: "gemini analyze the database schema"
+  assistant: "Let me invoke the gemini-delegator agent to have Gemini perform a comprehensive database schema analysis."
+  <commentary>Schema analysis requires reading many files simultaneously — Gemini's large context makes this efficient via gemini-delegator.</commentary>
+  </example>
 model: sonnet
 # Model rationale: Agent orchestrates via Bash/Read/Write — Sonnet is sufficient.
 # Heavy reasoning happens inside Gemini itself.

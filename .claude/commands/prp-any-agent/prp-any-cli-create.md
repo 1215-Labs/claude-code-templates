@@ -24,6 +24,7 @@ allowed-tools:
   - WebFetch
   - Write
   - Task
+hide-from-slash-command-tool: "true"
 ---
 
 # Create PRP

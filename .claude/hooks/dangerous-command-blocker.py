@@ -8,12 +8,12 @@
 Dangerous command and .env access blocker for Claude Code PreToolUse hooks.
 
 Reads tool input from stdin JSON, blocks dangerous rm commands and .env access,
-tracks shown warnings per session to avoid duplicate blocking, and exits with
-code 2 on first occurrence per pattern or 0 on repeat/no match.
+tracks shown warnings per session to avoid duplicate blocking, and outputs
+structured JSON to control blocking (deny/ask) or pass-through (allow).
 
 Input: JSON on stdin with keys: session_id, tool_name, tool_input
-Output: Warning message on stdout (if blocked)
-Exit codes: 0 = allow, 2 = block
+Output: JSON on stdout with hookSpecificOutput.permissionDecision and systemMessage
+Exit codes: 0 always (structured JSON output controls block/allow)
 """
 
 import json
@@ -123,8 +123,17 @@ def main() -> None:
             warned.add(violation_id)
         save_state(session_id, warned)
 
-        print("\n".join(msg for _, msg in new_violations))
-        sys.exit(2)
+        # dangerous_rm is clearly dangerous -> deny; env_access is ambiguous -> ask
+        violation_ids = {v[0] for v in new_violations}
+        decision = "deny" if "dangerous_rm" in violation_ids else "ask"
+        result = {
+            "hookSpecificOutput": {
+                "permissionDecision": decision
+            },
+            "systemMessage": "\n".join(msg for _, msg in new_violations)
+        }
+        print(json.dumps(result))
+        sys.exit(0)
     except Exception:
         sys.exit(0)
 

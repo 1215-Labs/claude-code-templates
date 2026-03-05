@@ -1,6 +1,6 @@
 ---
 name: mac-manage-context
-description: Shared knowledge base for mac-manage slash commands — paths, output formats, glossaries, and integration patterns
+description: "This skill should be used when mac-manage slash commands need shared knowledge about paths, output formats, glossaries, and integration patterns for macOS configuration management."
 version: 1.0.0
 category: system-management
 user-invocable: false

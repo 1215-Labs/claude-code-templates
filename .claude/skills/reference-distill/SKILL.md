@@ -1,9 +1,6 @@
 ---
 name: reference-distill
-description: |
-  Evaluation-to-integration engine — parses skill-evaluator reports, plans component extraction,
-  adapts source conventions to our standards, integrates into the template library, and tracks
-  provenance for downstream propagation via /repo-equip and /repo-optimize.
+description: "This skill should be used when the user asks to \"extract patterns from a reference\", \"integrate evaluated skills\", \"distill a submodule\", or needs to adapt external conventions to the template library."
 version: 1.0.0
 category: orchestration
 user-invocable: false

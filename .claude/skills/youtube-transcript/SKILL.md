@@ -1,10 +1,6 @@
 ---
 name: youtube-transcript
-description: |
-  Download YouTube video transcripts (3-method fallback) and transform into structured
-  markdown via OpenRouter. Standalone skill with embedded tools — no external repo dependency.
-  Integrates with skill-evaluator to enrich reference submodule evaluations with creator
-  video context.
+description: "This skill should be used when the user asks to \"download a YouTube transcript\", \"get video captions\", \"transcribe a YouTube video\", or needs to transform video content into structured markdown."
 version: 1.0.0
 category: research
 user-invocable: true

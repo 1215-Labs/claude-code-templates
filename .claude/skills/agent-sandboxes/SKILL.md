@@ -1,10 +1,6 @@
 ---
 name: agent-sandboxes
-description: |
-  E2B sandbox CLI for isolated code execution in agent workflows.
-  Use when agents need to execute untrusted code, test in clean environments,
-  or prototype full-stack apps with public URLs.
-  Examples: "run this in a sandbox", "test in isolation", "create a sandbox"
+description: "This skill should be used when the user asks to \"run in a sandbox\", \"execute in isolation\", \"create an E2B sandbox\", \"test untrusted code safely\", or needs isolated code execution in agent workflows."
 version: 1.0.0
 category: sandbox
 user-invocable: true

@@ -1,6 +1,6 @@
 ---
 name: lsp-symbol-navigation
-description: Navigate symbols using LSP go-to-definition, hover, and find-references.
+description: "This skill should be used when the user asks to \"go to definition\", \"find references\", \"navigate symbols\", \"understand this function\", or needs LSP-based code navigation."
 version: 1.2.0
 category: lsp
 user-invocable: true

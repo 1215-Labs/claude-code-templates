@@ -1,6 +1,6 @@
 ---
 name: lsp-type-safety-check
-description: Verify type safety of code changes using LSP hover and find-references.
+description: "This skill should be used when the user asks to \"check types\", \"verify type safety\", \"validate after refactoring\", \"find type mismatches\", or needs LSP hover and find-references for type validation."
 version: 1.2.0
 category: lsp
 user-invocable: true

@@ -1,6 +1,6 @@
 ---
 name: multi-model-orchestration
-description: Use when facing large codebase exploration, complex implementation tasks, or when your context would benefit from delegating to Gemini (1M context) or Codex (SWE-bench leader)
+description: "This skill should be used when the user asks to \"use Gemini\", \"delegate to Codex\", \"explore with a large context model\", or faces tasks that benefit from delegating to Gemini (1M context) or Codex (SWE-bench leader)."
 version: 1.0.0
 category: orchestration
 user-invocable: true

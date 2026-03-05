@@ -1,6 +1,6 @@
 ---
 name: cbass-context
-description: Shared knowledge base for cbass slash commands — Docker Compose services, profiles, domains, glossary, and integration patterns
+description: "This skill should be used when cbass slash commands need shared knowledge about Docker Compose services, profiles, domains, glossary, and integration patterns for the cbass stack."
 version: 1.0.0
 category: infrastructure
 user-invocable: false

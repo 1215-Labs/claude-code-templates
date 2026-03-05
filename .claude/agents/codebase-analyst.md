@@ -28,9 +28,8 @@ description: |
   Proactively invoke codebase-analyst when working on unfamiliar areas to maintain code consistency.
   </commentary>
   </example>
-model: sonnet
-# Model rationale: Pattern analysis requires nuanced understanding - sonnet handles complex codebase reasoning
 color: blue
+model: inherit
 tools: ["Read", "Glob", "Grep", "Bash(git *)"]
 category: analysis
 related:

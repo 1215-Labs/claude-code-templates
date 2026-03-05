@@ -1,6 +1,6 @@
 ---
 name: agent-teams
-description: Best practices and patterns for coordinating multiple Claude Code instances as an agent team — role design, task decomposition, conflict avoidance, and quality gates
+description: "This skill should be used when the user asks to \"coordinate agents\", \"spawn a team\", \"run tasks in parallel\", \"use multiple Claude instances\", or needs best practices for multi-agent orchestration."
 version: 1.0.0
 category: orchestration
 user-invocable: false

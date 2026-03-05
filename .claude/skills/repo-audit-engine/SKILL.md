@@ -1,6 +1,6 @@
 ---
 name: repo-audit-engine
-description: Scoring rubrics, alignment criteria, layer detection, and prompt templates for multi-layer repo auditing via forked Gemini + Codex instances
+description: "This skill should be used when the /repo-audit command needs scoring rubrics, alignment criteria, layer detection, and prompt templates for multi-layer repo alignment auditing."
 version: 1.0.0
 category: orchestration
 user-invocable: false

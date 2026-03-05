@@ -1,6 +1,6 @@
 ---
 name: lsp-dependency-analysis
-description: Map incoming and outgoing dependencies for modules using LSP.
+description: "This skill should be used when the user asks to \"map dependencies\", \"find what imports this module\", \"show incoming dependencies\", \"trace module coupling\", or needs LSP-based dependency analysis."
 version: 1.2.0
 category: lsp
 user-invocable: true

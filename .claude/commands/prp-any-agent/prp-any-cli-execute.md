@@ -23,6 +23,7 @@ allowed-tools:
   - Write
   - Bash(*)
   - Task
+hide-from-slash-command-tool: "true"
 ---
 
 # Execute BASE PRP

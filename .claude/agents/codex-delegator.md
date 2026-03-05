@@ -13,6 +13,20 @@ description: |
   - "codex execute PRPs/distill-auth-middleware.md"
   - "codex security audit src/auth/"
   - "codex document the REST API"
+
+  <example>
+  Context: Developer wants to implement a new feature using Codex
+  user: "use codex to implement pagination for the API"
+  assistant: "I'll use the codex-delegator agent to delegate the pagination implementation to Codex CLI."
+  <commentary>Since the user explicitly wants to use Codex for implementation, use the codex-delegator agent to dispatch the task.</commentary>
+  </example>
+
+  <example>
+  Context: Developer has a failing CI workflow that needs fixing
+  user: "codex fix the failing CI workflow"
+  assistant: "Let me invoke the codex-delegator agent to have Codex analyze and fix the CI workflow."
+  <commentary>The user wants Codex to fix a CI issue, so codex-delegator handles the delegation and monitoring.</commentary>
+  </example>
 model: sonnet
 # Model rationale: Agent orchestrates via Bash/Read/Write — Sonnet is sufficient.
 # Heavy reasoning happens inside Codex itself.

@@ -1,6 +1,6 @@
 ---
 name: uv-hook-template
-description: UV single-file script templates for Claude Code hooks with PEP 723 inline dependencies
+description: "This skill should be used when the user asks to \"create a hook script\", \"write a UV hook\", \"add a PEP 723 hook\", or needs a template for Claude Code hooks using UV single-file scripts."
 version: 1.0.0
 category: development
 user-invocable: false

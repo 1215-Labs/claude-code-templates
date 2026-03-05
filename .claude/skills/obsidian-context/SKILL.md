@@ -1,6 +1,6 @@
 ---
 name: obsidian-context
-description: Shared knowledge base for obsidian-ecosystem-hub slash commands — VPS paths, Docker services, domain glossary, CLI commands, and integration patterns
+description: "This skill should be used when obsidian slash commands need shared knowledge about VPS paths, Docker services, domain glossary, CLI commands, and integration patterns for the Obsidian ecosystem."
 version: 1.0.0
 category: infrastructure
 user-invocable: false
