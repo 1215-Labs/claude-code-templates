@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-03-05] merge: Merge memory branch: align agent-os with claude-code reference patterns (393725d)
 [2026-03-05] merge: Merge memory branch: align agent-os with claude-code reference patterns (1079a4c)
 [2026-03-05] merge: Merge memory branch: align agent-os with claude-code reference patterns (12bafa9)
 [2026-03-05] merge: Merge memory branch: align agent-os with claude-code reference patterns (158a4c5)

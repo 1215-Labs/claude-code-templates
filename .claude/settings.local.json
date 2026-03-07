@@ -2,6 +2,9 @@
   "permissions": {
     "additionalDirectories": [
       "X:\\GitHub\\CBass"
+    ],
+    "allow": [
+      "Bash(ls:*)"
     ]
   }
 }
