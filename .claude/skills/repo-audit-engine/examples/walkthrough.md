@@ -1,134 +1,141 @@
-# Repo Audit Engine — Example Walkthrough
+# Repo Audit Engine — Worked Example
 
 ## Scenario
 
-A developer runs a repo audit on a mid-sized Node.js API project called `cbass`. The project has a CLAUDE.md, README, some `.claude/` components, and a Dockerfile. They want to know how well the documentation matches the actual code and whether the deployment configuration is consistent.
+The user runs: `/repo-audit "/home/user/projects/myapp"`
 
-## Trigger
+The target repo is a Node.js Express API with a Dockerfile and GitHub Actions deploy workflow.
 
-> User: `/repo-audit "/home/user/projects/cbass"`
+## Step 1: Pre-Flight Checks
 
-## Step-by-Step
-
-### Step 1: Layer Detection
-
-The audit engine inspects the target repo for deploy configuration. It finds:
-- `Dockerfile` — present
-- `.github/workflows/deploy.yml` — present
-
-Code-to-Deploy layer is applicable. All three layers will run.
-
-### Step 2: Fork Allocation
-
-The engine sets up an isolated run directory:
-```
-/tmp/repo-audit/cbass/20260305_143022/
+```bash
+ls /home/user/projects/myapp
+# → src/ tests/ Dockerfile .github/ package.json CLAUDE.md docs/ .claude/
 ```
 
-Two forks launch concurrently (different providers, no rate conflict):
+Checks pass:
+- Path exists
+- Not the templates repo
+- Has `.git/` directory
 
-- **Fork A** — OpenCode oracle (`openai/gpt-5.2 via oracle agent`): Docs-to-Code layer
-  - Reads ALL docs (README, CLAUDE.md, .claude/INDEX.md) and ALL code via OpenCode's multi-provider model access
-  - Cross-references every claim: "Does CLAUDE.md say `npm run dev` works? Does package.json have that script?"
+## Step 2: Layer Detection
 
-- **Fork B** — Codex (`gpt-5.2-codex`): Internal Consistency layer
-  - Scans for dead exports, broken imports, stale .claude/ references, unused dependencies
-
-Fork C (OpenCode, Code-to-Deploy) is queued to launch after Fork A completes (max 2 concurrent OpenCode).
-
-### Step 3: Fork A Completes — Docs-to-Code Results
-
-After ~4 minutes, Fork A writes `fork-a.response.json`. Key findings:
-
-| Criterion | Score | Finding |
-|-----------|-------|---------|
-| Build/test commands accurate | 15/15 | `npm run dev` and `npm test` both verified |
-| README project description | 8/10 | Minor: README mentions "v2 API" but code is v3 |
-| API docs match endpoints | 10/15 | 3 endpoints documented but not in code (deleted) |
-| Directory structure matches docs | 10/10 | All documented paths exist |
-| INDEX.md present and accurate | 12/15 | INDEX.md exists; 1 Critical Path references missing dir |
-| Commands/agents referenced exist | 15/15 | All .claude/ components verified present |
-| Environment setup docs current | 7/10 | .env.example missing `REDIS_URL` used in code |
-| Glossary consistency | 10/10 | Terminology consistent |
-
-**Docs-to-Code raw score: 87/100 → Grade B**
-
-### Step 4: Fork B Completes — Internal Consistency Results
-
-Fork B writes `fork-b.response.json`:
-
-| Criterion | Score | Finding |
-|-----------|-------|---------|
-| No dead code | 10/15 | `src/utils/legacy-auth.ts` — exported but never imported |
-| No orphaned configs | 10/10 | All config files match installed tools |
-| All imports resolve | 20/20 | Every import verified |
-| No stale .claude/ references | 15/15 | All verified |
-| Package scripts work | 10/10 | All scripts valid |
-| No unused dependencies | 8/10 | `lodash` installed but only used in the dead code file |
-| Consistent naming conventions | 10/10 | Uniform |
-| No stale TODOs | 5/10 | 3 TODOs older than 90 days in src/services/ |
-
-**Internal Consistency raw score: 88/100 → Grade B**
-
-### Step 5: Fork C Launches — Code-to-Deploy
-
-Fork C launches after Fork A completes. Results after ~3 minutes:
-
-| Criterion | Score | Finding |
-|-----------|-------|---------|
-| Dockerfile installs all deps | 15/20 | Missing `redis-cli` in build stage |
-| CI builds what deploy expects | 20/20 | Build output matches |
-| Env vars documented and used | 5/15 | `REDIS_URL` not in .env.example (matches Fork A finding) |
-| Port/host configs consistent | 10/10 | Port 3000 consistent throughout |
-| Build artifacts match deploy | 15/15 | Output dir matches |
-| Health check endpoints exist | 10/10 | /health endpoint verified |
-| Secrets not hardcoded | 10/10 | No hardcoded secrets |
-
-**Code-to-Deploy raw score: 85/100 → Grade B**
-
-### Step 6: Cross-Reference Synthesis
-
-Opus applies cross-reference rules to the combined findings:
-
-- **HIGH priority**: `.env.example` missing `REDIS_URL` — found in BOTH Fork A (env docs stale) and Fork C (deploy env mismatch). Two-layer overlap → promoted to HIGH.
-- **HIGH priority**: 3 endpoints in API docs that don't exist in code — Fork A (doc claims X exists) + implicit in Fork B (no dead imports for those handlers). Promoted.
-- **MEDIUM priority**: `src/utils/legacy-auth.ts` dead code (Fork B only)
-- **MEDIUM priority**: 3 stale TODOs (Fork B only)
-- **MEDIUM priority**: README version mismatch (Fork A only)
-
-No gating issues found. Grade remains as-scored.
-
-### Step 7: Gap Report Presented to User
-
-```
-REPO AUDIT: cbass
-Run ID: 20260305_143022
-
-SCORES:
-  Docs-to-Code:        87/100  B
-  Internal Consistency: 88/100  B
-  Code-to-Deploy:      85/100  B
-  Overall Average:     87/100  B
-
-FIX FIRST (HIGH):
-  1. Add REDIS_URL to .env.example
-     → Referenced in src/services/cache.ts:14 but missing from docs and Dockerfile ENV
-  2. Remove 3 stale API docs entries (GET /v2/users, POST /v2/auth, DELETE /v2/sessions)
-     → Documented in README API section but handlers deleted in commit a3f9d2b
-
-RECOMMENDED NEXT (MEDIUM):
-  3. Delete src/utils/legacy-auth.ts (dead code, also pulls in lodash)
-  4. Resolve 3 TODOs in src/services/ (oldest: 2025-08-14)
-  5. Update README version from "v2 API" to "v3 API"
-  6. Add redis-cli to Dockerfile build stage
-
-Full report: /tmp/repo-audit/cbass/20260305_143022/
+Check for deploy config:
+```bash
+ls /home/user/projects/myapp/Dockerfile          # exists
+ls /home/user/projects/myapp/.github/workflows/  # exists, contains deploy.yml
 ```
 
-## Output
+Result: All three layers apply — Docs-to-Code, Internal Consistency, Code-to-Deploy.
 
-**What the user gets:**
-- Layer-by-layer scores with letter grades in under 10 minutes
-- Prioritized gap list (HIGH first, then MEDIUM) with exact file references
-- No false positives — cross-referenced findings get higher priority, single-layer findings stay MEDIUM
-- A permanent run directory with all raw fork outputs for deeper review
+## Step 3: Create Run Directory
+
+```bash
+RUN_DIR=/tmp/repo-audit/myapp/20260307_143022
+mkdir -p $RUN_DIR
+```
+
+## Step 4: Launch Forks A and B Concurrently
+
+**Fork A (OpenCode — Docs-to-Code):**
+
+Filled prompt includes:
+- `{REPO_PATH}` = `/home/user/projects/myapp`
+- `{REPO_NAME}` = `myapp`
+- `{RUN_DIR}` = `/tmp/repo-audit/myapp/20260307_143022`
+- `{KNOWN_DRIFT}` = contents from `.claude/INDEX.md` Known Drift section (if present)
+
+Task: Cross-reference all docs against actual code. Check README, CLAUDE.md, `.claude/` component references, API docs, env var documentation.
+
+**Fork B (Codex — Internal Consistency):**
+
+Task: Find dead code, broken imports, unused dependencies, stale `.claude/` references, broken package scripts.
+
+Both launched simultaneously (different providers, no rate conflict).
+
+## Step 5: Wait for A, Then Launch C
+
+After Fork A completes (~3-4 min):
+
+Launch Fork C (OpenCode — Code-to-Deploy):
+
+Task: Cross-reference `Dockerfile`, `.github/workflows/deploy.yml` with codebase. Check port configs, env vars, build output directories, health check endpoints.
+
+## Step 6: Poll for Completion
+
+Check every 30 seconds:
+```bash
+ls $RUN_DIR/fork-a.done.json  # appears after ~3-4 min
+ls $RUN_DIR/fork-b.done.json  # appears after ~3-4 min
+ls $RUN_DIR/fork-c.done.json  # appears after A + ~2 min
+```
+
+## Step 7: Synthesize Findings
+
+Read all three `fork-*.response.json` files. Apply cross-reference rules:
+
+**Fork A finds:** "README says `npm run dev` starts the server, but package.json has no `dev` script."
+
+**Fork B finds:** "package.json `start` script references `dist/server.js` but no `dist/` directory exists — build step missing."
+
+**Cross-reference:** Both A and B flag the missing build step. Severity promoted: LOW → MEDIUM → HIGH. Gating issue? Yes — build command fails. Grade capped at C.
+
+**Fork C finds:** "Dockerfile exposes port 3000, but app listens on `process.env.PORT || 8080`. Deploy config uses port 3000. Mismatch when PORT env var is not set."
+
+## Step 8: Score Each Layer
+
+**Docs-to-Code:** 100 points
+- Build/test commands accurate: -15 (README `npm run dev` does not exist)
+- API docs match endpoints: -15 (3 documented endpoints missing from router)
+- Commands/agents referenced exist: -5 (one stale .claude reference)
+- Score: 65/100 → D
+
+**Internal Consistency:** 100 points
+- All imports resolve: -20 (`dist/server.js` referenced but not built)
+- No stale .claude/ references: -10 (REGISTRY.md references deleted agent)
+- No unused dependencies: -10 (`lodash` imported nowhere)
+- Score: 60/100 → D
+
+**Code-to-Deploy:** 100 points
+- Port/host configs consistent: -10 (port 3000 vs 8080 mismatch)
+- Env vars documented and used: -15 (`PORT` used but not in .env.example)
+- CI builds what deploy expects: -20 (no build step in CI before deploy)
+- Score: 55/100 → F
+
+**Gating issues detected:**
+- Build command fails (npm run dev missing, no build step)
+- Grade cap: C regardless of numeric scores
+
+**Overall: C (Gating Issue Present)**
+
+## Step 9: Report to User
+
+```
+Repo Audit: myapp — Grade C (Gating Issue)
+
+Fix First (gating issues — cap grade at C):
+  1. [CRITICAL] No build step in CI — deploy copies unbuild source. Add `npm run build` before deploy.
+  2. [CRITICAL] README references `npm run dev` which does not exist in package.json.
+
+High Priority:
+  3. Port mismatch: Dockerfile EXPOSE 3000, app defaults to 8080 when PORT unset.
+  4. 3 API endpoints documented in docs/api.md do not exist in router.
+
+Medium Priority:
+  5. `lodash` in package.json but not imported anywhere.
+  6. Stale .claude/REGISTRY.md row references deleted `query-builder` agent.
+  7. `PORT` env var used in code but missing from .env.example.
+
+Scores: Docs-to-Code 65/100 | Internal Consistency 60/100 | Code-to-Deploy 55/100
+Full report: /tmp/repo-audit/myapp/20260307_143022/
+```
+
+## Timeline
+
+| Phase | Duration |
+|-------|----------|
+| Pre-flight + layer detection | ~30 sec |
+| Forks A + B concurrent | ~3-4 min |
+| Fork C (after A) | ~2 min |
+| Synthesis + scoring | ~1 min |
+| **Total** | **~7-8 min** |

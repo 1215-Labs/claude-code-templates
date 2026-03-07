@@ -1,161 +1,182 @@
-# Repo Optimize Engine — Example Walkthrough
+# Repo Optimize Engine — Worked Example
 
 ## Scenario
 
-A developer's `mac-manage` project has had a `.claude/` directory for 6 months. It was initially set up with an early version of the templates, but the templates repo has evolved significantly since. The hooks are outdated, the context skill is missing `related` fields, and there's no `skill-priorities.md`. The developer runs `/repo-optimize` to bring it up to the current standard.
+The user runs: `/repo-optimize "/home/user/projects/cbass"`
 
-## Trigger
+The target is a Python CLI tool. It has a `.claude/` directory but is not in MANIFEST.json — so it was equipped previously using an older version of the templates but is not tracked.
 
-> User: `/repo-optimize "/home/user/projects/mac-manage"`
+## Step 1: Validation and Mode Detection
 
-## Step-by-Step
+```bash
+ls /home/user/projects/cbass
+# → src/ tests/ pyproject.toml .claude/ .git/ README.md
 
-### Step 1: Mode Detection
+ls /home/user/projects/cbass/.claude/
+# → CLAUDE.md commands/ skills/ hooks.json
 
-The engine checks the target repo:
-- `.claude/` directory exists → yes
-- `mac-manage` found in templates `MANIFEST.json` → yes
+# Check MANIFEST.json for 'cbass'
+grep -r "cbass" /home/mdc159/projects/claude-code-templates/MANIFEST.json
+# → no match
+```
 
-**Mode: upgrade** — diff against latest templates, patch stale components.
+Mode: **audit** (has `.claude/` but not in MANIFEST — existing install, not tracked).
 
-Validation passes: path exists, is not claude-code-templates itself, has a `.git/` directory.
+Working variables:
+- `REPO_PATH` = `/home/user/projects/cbass`
+- `REPO_NAME` = `cbass`
+- `FOCUS_HINT` = (none provided)
+- `MODE` = `audit`
 
-### Step 2: Multi-Model Fork Launch
+## Step 2: Create Output Directory
 
-Two forks launch concurrently:
+```bash
+mkdir -p /home/user/projects/cbass/docs/optimization
+```
 
-**Fork A — OpenCode oracle (Needs Analysis):**
-Reads the entire `mac-manage` codebase via OpenCode's multi-provider model access alongside the current templates. Produces `docs/optimization/mac-manage-needs.md`:
+## Step 3: Launch Forks A and B Concurrently
 
-> "mac-manage has no workflow commands — only slash commands. Users frequently run multi-step sequences (discover → diff → restore) that would benefit from a workflow chain. The context skill is missing and the 4 existing commands don't cross-reference each other."
+**Fork A — OpenCode (Needs Analysis):**
+
+Task: Read the entire cbass repo with 1M context. Identify gaps in `.claude/` components vs. current best practices. What commands, agents, or workflows are missing that would benefit this Python CLI project? Output: `docs/optimization/cbass-needs.md`.
 
 **Fork B — Codex (Quality Audit):**
-Audits each `.claude/` component against the freshness rubric. Produces `docs/optimization/mac-manage-audit.md`:
 
-Key scores:
-| Component | Score | Grade | Issues |
-|-----------|-------|-------|--------|
-| hooks.json | 52/100 | F | Pre-commit hook uses old `python3` command, not `uv run`; missing PostToolUse hook |
-| mac-discover.md | 74/100 | C | Missing `related` fields; no completion criteria |
-| mac-diff.md | 71/100 | C | Missing `related` fields; vague completion criteria |
-| mac-restore.md | 68/100 | D | Missing error handling section; no `related` fields |
-| mac-status.md | 75/100 | C | Minor: prompt is overly generic |
-| mac-manage-context/SKILL.md | 61/100 | D | Missing `version` field; no `related` references |
+Task: Score each existing `.claude/` component against the freshness rubric (100-point scale). Flag stale frontmatter, missing related fields, vague prompts, missing completion criteria. Output: `docs/optimization/cbass-audit.md`.
 
-### Step 3: Opus Synthesizes — Phase 2 Planning
+Both launch simultaneously.
 
-Opus applies cross-reference priority rules:
+## Step 4: Poll for Completion
 
-| OpenCode Says | Codex Says | Priority |
-|---------------|-----------|----------|
-| "Needs workflow commands" | "Commands lack cross-references" | HIGH — both confirm workflow gap |
-| "Context skill needs improvement" | "Context skill: Grade D" | HIGH — both confirm |
-| (no mention) | "hooks.json: Grade F" | MEDIUM — quality fix |
-| (no mention) | "mac-restore missing error handling" | MEDIUM — quality fix |
-
-### Step 4: Task Graph Generated
-
-Opus generates the dynamic task graph:
-
+Check every 15 seconds:
 ```
-T1: Update mac-manage-context skill (blocked by nothing)
-  → Add version field, related references, update to latest template
-  Owner: config-upgrader
-
-T2: Fix hooks.json (blocked by nothing)
-  → Migrate pre-commit hook to uv run, add PostToolUse hook for LSP
-  Owner: config-upgrader
-
-T3: Update MANIFEST + REGISTRY (blocked by nothing)
-  Owner: config-upgrader
-
-T4: Add related fields to 4 commands (blocked by T1)
-  → mac-discover, mac-diff, mac-restore, mac-status
-  Owner: command-builder
-
-T5: Create discover→diff→restore workflow chain (blocked by T1)
-  Owner: command-builder
-
-T6: Update CLAUDE.md (blocked by T4, T5)
-  → Document new workflow, update component table
-  Owner: docs-finalizer
-
-T7: Generate skill-priorities.md (blocked by T4, T5)
-  Owner: docs-finalizer
-
-T8: Run validation suite (blocked by T6, T7)
-  Owner: docs-finalizer
+[~3 min] docs/optimization/cbass-needs.md appears
+[~3.5 min] docs/optimization/cbass-audit.md appears
 ```
 
-T6 from the template (PRPs) is skipped — no complex gaps requiring standalone PRP documents.
+## Step 5: Synthesize Findings (Phase 2)
 
-### Step 5: Spawn Team
+**OpenCode (needs) findings:**
+- No context skill for cbass domain knowledge
+- No `/test` command (runs `pytest` but no command shortcut)
+- Missing hooks for type checking (mypy not configured)
+- No workflow for the bug investigation pattern
+- CLAUDE.md is 180 lines and getting dense
 
-Opus spawns three teammates with file ownership enforced in spawn prompts:
+**Codex (quality) findings:**
+- `cbass-debug` command: score 55/100 (F) — prompt is vague, no completion criteria, outdated frontmatter schema
+- `hooks.json` PostToolUse hook: score 70/100 (C) — works but no error handling
+- `.claude/CLAUDE.md`: score 60/100 (D) — missing related-commands section, no quick-start table
 
-- **config-upgrader** (Sonnet): owns context skill, hooks.json, MANIFEST.json, REGISTRY.md
-- **command-builder** (Sonnet): owns .claude/commands/mac-manage/*.md, .claude/workflows/*.md
-- **docs-finalizer** (Sonnet): owns CLAUDE.md, .claude/memory/skill-priorities.md (read-only on all else)
+Cross-reference: Both OpenCode and Codex flag the missing context skill and weak CLAUDE.md. Priority: High.
 
-Opus enters delegate mode (Shift+Tab).
+## Step 6: Generate Task Graph
 
-### Step 6: Parallel Execution
+Dynamic task graph based on findings:
 
-**config-upgrader** completes T1, T2, T3 concurrently:
-- Context skill: added `version: 1.0.0`, `related` fields, updated prompt specificity → score now 91/100 (A)
-- hooks.json: migrated to `uv run`, added PostToolUse LSP hook → score now 88/100 (B)
-- MANIFEST + REGISTRY updated with new workflow
+| Task | Teammate | Blocked By | Priority | Effort |
+|------|----------|------------|----------|--------|
+| T1: Create cbass-context skill | config-upgrader | Nothing | High | Simple |
+| T2: Fix PostToolUse hook error handling | config-upgrader | Nothing | Medium | Simple |
+| T3: Update MANIFEST + REGISTRY | config-upgrader | Nothing | Low | Simple |
+| T4: Create /test command | command-builder | T1 | High | Simple |
+| T4b: Rewrite /cbass-debug command | command-builder | T1 | High | Simple |
+| T5: Create bug-investigation workflow | command-builder | T1 | Medium | Simple |
+| T7: Rewrite CLAUDE.md | docs-finalizer | T4, T4b, T5 | High | Simple |
+| T8: Generate skill-priorities | docs-finalizer | T4, T4b, T5 | Medium | Simple |
+| T9: Run validation suite | docs-finalizer | T7, T8 | — | Simple |
 
-T4 and T5 unblock for **command-builder**:
-- Adds `related` fields to all 4 commands
-- Creates `mac-discovery-workflow.md` chaining discover→diff→restore with decision points
+T6 (PRPs) skipped — no complex tasks identified.
 
-**docs-finalizer** starts T6 and T7 after command-builder finishes:
-- Updates CLAUDE.md component table, adds workflow section
-- Generates `skill-priorities.md` with tier assignments
+## Step 7: Spawn the Three-Teammate Team
 
-T8: validation suite runs — all checks pass.
-
-### Step 7: Final Report
-
-Opus synthesizes the before/after summary:
-
+**Spawn config-upgrader (Sonnet):**
 ```
-REPO OPTIMIZE COMPLETE: mac-manage
-Mode: upgrade
+You are the config-upgrader for cbass repo optimization.
 
-BEFORE vs AFTER:
-  hooks.json:          52 (F) → 88 (B)
-  mac-manage-context:  61 (D) → 91 (A)
-  mac-discover:        74 (C) → 87 (B)
-  mac-diff:            71 (C) → 85 (B)
-  mac-restore:         68 (D) → 84 (B)
-  mac-status:          75 (C) → 86 (B)
+WRITE: /home/user/projects/cbass/.claude/skills/cbass-context/*, 
+       /home/user/projects/cbass/.claude/hooks.json, 
+       /home/user/projects/cbass/MANIFEST.json,
+       /home/user/projects/cbass/.claude/REGISTRY.md
+READ:  docs/optimization/*.md, .claude/skills/repo-equip-engine/*
 
-NEW COMPONENTS:
-  + .claude/workflows/mac-discovery-workflow.md
-  + .claude/memory/skill-priorities.md
-
-VALIDATION: All checks passed
-
-Estimated improvement: from fragmented commands to a cohesive workflow with
-current hooks, cross-referenced components, and a context skill at grade A.
+Tasks:
+T1: Create cbass-context skill using the context skill template from repo-equip-engine
+T2: Add try/catch error handling to hooks.json PostToolUse hook
+T3: Add cbass entry to MANIFEST.json and REGISTRY.md
 ```
 
-## Output
+**Spawn command-builder (Sonnet):**
+```
+You are the command-builder for cbass repo optimization.
+BLOCKED on T4, T4b, T5 until config-upgrader completes T1.
 
-**What the user gets:**
-- A fully upgraded `.claude/` directory aligned with current template standards
-- Before/after freshness scores for every component
-- A new workflow chain (discover→diff→restore) they didn't have to design manually
-- All changes made in parallel by three teammates — total wall-clock time ~8 minutes
-- A validation suite confirms consistency before the session ends
+WRITE: /home/user/projects/cbass/.claude/commands/cbass/*.md,
+       /home/user/projects/cbass/.claude/workflows/*.md
+READ:  docs/optimization/*.md, .claude/skills/cbass-context/*
 
-**Files created/modified:**
-- `.claude/skills/mac-manage-context/SKILL.md` — updated to Grade A
-- `.claude/hooks/hooks.json` — migrated to uv run, added PostToolUse
-- `.claude/commands/mac-manage/*.md` — all 4 updated with related fields
-- `.claude/workflows/mac-discovery-workflow.md` — new workflow chain
-- `.claude/memory/skill-priorities.md` — new tier assignments
-- `CLAUDE.md` — updated component table and workflow documentation
-- `MANIFEST.json` + `.claude/REGISTRY.md` — updated registrations
+Tasks:
+T4: Create /test command that runs pytest with output formatting
+T4b: Rewrite /cbass-debug command with specific prompts and completion criteria
+T5: Create bug-investigation workflow following .claude/workflows/bug-investigation.md pattern
+```
+
+**Spawn docs-finalizer (Sonnet):**
+```
+You are the docs-finalizer for cbass repo optimization.
+BLOCKED on T7, T8 until command-builder completes T4, T4b, T5.
+
+WRITE: /home/user/projects/cbass/CLAUDE.md,
+       /home/user/projects/cbass/.claude/memory/skill-priorities.md
+READ:  Everything — you need the full picture of what teammates built
+
+Tasks:
+T7: Rewrite CLAUDE.md with quick-start table, related-commands section, keep under 200 lines
+T8: Generate skill-priorities.md listing all components by tier
+T9: Run validation suite (python3 scripts/validate-manifest.py)
+```
+
+Enable delegate mode (Shift+Tab) immediately after spawning.
+
+## Step 8: Monitor and Coordinate
+
+```
+[~5 min] config-upgrader: T1, T2, T3 complete
+[~5 min] command-builder: unblocked, starts T4, T4b, T5
+[~9 min] command-builder: all tasks complete
+[~9 min] docs-finalizer: unblocked, starts T7, T8
+[~12 min] docs-finalizer: T7, T8 complete
+[~13 min] docs-finalizer: T9 (validation) — 0 errors
+```
+
+## Step 9: Synthesize Final Summary
+
+```
+Optimization complete: cbass (audit mode)
+
+Freshness before: 55-70/100 (D-C range)
+Estimated freshness after: 80-90/100 (B-A range)
+
+Changes made:
+- Created cbass-context skill (domain knowledge base)
+- Rewrote /cbass-debug command (55 → 88/100)
+- Added /test command
+- Created bug-investigation workflow
+- Improved hooks.json error handling
+- Rewrote CLAUDE.md (dense 180 lines → clean 140 lines with quick-start table)
+- Added cbass to MANIFEST.json and REGISTRY.md
+- Generated skill-priorities.md
+
+Validation: 0 errors
+```
+
+## Timeline
+
+| Phase | Duration |
+|-------|----------|
+| Validation + mode detection | ~30 sec |
+| Forks A + B concurrent | ~3-4 min |
+| Synthesis + task graph | ~1 min |
+| Spawn team + execute | ~8 min |
+| Validation + summary | ~1 min |
+| **Total** | **~14-15 min** |

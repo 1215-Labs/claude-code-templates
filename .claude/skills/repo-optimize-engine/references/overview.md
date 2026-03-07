@@ -1,45 +1,43 @@
 # Repo Optimize Engine — Reference Overview
 
-## Key Concepts
+Supplementary reference for the `repo-optimize-engine` skill. Read SKILL.md for full instructions.
 
-- **Three optimization modes**: Mode is auto-detected from repo state — `greenfield` (no `.claude/` directory, build from scratch), `upgrade` (repo is registered in MANIFEST, diff and patch stale components), `audit` (has `.claude/` but not registered, quality check and best practices).
-- **Two-phase execution**: Phase 1 uses multi-model forks (OpenCode oracle for needs analysis, Codex for quality audit) to produce analysis docs. Phase 2 spawns a three-teammate agent team (config-upgrader, command-builder, docs-finalizer) to execute the upgrade task graph.
-- **Freshness scoring drives prioritization**: Each existing `.claude/` component scores 0-100 on a rubric. Cross-referencing OpenCode's needs analysis with Codex's quality audit determines task priority (both agree = High, one mentions = Medium, neither = skip).
-- **Task graph has fixed dependency wiring**: T1 (context skill) unblocks T4/T5 (commands/workflows); T4+T5 unblock T7/T8 (CLAUDE.md, skill-priorities); T7+T8 unblock T9 (validation). The graph is dynamic — skip tasks for gaps that don't exist.
+## What This Engine Does vs. Related Skills
 
-## Decision Criteria
+| Skill | Purpose |
+|-------|---------|
+| `repo-optimize-engine` | Orchestration logic: mode detection, fork management, task graph, team spawn |
+| `repo-equip-engine` | Templates and gap detection: component templates, applicability matrix, complexity scoring |
+| `repo-audit-engine` | Alignment auditing: scores existing repos against docs-to-code rubric |
 
-### Mode Detection
+repo-optimize-engine imports logic from repo-equip-engine (do not duplicate). repo-audit-engine scores; repo-optimize-engine improves.
 
-| Repo State | Mode | Action |
-|------------|------|--------|
-| No `.claude/` directory | greenfield | Full analysis + equipment from scratch via repo-equip-engine |
-| Has `.claude/` AND found in MANIFEST.json | upgrade | Diff against latest templates, patch stale components |
-| Has `.claude/` but NOT in MANIFEST.json | audit | Quality audit, suggest improvements, integrate best practices |
-| Path resolves to claude-code-templates itself | Decline | Suggest /sync-reference instead |
+## Mode Detection Decision Tree
 
-### Cross-Reference Priority Rules
+```
+Target repo has .claude/ directory?
+├── No  → greenfield
+│         Full analysis + equip from scratch
+│         Both OpenCode (needs) + Codex (quality) forks
+│
+└── Yes → Check MANIFEST.json for repo name
+    ├── Found   → upgrade
+    │             Diff against latest templates, patch stale components
+    │             Codex quality fork focuses on freshness scoring
+    │
+    └── Not found → audit
+                    Quality audit + best practices integration
+                    Both forks run; emphasis on what's missing
+```
 
-| OpenCode Says | Codex Says | Task Priority |
-|---------------|-----------|---------------|
-| "Repo needs X" | "X is stale/missing/weak" | High — both agree |
-| "Repo needs Y" | (no mention) | Medium — new addition |
-| (no mention) | "Z has quality issues" | Medium — quality fix |
-| (no mention) | (no mention) | Skip — not a task |
+**Validation before mode detection:**
+1. Path must exist and be accessible
+2. Target must not be the claude-code-templates repo itself (decline → suggest `/sync-reference`)
+3. Target should have a `.git/` directory (warn if absent, do not block)
 
-### Impact vs. Effort for Task Ordering
+## Freshness Scoring Quick Reference
 
-| Impact | Criteria | Examples |
-|--------|----------|---------|
-| High | Daily workflow improvement | New commands, better CLAUDE.md, critical hooks |
-| Medium | Occasional benefit | Agent updates, workflow refinements |
-| Low | Completeness | MANIFEST entries, REGISTRY rows, docs polish |
-
-Simple tasks (complexity 1-3): build inline. Complex tasks (4+): generate a PRP for later development.
-
-## Quick Reference
-
-### Freshness Scoring Rubric (100 points per component)
+100-point scale applied to each existing `.claude/` component:
 
 | Criterion | Points |
 |-----------|--------|
@@ -47,24 +45,45 @@ Simple tasks (complexity 1-3): build inline. Complex tasks (4+): generate a PRP 
 | `related` fields present | +5 |
 | Tools properly restricted | +10 |
 | `$ARGUMENTS` usage correct | +5 |
-| Prompt specificity | +15 |
+| Prompt specificity (not vague) | +15 |
 | Matches latest template | +15 |
 | Has completion criteria | +10 |
 | Error handling present | +10 |
 | References context skill | +10 |
 | Documentation quality | +10 |
 
-### Grade Mapping
+Grade mapping: A (90-100), B (80-89), C (70-79), D (60-69), F (<60).
 
-| Grade | Score | Meaning |
-|-------|-------|---------|
-| A | 90-100 | Matches latest patterns, production-ready |
-| B | 80-89 | Minor gaps, solid overall |
-| C | 70-79 | Functional but notable gaps |
-| D | 60-69 | Significant issues, needs rework |
-| F | < 60 | Fundamentally outdated or missing key elements |
+## Fork Configuration
 
-### Task Graph Dependency Wiring
+| Fork | Model | Purpose |
+|------|-------|---------|
+| A | openai/gpt-5.2 via oracle agent | Needs analysis — 1M context reads the whole repo to identify gaps |
+| B | gpt-5.2-codex | Quality audit — freshness scoring of existing .claude/ components |
+
+Both forks run in parallel (different providers). Polling: every 15 seconds, 5-minute timeout.
+
+Output: `docs/optimization/{REPO_NAME}-needs.md` and `docs/optimization/{REPO_NAME}-audit.md`.
+
+## Fallback Chain
+
+```
+OpenCode fails (429/capacity/timeout) → Sonnet subagent via Task tool
+Codex fails (API error/timeout)     → Sonnet subagent via Task tool
+```
+
+Note which fallback was used in the final report.
+
+## Cross-Reference Priority Rules for Task Generation
+
+| OpenCode (needs) | Codex (quality) | Task Priority |
+|----------------|-----------------|---------------|
+| "Repo needs X" | "X is stale/missing" | High — both agree |
+| "Repo needs Y" | (no mention) | Medium — new addition |
+| (no mention) | "Z has quality issues" | Medium — quality fix |
+| (no mention) | (no mention) | Not a task — skip |
+
+## Task Graph Dependency Rules
 
 | Task | Teammate | Blocked By |
 |------|----------|------------|
@@ -78,19 +97,28 @@ Simple tasks (complexity 1-3): build inline. Complex tasks (4+): generate a PRP 
 | T8: Generate skill-priorities | docs-finalizer | T4, T5 |
 | T9: Run validation suite | docs-finalizer | T7, T8 |
 
-### Teammate File Ownership
+**Dynamic pruning:** Skip tasks with no findings. Minimum viable graph: T3 + T7 + T9.
 
-| Teammate | Writes | Reads |
-|----------|--------|-------|
-| config-upgrader | .claude/skills/{REPO_NAME}-context/*, .claude/hooks/*, MANIFEST.json, .claude/REGISTRY.md | docs/optimization/*.md |
-| command-builder | .claude/commands/{REPO_NAME}/*.md, .claude/workflows/*.md, PRPs/*.md | docs/optimization/*.md, context skill |
-| docs-finalizer | {REPO_PATH}/CLAUDE.md, .claude/memory/skill-priorities.md | Everything |
+## Three-Teammate Team Structure
 
-### Multi-Model Fork Configuration
+| Teammate | Model | File Ownership |
+|----------|-------|----------------|
+| config-upgrader | Sonnet | `.claude/skills/{name}-context/`, `.claude/hooks/`, `MANIFEST.json`, `REGISTRY.md` |
+| command-builder | Sonnet | `.claude/commands/{name}/`, `.claude/workflows/`, `PRPs/` |
+| docs-finalizer | Sonnet | `{REPO_PATH}/CLAUDE.md`, `.claude/memory/skill-priorities.md` |
 
-| Fork | Model | Purpose | Fallback |
-|------|-------|---------|---------|
-| A | openai/gpt-5.2 via oracle agent | Needs analysis (multi-provider model access) | Sonnet subagent |
-| B | gpt-5.2-codex | Quality audit (SWE-bench leader) | Sonnet subagent |
+Lead (Opus) enters delegate mode after spawning. Lead does no implementation — only coordinates.
 
-Polling: every 15s, timeout 5 min. Both forks launch concurrently.
+## Impact vs. Effort Classification
+
+Each generated task is classified before queuing:
+
+| Impact | Criteria |
+|--------|----------|
+| High | Daily workflow improvement — new commands, better CLAUDE.md, critical hooks |
+| Medium | Occasional benefit — agent updates, workflow refinements |
+| Low | Completeness — MANIFEST entries, REGISTRY rows, documentation polish |
+
+**Effort** (from repo-equip-engine Complexity Scoring):
+- Simple (score 1-3): build inline during team execution
+- Complex (score 4+): generate a PRP document for later development

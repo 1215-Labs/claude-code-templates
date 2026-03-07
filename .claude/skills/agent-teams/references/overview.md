@@ -1,98 +1,93 @@
 # Agent Teams — Reference Overview
 
-## Key Concepts
+Supplementary reference for the `agent-teams` skill. Read SKILL.md for full instructions.
 
-- **Lead + teammates model**: One Opus lead coordinates; Sonnet teammates implement. The lead should enter delegate mode (Shift+Tab) for teams of 3+ to prevent accidental implementation work.
-- **File ownership prevents conflicts**: Each file belongs to exactly one teammate. If two teammates need the same file, serialize access via task dependencies or have the lead make shared-file edits after teammates finish.
-- **Task decomposition is the critical skill**: Create 5-6 self-contained tasks per teammate. Each task must have a clear deliverable, explicit file ownership, and be verifiable.
-- **Token cost scales linearly**: N teammates = N+1 concurrent context windows. Prefer subagents for focused parallel tasks; reserve agent teams for work requiring inter-agent communication.
+## When to Use Agent Teams vs. Alternatives
 
-## Decision Criteria
+| Situation | Best Choice | Reason |
+|-----------|-------------|--------|
+| Workers need to communicate with each other | Agent teams | Messaging between teammates |
+| Workers just report results to you | Subagents (Task tool) | Simpler, less overhead |
+| Workers need different AI models | `/orchestrate` (forked terminals) | Multi-model support |
+| Sequential steps, each depending on previous | Single session | No parallelism benefit |
+| 2-file change | Single session | Coordination overhead exceeds benefit |
 
-### Teams vs. Alternatives
+## Team Size Decision Criteria
+
+Start with the smallest team that covers the independent workstreams:
+
+- **2 teammates**: Paired review (two lenses on same code), or research + implementation
+- **3 teammates**: Cross-layer feature (frontend + backend + tests), or 3-angle review
+- **4 teammates**: Large feature with clear module boundaries (API + UI + DB + tests)
+- **5 teammates**: Competing hypotheses — adversarial debugging where theories challenge each other
+
+Rule: each additional teammate adds overhead. Default to fewer.
+
+## Role Pattern Decision Tree
 
 ```
-Task requires parallel work?
-  No  → Single session or subagents
-  Yes →
-    Workers need to communicate?     → Agent teams
-    Workers just report results?     → Subagents (cheaper)
-    Workers need different models?   → /orchestrate (forked terminals)
+What is the team doing?
+├── Reviewing existing code → Parallel Reviewers
+│   Each reviewer: one lens (security / performance / test coverage)
+│   Lead: synthesizes findings, does NOT implement
+│
+├── Building a new feature → Cross-Layer Builders
+│   Each builder: one layer (frontend / backend / DB / tests)
+│   File ownership prevents conflicts
+│
+├── Debugging a mysterious bug → Competing Investigators
+│   Each investigator: one hypothesis
+│   They message each other to challenge findings
+│
+├── Complex risky change → Architect + Implementers
+│   Architect plans first, plan approval required before others start
+│
+└── Researching a decision → Research Council
+    Each researcher: one aspect (options / benchmarks / security implications)
+    Lead synthesizes into recommendation
 ```
 
-### When to Use Agent Teams
+## Critical Rules for Conflict Avoidance
 
-| Scenario | Use Teams? | Why |
-|----------|-----------|-----|
-| Parallel exploration (multiple angles) | Yes | Workers can share findings |
-| Multi-angle review (security + perf + tests) | Yes | Each reviewer needs full context |
-| Cross-layer feature (frontend + backend + tests) | Yes | Clear file ownership per layer |
-| Competing hypotheses for debugging | Yes | Adversarial communication helps |
-| Sequential task chain (step N needs step N-1) | No | Use task dependencies instead |
-| Same-file edits needed | No | Will cause conflicts |
-| Simple task completable in one session | No | Coordination overhead > benefit |
-| Token-budget-constrained | No | N teammates = N+1 sessions |
+**File ownership is non-negotiable:**
+- Every file must have exactly one owner
+- State explicit ownership in the spawn prompt: "You own these files exclusively: [list]"
+- If two teammates need the same shared file (e.g., `index.ts`, `types.ts`):
+  - Designate one as owner; others block on them
+  - OR have the lead edit shared files after teammates finish
 
-### Team Sizing
+**The lead must stay in delegate mode (Shift+Tab):**
+- Lead does NOT implement anything
+- Lead only: spawns, messages, monitors task list, shuts down
+- Failing to enable delegate mode is the most common mistake
 
-| Size | Best For | Example |
-|------|----------|---------|
-| 2 | Paired review, research + implementation | Security + performance review |
-| 3 | Multi-angle review, cross-layer feature | Frontend + backend + tests |
-| 4 | Large feature with clear module boundaries | API + UI + DB + tests |
-| 5 | Competing hypotheses, broad investigation | 5 theories for a mysterious bug |
+## Task Quality Checklist
 
-## Quick Reference
+Each task assigned to a teammate must be:
+- [ ] Self-contained (can start without waiting for another task, unless explicitly blocked)
+- [ ] Has a clear, verifiable deliverable (a file, a report, a function)
+- [ ] States which files the task will touch
+- [ ] Right-sized: 5-6 tasks per teammate is the target
 
-### Role Patterns
+## Environment Compatibility
 
-| Pattern | Teammates | Lead Role |
-|---------|-----------|-----------|
-| Parallel Reviewers | 2-3 reviewers, each with a distinct lens | Synthesize findings |
-| Cross-Layer Builders | Each owns a layer (frontend/backend/db/tests) | Coordinate, resolve conflicts |
-| Competing Investigators | Each tests a different hypothesis | Adjudicate the winning theory |
-| Architect + Implementers | 1 architect (plan approval), 2-3 implementers | Approve plans, unblock |
-| Research Council | Each researches a different aspect | Synthesize into recommendation |
+| Platform | Display Mode | Notes |
+|----------|-------------|-------|
+| WSL2 | `in-process` | tmux unreliable under WSL |
+| macOS + iTerm2 | `tmux` | Best visual experience |
+| VS Code terminal | `in-process` | Split panes not supported |
+| SSH session | `in-process` | Unless tmux already running |
 
-### Spawn Prompt Templates
+## Token Cost Awareness
 
-**Reviewer:**
-```
-Review {target} focusing exclusively on {lens}.
-For each finding: severity, file+line, specific recommendation.
-Do NOT fix code — report only. Save findings to {output_path}.
-```
+N teammates costs approximately N+1 context windows in parallel. Each teammate independently loads CLAUDE.md, MCP servers, and skills. Use Sonnet for implementation teammates to reduce cost; reserve Opus for the lead and architect.
 
-**Implementer:**
-```
-Implement {feature} in {directory}. Follow patterns in {reference_file}.
-You own these files exclusively: {file_list}.
-Do NOT modify files outside your ownership.
-Run tests after each change: {test_command}.
-```
+## Anti-Pattern Quick Reference
 
-### Display Mode Selection
-
-| Environment | Mode |
-|-------------|------|
-| WSL2 | in-process (tmux unreliable) |
-| macOS + iTerm2/tmux | tmux |
-| VS Code terminal | in-process |
-| SSH session | in-process |
-
-### Task Ownership Rules
-
-- One file = one owner. No exceptions.
-- Lead should NOT edit files when in delegate mode.
-- Shared files (index.ts, types.ts): designate one owner; others create blocked tasks.
-
-### Anti-Patterns
-
-| Anti-Pattern | Fix |
-|-------------|-----|
-| Over-teaming (5 teammates for 2-file change) | Use subagents or single session |
-| Under-contexting ("fix the bug") | Include file paths, error messages, constraints |
-| File collision (two teammates edit index.ts) | Enforce file ownership + task dependencies |
-| Lead does implementation work | Enable delegate mode (Shift+Tab) |
-| No quality gates | Use TeammateIdle and TaskCompleted hooks |
-| Broadcast spam to all teammates | Use targeted messages instead |
+| Symptom | Root Cause | Fix |
+|---------|-----------|-----|
+| Two teammates modifying the same file | No file ownership enforced | Add explicit file lists to spawn prompts |
+| Lead is writing code | Delegate mode not enabled | Press Shift+Tab after spawning |
+| Tasks never completing | Tasks too large or blocked | Break into smaller units, verify blockers |
+| Team left running after session | No cleanup step | Always end with "clean up the team" |
+| Teammate doing the wrong thing | Spawn prompt too vague | Include file paths, constraints, examples |

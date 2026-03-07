@@ -1,107 +1,113 @@
 # Repo Audit Engine — Reference Overview
 
-## Key Concepts
+Supplementary reference for the `repo-audit-engine` skill. Read SKILL.md for full instructions.
 
-- **Three-layer architecture**: Every audit covers Docs-to-Code (always), Internal Consistency (always), and Code-to-Deploy (only when deploy configuration is detected). Each layer scores independently on a 100-point scale.
-- **Complementary model strengths**: OpenCode oracle (multi-provider model access) cross-references docs against all code; Codex (SWE-bench leader) finds dead code, broken imports, unused deps. They run concurrently (different providers, no rate conflict).
-- **Gating issues override scores**: Certain findings (hardcoded secrets, broken imports, nonexistent deploy targets) cap the grade at C regardless of point total. Report these prominently in a "Fix First" section.
-- **Cross-layer promotion**: Findings that appear in multiple layers are promoted one severity level (LOW → MEDIUM, MEDIUM → HIGH).
+## What This Engine Audits
 
-## Decision Criteria
+The engine checks three alignment layers:
 
-### Layer Applicability Detection
+| Layer | Question | Always Run? |
+|-------|----------|-------------|
+| Docs-to-Code | Do documented commands, endpoints, and paths actually exist in code? | Yes |
+| Internal Consistency | Are imports, deps, and .claude/ references internally valid? | Yes |
+| Code-to-Deploy | Do app ports, env vars, and build outputs match deploy config? | Only if deploy config detected |
 
-| Layer | Always Run? | Detection Trigger |
-|-------|-------------|------------------|
-| Docs-to-Code | Yes | Every repo has documentation |
-| Internal Consistency | Yes | Every repo has code |
-| Code-to-Deploy | Conditional | Dockerfile, docker-compose.yml, .github/workflows/ deploy steps, Caddyfile, nginx.conf, vercel.json, netlify.toml, fly.toml, Procfile, k8s/, serverless.yml, .deploy/, render.yaml |
+## Fork Assignment Logic
 
-### Fork Allocation
+| Fork | Model | Layer | Why This Model |
+|------|-------|-------|----------------|
+| A | OpenCode | Docs-to-Code | 1M context reads all docs + all code simultaneously for cross-referencing |
+| B | Codex | Internal Consistency | SWE-bench leader — best at dead code, broken imports, unused deps |
+| C | OpenCode | Code-to-Deploy | Broad context cross-references deploy configs with codebase |
 
-| Fork | Model | Layer | Launch Timing |
-|------|-------|-------|---------------|
-| A | openai/gpt-5.2 via oracle agent | Docs-to-Code | Immediately |
-| B | gpt-5.2-codex | Internal Consistency | Immediately (concurrent with A) |
-| C | openai/gpt-5.2 via oracle agent | Code-to-Deploy | After A completes (max 2 concurrent OpenCode) |
+Concurrency rule: Launch A + B together (different providers, no rate conflict). Launch C after A completes to stay within the 2-concurrent-OpenCode limit.
 
-### Gating Issues (cap grade at C)
+## Deploy Config Detection Checklist
 
-- Build command fails or doesn't exist
-- Secrets/credentials hardcoded in source
-- Deploy config references files that don't exist
-- Critical import paths are broken (app won't start)
-- INDEX.md Documentation Map points to non-existent files (when INDEX.md exists)
+Run Code-to-Deploy layer only when one or more of these exist:
 
-## Quick Reference
+- `Dockerfile` or `docker-compose.yml`
+- `.github/workflows/` with deploy steps
+- `Caddyfile`, `nginx.conf`
+- `vercel.json`, `netlify.toml`, `fly.toml`
+- `Procfile`, `render.yaml`
+- `k8s/` or `kubernetes/` directory
+- `serverless.yml` or `serverless.ts`
+- `.deploy/` directory
 
-### Scoring Rubrics
+## Scoring Quick Reference
 
-**Docs-to-Code (100 points)**
+Each layer is scored 0-100. Final grade averages applicable layers.
 
-| Criterion | Points |
-|-----------|--------|
-| Build/test commands accurate | +15 |
-| README project description current | +10 |
-| API docs match endpoints | +15 |
-| Directory structure matches docs | +10 |
-| INDEX.md present and accurate | +15 |
-| Commands/agents referenced exist | +15 |
-| Environment setup docs current | +10 |
-| Glossary terms match code usage | +10 |
+| Grade | Score | Meaning |
+|-------|-------|---------|
+| A | 90-100 | Excellent alignment |
+| B | 80-89 | Minor gaps only |
+| C | 70-79 | Notable gaps; also the cap grade for any gating issue |
+| D | 60-69 | Significant issues |
+| F | <60 | Fundamental misalignment |
 
-**Internal Consistency (100 points)**
+## Gating Issues (Cap Grade at C)
 
-| Criterion | Points |
-|-----------|--------|
-| No dead code | +15 |
-| No orphaned configs | +10 |
-| All imports resolve | +20 |
-| No stale .claude/ references | +15 |
-| Package scripts work | +10 |
-| No unused dependencies | +10 |
-| Consistent naming conventions | +10 |
-| No stale TODOs (>90 days) | +10 |
+These findings override the numeric score — even a 95-point repo gets C if any gating issue exists:
 
-**Code-to-Deploy (100 points)**
+1. Build command fails or does not exist
+2. Secrets or credentials hardcoded in source
+3. Deploy config references files that do not exist
+4. Critical import paths are broken (app will not start)
+5. INDEX.md Documentation Map points to non-existent files (if INDEX.md exists)
 
-| Criterion | Points |
-|-----------|--------|
-| Dockerfile installs all deps | +20 |
-| CI builds what deploy expects | +20 |
-| Env vars documented and used | +15 |
-| Port/host configs consistent | +10 |
-| Build artifacts match deploy | +15 |
-| Health check endpoints exist | +10 |
-| Secrets not hardcoded | +10 |
+Always report gating issues in a "Fix First" section at the top of the report.
 
-### Grade Mapping
+## Cross-Reference Priority Rules
 
-| Grade | Score |
-|-------|-------|
-| A | 90-100 |
-| B | 80-89 |
-| C | 70-79 |
-| D | 60-69 |
-| F | < 60 |
+When the same issue appears in multiple fork outputs, escalate severity:
 
-### Cross-Reference Priority Rules
-
-| Docs Layer Says | Internal Layer Says | Priority |
-|----------------|---------------------|----------|
-| "Doc claims X exists" | "X is dead code/missing" | HIGH |
-| "Doc claims command Y" | "Y has broken imports" | HIGH |
-| "Doc claims deploy to X" | "Target mismatch" | HIGH |
+| Docs Layer | Internal Layer | Combined Priority |
+|-----------|----------------|-------------------|
+| "Doc claims X exists" | "X is missing or dead code" | HIGH — documented feature is broken |
+| "Doc claims command Y" | "Y has broken imports" | HIGH — documented feature is broken |
 | "Doc is stale" | (no mention) | MEDIUM |
 | (no mention) | "Orphaned config Z" | MEDIUM |
+| "Doc claims deploy to X" | Deploy says "target mismatch" | HIGH — deploy drift |
 
-### INDEX.md Validation Rules
+Findings that overlap between two layers are promoted one severity level.
 
-- Line count > 80 lines: flag as over-budget
-- Every Documentation Map path must exist as a file
-- Every Quick Facts entry must be verifiable (stack, deploy, entry point, build/test commands)
-- If INDEX.md is absent and CLAUDE.md > 200 lines: deduct 15 points from docs-to-code score
+## INDEX.md Validation Rules
 
-### Fallback Chain
+If `.claude/INDEX.md` exists, Docs-to-Code fork must verify:
+- File is under 80 lines (flag if over-budget)
+- `Purpose` field is present and non-empty
+- "If you only read one file today" path exists on disk
+- Every Quick Facts entry is verifiable (stack, deploy, entry point, build/test, package manager)
+- Every Documentation Map path exists as a real file
+- Every Critical Path hop references existing directories/files
+- Known Drift entries have dates
 
-Fork timeout (5 min) → check `error_type` in `done.json` → dispatch Sonnet subagent with identical prompt
+If `.claude/INDEX.md` does NOT exist:
+- Flag as "INDEX.md missing" in findings
+- Deduct 15 points from docs-to-code only if `CLAUDE.md` is over 200 lines
+- If `CLAUDE.md` is 200 lines or shorter, warn but do not penalize
+
+## Fallback Chain
+
+```
+Fork timeout (5 min) → check error_type in done.json
+├── QUOTA / CAPACITY → dispatch Sonnet subagent via Task tool with identical prompt
+└── Other error      → check output log tail, then dispatch Sonnet subagent
+```
+
+## Run Directory Contract
+
+All audit output goes to:
+```
+/tmp/repo-audit/{REPO_NAME}/{YYYYMMDD_HHMMSS}/
+  fork-a.response.json
+  fork-a.done.json
+  fork-b.response.json
+  fork-b.done.json
+  fork-c.response.json   (if applicable)
+  fork-c.done.json       (if applicable)
+```
+
+All forks emit JSON matching `schema/audit-layer-output.json` for uniform synthesis.

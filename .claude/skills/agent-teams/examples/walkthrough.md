@@ -1,139 +1,127 @@
-# Agent Teams — Example Walkthrough
+# Agent Teams — Worked Example
 
 ## Scenario
 
-A developer needs to implement a full CRUD API for a user management system, complete with unit tests and OpenAPI documentation. The work clearly separates into three independent layers: backend routes, test coverage, and API docs. Doing this sequentially in one session would be slow; the layers can be built in parallel with no file conflicts.
+The user asks: "We need to add user profile pages to the app. It needs a new API endpoint, a frontend component, and tests for both."
 
-## Trigger
+This is a cross-layer feature with clear boundaries: backend, frontend, and tests can be built in parallel. There are no sequential dependencies except tests coming after the main code.
 
-> User: "implement a full CRUD API for user management with tests and OpenAPI docs"
+## Step 1: Classify the Task
 
-## Step-by-Step
+- Three independent workstreams: API endpoint, frontend component, tests
+- Teammates can work in parallel on separate files
+- Role pattern: Cross-Layer Builders (3 teammates)
+- File ownership is clean — no shared files at risk
 
-### Step 1: Task Analysis
+## Step 2: Define Teammate Roles and File Ownership
 
-Opus evaluates whether this warrants a team:
-- Parallel work available? Yes — backend, tests, and docs can be built simultaneously
-- Workers need to communicate? Minimal — tests need to know the route signatures, but docs and backend are independent
-- File conflicts possible? No — clear directory partitioning
-- Worth the coordination overhead? Yes — 3 layers in parallel is ~3x faster than sequential
+**Lead (Opus):** Coordinate, delegate, synthesize. No implementation.
 
-Decision: spawn a 3-teammate team with a lead + builder + validator pattern.
+**Teammate 1 — backend-api:**
+- Implements `GET /users/:id/profile` endpoint
+- Owns: `src/routes/users.ts`, `src/services/user-profile.ts`, `src/types/profile.ts`
 
-### Step 2: Create Team and Decompose Tasks
+**Teammate 2 — frontend-ui:**
+- Implements the `<UserProfile>` React component
+- Owns: `src/components/UserProfile.tsx`, `src/components/UserProfile.css`
 
-Opus creates the team and defines tasks before spawning teammates:
+**Teammate 3 — test-coverage:**
+- Writes tests for both layers (blocked until teammates finish)
+- Owns: `tests/routes/users.test.ts`, `tests/components/UserProfile.test.tsx`
 
+## Step 3: Spawn the Team
+
+Spawn teammate 1 (backend-api):
 ```
-Team: user-crud-feature
-Teammates:
-  - backend-api   (implements routes)
-  - test-writer   (writes unit tests)
-  - docs-writer   (produces OpenAPI schema)
-```
+Implement GET /users/:id/profile endpoint.
 
-**Task assignments:**
+You own these files exclusively:
+- src/routes/users.ts (add new route)
+- src/services/user-profile.ts (create new service)
+- src/types/profile.ts (create Profile type)
 
-| Task | Owner | Files | Blocked By |
-|------|-------|-------|-----------|
-| T1: GET /users endpoint | backend-api | src/routes/users.ts | — |
-| T2: POST /users endpoint | backend-api | src/routes/users.ts | — |
-| T3: PUT /users/:id endpoint | backend-api | src/routes/users.ts | — |
-| T4: DELETE /users/:id endpoint | backend-api | src/routes/users.ts | — |
-| T5: Update route index | backend-api | src/routes/index.ts | T1, T2, T3, T4 |
-| T6: Unit tests for GET/POST | test-writer | tests/routes/users.test.ts | — |
-| T7: Unit tests for PUT/DELETE | test-writer | tests/routes/users.test.ts | T6 |
-| T8: GET + POST OpenAPI schema | docs-writer | docs/api/users.yaml | — |
-| T9: PUT + DELETE OpenAPI schema | docs-writer | docs/api/users.yaml | T8 |
-
-### Step 3: Spawn Teammates
-
-Opus spawns three teammates with scoped prompts:
-
-**backend-api spawn prompt:**
-```
-Implement CRUD endpoints for /api/users in src/routes/users.ts.
-Follow existing patterns in src/routes/products.ts.
-You own these files exclusively: src/routes/users.ts, src/routes/index.ts.
-Do NOT modify any other files.
-Run tests after each endpoint: npm test -- --grep "users"
+Follow existing patterns in src/routes/posts.ts for route structure.
+Do NOT modify files outside your ownership.
+After each change, run: npm run type-check
 ```
 
-**test-writer spawn prompt:**
+Spawn teammate 2 (frontend-ui):
 ```
-Write unit tests for the /api/users CRUD endpoints in tests/routes/users.test.ts.
-Follow existing test patterns in tests/routes/products.test.ts.
-You own this file exclusively: tests/routes/users.test.ts.
-Test all four methods: GET, POST, PUT, DELETE.
-Mock the database layer using the existing db-mock helper.
-```
+Implement the UserProfile React component.
 
-**docs-writer spawn prompt:**
-```
-Write OpenAPI 3.0 schema for the /api/users CRUD endpoints in docs/api/users.yaml.
-Follow the existing schema structure in docs/api/products.yaml.
-You own this file exclusively: docs/api/users.yaml.
-Document all request bodies, response shapes, and error codes.
+You own these files exclusively:
+- src/components/UserProfile.tsx (create component)
+- src/components/UserProfile.css (create styles)
+
+Follow existing patterns in src/components/PostCard.tsx.
+Fetch data from GET /users/:id/profile endpoint (assume it exists).
+Do NOT modify files outside your ownership.
 ```
 
-### Step 4: Opus Enters Delegate Mode
-
-Opus presses Shift+Tab to enter delegate mode. It will not implement anything itself — only coordinate, answer questions, and resolve blockers.
-
-### Step 5: Parallel Execution
-
-All three teammates work simultaneously:
-
-- **backend-api** implements GET /users (T1), commits, moves to POST /users (T2), etc.
-- **test-writer** writes GET + POST tests (T6) in parallel, then PUT + DELETE tests (T7)
-- **docs-writer** documents GET + POST schema (T8) in parallel, then PUT + DELETE (T9)
-
-backend-api finishes T1-T4 and messages Opus:
-
-> "All four CRUD endpoints implemented and tests passing locally. Ready for T5 (route index update)."
-
-Opus unblocks T5 in the task list. backend-api updates the route index.
-
-### Step 6: Validation Check
-
-test-writer messages Opus after T7:
-
-> "All 8 tests written. 7 pass. The DELETE test is failing — DELETE /users/:id returns 204 but my test expects 200. Should I update the test or is the route wrong?"
-
-Opus checks the API conventions doc and responds:
-
-> "204 is correct for DELETE. Update the test to expect 204."
-
-test-writer fixes the test. All 8 pass.
-
-### Step 7: Shutdown and Summary
-
-Opus sends shutdown requests to all three teammates after confirming all tasks are complete. Opus synthesizes a handoff summary:
-
+Spawn teammate 3 (test-coverage):
 ```
-User CRUD API complete:
-  - 4 endpoints implemented: GET, POST, PUT, DELETE /api/users
-  - 8 unit tests passing (tests/routes/users.test.ts)
-  - OpenAPI schema documented (docs/api/users.yaml)
-  - Route index updated (src/routes/index.ts)
+Write tests for the user profile feature.
+BLOCKED: Wait until backend-api and frontend-ui complete their tasks first.
 
-Files changed:
-  src/routes/users.ts
-  src/routes/index.ts
-  tests/routes/users.test.ts
-  docs/api/users.yaml
+You own these files exclusively:
+- tests/routes/users.test.ts (API endpoint tests)
+- tests/components/UserProfile.test.tsx (component tests)
+
+Run tests after writing: npm test -- --testPathPattern=users
 ```
 
-## Output
+Enable delegate mode (Shift+Tab) immediately after spawning.
 
-**What the user gets:**
-- A complete CRUD API implementation with tests and OpenAPI docs, delivered in the time it would have taken to build just the backend routes alone
-- All 4 files clearly partitioned — no merge conflicts
-- A clean task history showing exactly which teammate built what
-- Opus's context preserved for further coordination (no implementation work done by lead)
+## Step 4: Monitor Progress
 
-**Files created/modified:**
-- `src/routes/users.ts` — 4 CRUD endpoints
-- `src/routes/index.ts` — registered new routes
-- `tests/routes/users.test.ts` — 8 unit tests
-- `docs/api/users.yaml` — OpenAPI 3.0 schema
+Monitor the task list (Ctrl+T). Expected sequence:
+
+```
+[~5 min] backend-api: Task 1 complete (src/routes/users.ts)
+[~6 min] frontend-ui: Task 1 complete (UserProfile.tsx)
+[~8 min] backend-api: All tasks complete
+[~9 min] frontend-ui: All tasks complete
+[~11 min] test-coverage: Unblocked — starts running
+[~14 min] test-coverage: 12 tests passing, all complete
+```
+
+If a teammate messages with a question, respond via targeted message (not broadcast).
+
+Example: backend-api asks "Should Profile include the user's email?" — answer directly, then continue monitoring.
+
+## Step 5: Handle the Shared File Edge Case
+
+Suppose both backend-api and frontend-ui need to update `src/types/index.ts` to export their new types.
+
+Resolution: After both complete, the lead makes that single shared-file edit:
+1. Read what backend-api added to `src/types/profile.ts`
+2. Read what frontend-ui expects from the index
+3. Add both exports to `src/types/index.ts` as the lead
+
+This is a legitimate lead action — not implementation, but coordination.
+
+## Step 6: Clean Up
+
+After test-coverage completes:
+1. Read the test results summary
+2. Report to user: "User profile feature complete. 12 tests passing across API and frontend."
+3. Say "clean up the team" to terminate all teammate sessions
+
+## What Went Right
+
+- Parallel execution cut a ~45-minute sequential task to ~14 minutes
+- No file conflicts because ownership was explicit from the start
+- The blocked test-coverage task naturally waited without needing manual coordination
+- Lead stayed in delegate mode — no context pollution from implementation work
+
+## Expected Timeline
+
+| Phase | Duration |
+|-------|----------|
+| Spawn 3 teammates | ~2 min |
+| Backend + frontend parallel work | ~8 min |
+| Tests (after unblock) | ~5 min |
+| Lead shared-file edit + cleanup | ~2 min |
+| **Total** | **~17 min** |
+
+Sequential equivalent: ~45 min. Parallelism saved ~28 min.

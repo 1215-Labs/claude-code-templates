@@ -1,110 +1,111 @@
-# Multi-Model Orchestration — Example Walkthrough
+# Multi-Model Orchestration — Worked Example
 
 ## Scenario
 
-A developer has a 500k-token monorepo containing a Django REST API, React frontend, and Postgres schema spread across hundreds of files. They need to find all API endpoints and understand which ones lack authentication. The codebase is too large for Opus to hold in context, and manually grepping is error-prone across this many files.
+The user asks: "I need to add rate limiting to our API. I've never looked at how the middleware layer works."
 
-## Trigger
+This is a classic explore-then-implement task. The codebase is unfamiliar, and there's a clear implementation goal after exploration.
 
-> User: "our codebase is 500k tokens, help me find all the API endpoints and which ones are missing authentication"
+## Step 1: Classify and Decide
 
-## Step-by-Step
+- Unfamiliar middleware layer → needs exploration first
+- Concrete implementation goal → Codex after exploration
+- Pattern: Explore-Then-Implement (Pattern 1)
 
-### Step 1: Task Classification
+## Step 2: Fork OpenCode to Explore
 
-Opus recognizes this as a large-codebase exploration task — the user's 500k-token codebase exceeds what Opus can hold directly. OpenCode with multi-provider model access is the right tool. Opus will NOT attempt to grep or read files itself.
-
-Decision path:
-- Large task? Yes
-- Codebase exploration? Yes → Fork OpenCode (multi-provider)
-
-### Step 2: Structure the OpenCode Prompt
-
-Opus constructs a scoped exploration prompt:
+Construct and send the exploration prompt:
 
 ```
-Explore the API endpoint structure in this Django/React codebase at /home/user/projects/myapp.
+Explore the middleware architecture in this codebase.
 
 Focus on:
-- All URL patterns in urls.py files (list every endpoint with HTTP method)
-- Authentication decorators or middleware applied to each view
-- Views that have NO authentication (no @login_required, no IsAuthenticated, no JWT check)
-- The pattern used for auth — is it decorator-based, class-based, or middleware?
+- How existing middleware is structured and registered (src/middleware/)
+- The request/response lifecycle and where middleware hooks in
+- Any existing rate limiting or throttling code (even partial)
+- Naming conventions and patterns I should follow when adding new middleware
 
-Write findings to docs/exploration/api-endpoints.md using progressive disclosure format:
-- Executive Summary (2-3 sentences)
-- Quick Reference table: endpoint | method | auth status
-- Critical Files (urls.py files, auth middleware, base view classes)
-- Patterns & Conventions (how auth is applied)
-- Edge Cases (public endpoints that should be public, e.g. /health, /login)
-- Raw Findings (full endpoint list with file:line references)
+Write findings to docs/exploration/middleware.md using progressive disclosure format
+(Executive Summary → Quick Reference → Architecture → Critical Files → Patterns → Recommendations).
 ```
 
-### Step 3: Fork OpenCode
+Fork with: `openai/gpt-5.2 via oracle agent` via fork-terminal. Output: `docs/exploration/middleware.md`.
 
-Opus invokes the fork-terminal skill to launch OpenCode in a new terminal window with the constructed prompt. OpenCode has access to the full codebase via its multi-provider model access and begins reading all relevant files.
+Tell the user: "Forking OpenCode to explore the middleware layer. This takes about 2-3 minutes."
 
-```bash
-python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool opencode \
-  "opencode -p '{FILLED_PROMPT}' --agent oracle"
-```
+## Step 3: Read Results Progressively
 
-Opus monitors for output at `docs/exploration/api-endpoints.md`. Poll interval: 30 seconds.
+When `docs/exploration/middleware.md` appears:
 
-### Step 4: OpenCode Completes Exploration
+1. Read Executive Summary (2-3 sentences) — get the gist
+2. Scan Quick Reference table — key facts
+3. Check Recommendations section — OpenCode's guidance for implementation
 
-After ~3 minutes, `docs/exploration/api-endpoints.md` appears. Opus reads the Executive Summary first:
+Example summary OpenCode might produce:
+> "Middleware is registered in `src/middleware/index.ts` via an `applyMiddleware()` factory. All middleware must export a function matching the `Middleware` interface in `src/types/middleware.ts`. There is no existing rate limiting; the closest is the 10s request timeout in `src/middleware/timeout.ts`."
 
-> "This codebase has 47 API endpoints across 8 URL conf files. 12 endpoints have no authentication, including 3 that appear sensitive (user data export, admin stats, billing history). Auth is applied via `@login_required` decorator for function-based views and `IsAuthenticated` permission class for DRF ViewSets."
+Synthesize this for the user: "Found the middleware pattern. All middleware goes in `src/middleware/`. There's a clean `Middleware` interface to implement. No existing rate limiting — we're building from scratch."
 
-### Step 5: Opus Reads Quick Reference Table
+## Step 4: Fork Codex to Implement
 
-Opus scans the Quick Reference table — the 12 unauthenticated endpoints are listed with file:line references. Three are flagged as high-risk. Opus does NOT need to read Raw Findings yet.
-
-### Step 6: Opus Synthesizes and Presents to User
-
-Opus presents a structured response:
+Construct the implementation prompt using OpenCode's output:
 
 ```
-Found 47 endpoints, 12 without authentication.
+Implement a rate limiting middleware for the API, based on the exploration in
+docs/exploration/middleware.md.
 
-3 HIGH RISK (likely should be protected):
-- GET /api/v1/users/export/ → views/users.py:145 (exports PII)
-- GET /api/v1/admin/stats/ → views/admin.py:67 (admin dashboard data)
-- GET /api/v1/billing/history/ → views/billing.py:203 (financial records)
+Requirements:
+- Create src/middleware/rate-limit.ts following the Middleware interface pattern
+- Default: 100 requests per minute per IP address (configurable via env var RATE_LIMIT_RPM)
+- Return 429 Too Many Requests with Retry-After header on limit exceeded
+- Register the middleware in src/middleware/index.ts (after auth, before routes)
+- Write unit tests in tests/middleware/rate-limit.test.ts
 
-9 LOW RISK (likely intentionally public):
-- POST /api/v1/auth/login/
-- GET /api/v1/health/
-- ... (7 more)
-
-Auth pattern: @login_required for FBVs, IsAuthenticated for DRF ViewSets.
-Full report: docs/exploration/api-endpoints.md
+After implementation:
+1. Run: npm test -- --testPathPattern=rate-limit
+2. Document changes in docs/implementation/rate-limiting-log.md
+3. List all files modified
 ```
 
-### Step 7: (Optional) Fork Codex to Fix
+Fork with: `gpt-5.2-codex` via fork-terminal.
 
-If the user wants to add authentication to the 3 high-risk endpoints, Opus forks Codex with the exploration doc as context:
+Tell the user: "Forking Codex to implement the rate limiter. Estimated 3-5 minutes."
+
+## Step 5: Review Implementation Results
+
+When `docs/implementation/rate-limiting-log.md` appears, read the Files Changed table and test results:
 
 ```
-Fix authentication on these 3 endpoints based on the analysis in docs/exploration/api-endpoints.md:
-- views/users.py:145 — add @login_required
-- views/admin.py:67 — add IsAdminUser permission
-- views/billing.py:203 — add IsAuthenticated permission
+Files Changed:
+| File | Change Type | Description |
+|------|-------------|-------------|
+| src/middleware/rate-limit.ts | Created | Rate limiter with sliding window counter |
+| src/middleware/index.ts | Modified | Registered after auth middleware |
+| tests/middleware/rate-limit.test.ts | Created | 8 unit tests |
 
-Follow the existing auth patterns documented in the exploration.
-Run tests after: python manage.py test api.tests.auth
-Document changes in docs/implementation/auth-fixes-log.md
+Tests:
+✓ 8/8 passing
 ```
 
-## Output
+Report to user: "Done. Rate limiting middleware created and registered. 8 tests passing. Files are in `src/middleware/rate-limit.ts`. Want me to show you the implementation?"
 
-**What the user sees:**
-- A clear summary of all 47 endpoints in under 5 minutes
-- Prioritized list of 3 high-risk unauthenticated endpoints with file:line references
-- A permanent reference doc at `docs/exploration/api-endpoints.md` for the team
-- Opus's context window remains clean (only the summary was read, not all 500k tokens)
+## What Opus Does Throughout
 
-**Files created:**
-- `docs/exploration/api-endpoints.md` — OpenCode's full exploration output
-- (Optional) `docs/implementation/auth-fixes-log.md` — Codex implementation log
+- Classifies the task (2 seconds)
+- Constructs exploration prompt with focused questions (30 seconds)
+- Reads OpenCode's summary selectively, not raw findings (saves context)
+- Synthesizes finding for user in plain language
+- Constructs implementation prompt with exploration context attached
+- Reports final results with file list and test status
+
+Opus never reads the full codebase or writes code. Context window stays clean for user conversation.
+
+## Expected Timeline
+
+| Phase | Duration |
+|-------|----------|
+| Fork OpenCode + wait | ~2-3 min |
+| Read summary + synthesize | ~30 sec |
+| Fork Codex + wait | ~3-5 min |
+| Read results + report | ~30 sec |
+| **Total** | **~6-9 min** |

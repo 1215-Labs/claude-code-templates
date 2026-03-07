@@ -1,78 +1,76 @@
 # Multi-Model Orchestration — Reference Overview
 
-## Key Concepts
+Supplementary reference for the `multi-model-orchestration` skill. Read SKILL.md for full instructions.
 
-- **Opus stays clean**: Opus acts as the strategic orchestrator and never does exploration or implementation itself — it delegates to specialized models via forked terminals, preserving its context for user interaction and synthesis.
-- **Context-based routing**: The primary decision driver is task type and context size. Exploration goes to OpenCode (multi-provider model access), implementation goes to Codex (SWE-bench leader), coordination stays in Opus.
-- **Progressive disclosure outputs**: Forked agents write structured documents to `docs/exploration/` or `docs/implementation/`. Opus reads the executive summary first, then drills into details only as needed.
-- **Flat-rate and free models**: OpenAI models via ChatGPT Pro are flat rate. GLM and Kimi models are free. No per-request quota concerns for exploration tasks.
+## Decision Criteria: Fork vs. Handle Directly
 
-## Decision Criteria
+Fork when ALL of the following are true:
+1. The task cannot be completed in 2-3 tool calls
+2. It involves either broad codebase exploration OR a concrete implementation task
+3. Your context window is not already packed with essential state the forked agent needs
 
-### When to Fork vs. Handle Directly
+Handle directly when ANY of the following are true:
+- Simple lookup, explanation, or single-file edit
+- User needs immediate back-and-forth during execution
+- Task requires your full session context to correctly interpret
 
-| Condition | Action |
-|-----------|--------|
-| Task requires 2-3 tool calls | Handle directly — forking overhead not worth it |
-| Exploring unfamiliar/large codebase | Fork OpenCode (multi-provider model access) |
-| Implementing a feature after exploration | Fork Codex (SWE-bench leader) |
-| Context window is filling up | Consider forking to preserve Opus context |
-| Task spans multiple independent subsystems | Fork multiple OpenCode instances in parallel |
-| User needs tight back-and-forth during work | Handle directly — forking breaks the loop |
-| Task requires full session context to understand | Handle directly |
+## Model Selection Quick Reference
 
-### Model Selection Matrix
+| Signal | Choose | Reason |
+|--------|--------|--------|
+| "How does X work?", unfamiliar codebase, large surface area | OpenCode | 1M context reads everything at once |
+| Architecture analysis, complex patterns, design decisions | OpenCode | Deep reasoning + 1M context |
+| "Implement X", "Fix bug Y", "Refactor Z" | Codex | SWE-bench leader for code changes |
+| Coordinate, synthesize, talk to user | Stay Opus | Orchestration is your role |
+| Docs, API docs generation | Codex (mini) | Lighter model, lower cost |
 
-| I need to... | Fork to | Model | Output |
-|--------------|---------|-------|--------|
-| Explore large codebase | OpenCode | openai/gpt-5.2 via oracle agent | docs/exploration/ |
-| Understand architecture | OpenCode | openai/gpt-5.2 via oracle agent | docs/exploration/ |
-| Find patterns and conventions | OpenCode | openai/gpt-5.2 via oracle agent | docs/exploration/ |
-| Implement a feature | Codex | gpt-5.2-codex | docs/implementation/ |
-| Refactor code | Codex | gpt-5.2-codex | docs/implementation/ |
-| Fix bugs | Codex | gpt-5.2-codex | docs/implementation/ |
-| Fix CI failures | Codex | gpt-5.2-codex | (uses /gh-fix-ci skill) |
-| Generate docs | Codex | gpt-5.1-codex-mini | (uses /doc skill) |
-| Coordinate and decide | Stay in Opus | — | — |
+## Pattern Decision Tree
 
-### Context Size Thresholds
+```
+New request arrives
+├── Needs codebase understanding first?
+│   ├── Yes, large/unfamiliar area → Pattern 1: Explore-Then-Implement
+│   │     Fork OpenCode → read summary → Fork Codex
+│   └── Yes, multiple independent areas → Pattern 2: Parallel Exploration
+│         Fork 2 OpenCode instances concurrently (stagger 30-60s) → synthesize
+└── Ready to implement directly?
+    ├── Yes, first attempt → Fork Codex
+    └── Yes, iterative (needs review) → Pattern 3: Iterative Refinement
+          Fork Codex → Opus reviews → Fork Codex again
+```
 
-- **< 50k tokens**: Handle directly in Opus; forking overhead dominates.
-- **50k–200k tokens**: Single OpenCode fork usually sufficient.
-- **200k+ tokens**: OpenCode excels; potentially parallel forks for different subsystems.
-- **Context getting full in Opus session**: Fork to preserve Opus for synthesis.
+## Key Constraints
 
-## Quick Reference
+**Concurrency limits (free OAuth):**
+- Max 2 concurrent OpenCode forks
+- Stagger parallel launches by 30-60 seconds
+- Prefer `openai/gpt-5.2 via oracle agent` for parallel tasks (preview models have lower capacity)
 
-### Orchestration Patterns
+**Context hygiene rules:**
+- Always point forked agents to their output file (`docs/exploration/` or `docs/implementation/`)
+- When reading results, read the Executive Summary first — only drill into Raw Findings if needed
+- Always pass previous output file paths when chaining forks (Codex needs the OpenCode exploration doc)
 
-| Pattern | When | Flow |
-|---------|------|------|
-| Explore-Then-Implement | Most common | OpenCode → Opus synthesis → Codex |
-| Parallel Exploration | Feature spans multiple subsystems | Multiple OpenCode forks → Opus synthesis |
-| Iterative Refinement | Implementation needs review loop | Codex → Opus review → Codex refine |
+## Error Recovery Decision Tree
 
-### Oh-My-OpenCode Agent Routing
+```
+Fork returns error_type in done.json
+├── QUOTA_EXHAUSTED → wait 60s, retry with different auth mode or model
+├── MODEL_CAPACITY  → switch to openai/gpt-5.2 via oracle agent (more available capacity)
+└── Other error     → read output log tail; do NOT retry more than 3 times total
+```
 
-| Agent | Model | Rate | Best For |
-|-------|-------|------|----------|
-| oracle | openai/gpt-5.2 | Flat rate | Analysis, reasoning |
-| momus | openai/gpt-5.2 | Flat rate | Code review |
-| hephaestus | openai/gpt-5.3-codex | Flat rate | Implementation |
-| librarian | opencode/glm-4.7-free | Free | Docs, search |
-| atlas | opencode/kimi-k2.5-free | Free | General tasks |
+## Output File Conventions
 
-### Error Recovery Chain
+| Fork | Output location | Format |
+|------|-----------------|--------|
+| OpenCode exploration | `docs/exploration/{topic}.md` | Progressive disclosure (Executive Summary first) |
+| Codex implementation | `docs/implementation/{topic}-log.md` | Files Changed table + test results |
 
-1. Primary model fails with 429 → retry up to `--max-retries` times
-2. Exhausted retries → fall back to next model in `--fallback-models` chain
-3. `QUOTA_EXHAUSTED`: wait 60s, retry with a different agent or model
-4. `MODEL_CAPACITY`: switch to a free-tier agent (librarian or atlas)
-5. Never retry more than 3 times total from the orchestrator level
+## Anti-Pattern Checklist
 
-### Anti-Patterns to Avoid
-
-- Don't fork for tasks completable in 2-3 tool calls
-- Don't start a new fork without referencing previous fork outputs
-- Don't forget to specify output locations in fork prompts
-- Don't over-orchestrate — not every task needs explore-then-implement
+Before forking, confirm none of these apply:
+- [ ] Task completable in under 3 tool calls (overhead not worth it)
+- [ ] Task requires tight user interaction during execution
+- [ ] About to start a 3rd+ recursive fork without synthesizing first (over-orchestration)
+- [ ] Previous fork output not referenced in next fork prompt (losing context chain)

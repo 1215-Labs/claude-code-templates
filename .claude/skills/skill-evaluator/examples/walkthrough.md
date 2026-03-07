@@ -1,146 +1,129 @@
-# Skill Evaluator — Example Walkthrough
+# Skill Evaluator — Worked Example
 
 ## Scenario
 
-A developer discovers the `last30days-skill` reference submodule in their repo and wants to understand whether it's worth adopting. The skill generates a "last 30 days of activity" summary from git history. Before spending time integrating it, they want a structured assessment of its code quality, how well it fits their current component ecosystem, and what adoption risks exist.
+The user asks: "Evaluate the `last30days-skill` reference submodule. I'm thinking of adopting its pattern for summarizing recent activity in our repos."
 
-## Trigger
+This is a pre-adoption evaluation of an external component. Full evaluation depth is appropriate since the user is considering real adoption.
 
-> User: "evaluate this new skill at references/last30days-skill — we're thinking about adopting it for our /catchup command"
+## Step 1: Parse Input
 
-## Step-by-Step
+- `TARGET_PATH` = `references/last30days-skill`
+- `SKILL_NAME` = "last30days-skill"
+- `INTENDED_USE` = "Summarizing recent activity in our repos"
+- `EVALUATION_DEPTH` = "full" (default, real adoption consideration)
 
-### Step 1: Parse Input
+## Step 2: Gather Pre-Fork Context
 
-Opus extracts:
-- `TARGET_PATHS`: `references/last30days-skill`
-- `SKILL_NAMES`: `last30days-skill`
-- `INTENDED_USE`: integration with the /catchup command
-- `EVALUATION_DEPTH`: full (default — this is a real adoption decision)
-
-The path resolves to a reference submodule — use directly, no git clone needed.
-
-### Step 2: Gather Context
-
-**Pre-fork inventory (run on target):**
+Run the pre-fork inventory:
 
 ```bash
 find references/last30days-skill -type f | head -200
-# → SKILL.md, tools/git_summary.py, tools/format_output.py, README.md, tests/test_git_summary.py
+# → SKILL.md, tools/last30days.py, tools/summarize.py, README.md, examples/output.md
 
-git -C references/last30days-skill log --oneline -20
-# → 8 commits, most recent 3 months ago
+find references/last30days-skill -type f \( -name "*.md" -o -name "*.py" \) | xargs wc -l 2>/dev/null | tail -1
+# → 847 total
 
-ls references/last30days-skill/README* references/last30days-skill/SKILL.md
-# → Both present
+git -C references/last30days-skill log --oneline -20 2>/dev/null
+# → 8 commits, most recent 3 months ago, authored by mvanhorn
+
+ls references/last30days-skill/README* references/last30days-skill/SKILL.md 2>/dev/null
+# → SKILL.md exists, no README
 ```
 
-Inventory saved to `/tmp/skill-eval-last30days-inventory.txt`.
+Save to `/tmp/skill-eval-last30days-inventory.txt`.
 
-**Ecosystem snapshot (current components):**
-
+Generate ecosystem snapshot:
 ```bash
-ls -la ~/.claude/skills/
-# → 14 skills including fork-terminal, multi-model-orchestration, agent-teams...
-
-cat MANIFEST.json | python3 -c "..."
-# → agents: 13, commands: 17, skills: 14, hooks: 5
+ls ~/.claude/skills/
+# → fork-terminal/ multi-model-orchestration/ skill-evaluator/ repo-audit-engine/ ...
+# No existing "activity" or "recent-changes" skill found
 ```
 
-Snapshot saved to `/tmp/skill-eval-ecosystem-snapshot.txt`.
+Save to `/tmp/skill-eval-ecosystem-snapshot.txt`.
 
-### Step 3: Create Output Directory
+## Step 3: Create Output Directory
 
 ```bash
 mkdir -p docs/evaluations
 ```
 
-### Step 4: Fork Three Agents
+## Step 4: Fork Three Agents Concurrently
 
-All three agents launch in parallel:
+**Fork 1 — Codex (Structural Quality):**
 
-**Agent 1 — Structural Quality (Codex):**
-Codex reads `references/last30days-skill/` and the inventory. It evaluates:
-- Code architecture: git_summary.py uses `subprocess` to call `git log` with configurable date range. Clean separation.
-- Testing: `tests/test_git_summary.py` has 6 tests — covers happy path and empty-repo edge case. Missing tests for non-git directories.
-- Dependencies: Standard library only (`subprocess`, `datetime`). No external deps.
-- Error handling: Partial. git errors caught, but output parsing failures will raise uncaught exceptions.
+Prompt includes inventory. Task: assess code architecture, testing patterns, API design, reusability, technical debt in `references/last30days-skill`. Output: `docs/evaluations/last30days-structural.md`.
 
-Output: `docs/evaluations/last30days-structural.md`
+**Fork 2 — OpenCode (Ecosystem Fit):**
 
-**Agent 2 — Ecosystem Fit (OpenCode oracle):**
-OpenCode oracle reads both the target skill and the full ecosystem snapshot via multi-provider model access. It assesses:
-- Overlap with existing components: `/catchup` command already calls `git log` directly. This skill abstracts that logic — reduces duplication.
-- Interface compatibility: SKILL.md uses standard frontmatter schema. Consistent with existing skills.
-- Integration path: Could be called from `/catchup` as a Python subprocess or inlined. The tool output format (markdown) is compatible.
-- Maintenance signals: 8 commits, 3-month-old latest commit. Active enough for its simplicity.
+Prompt includes ecosystem snapshot. Task: assess how this skill fits alongside existing components, naming conflicts, overlap, integration effort. Output: `docs/evaluations/last30days-ecosystem.md`.
 
-Output: `docs/evaluations/last30days-ecosystem.md`
+**Fork 3 — OpenCode (Risk & Adoption):**
 
-**Agent 3 — Risk & Adoption (OpenCode momus):**
-OpenCode momus analyzes:
-- Dependency count: 0 external deps. No supply chain risk.
-- Git history health: 8 commits, 1 contributor. Single-author risk if skill needs changes.
-- Scope creep risk: Low — tool does one thing.
-- Breaking change surface: Only risk is git CLI output format changes across versions.
+Task: assess maintenance signals, dependency count, license, git activity patterns. Output: `docs/evaluations/last30days-risk.md`.
 
-Output: `docs/evaluations/last30days-risk.md`
+OpenCode and OpenCode are the two concurrent OpenCode forks (within the 2-concurrent limit).
 
-### Step 5: Synthesis
+## Step 5: Poll for Completion
 
-Opus reads all three reports (executive summaries first). It resolves one apparent contradiction:
-- Structural says "good testing" (6 tests)
-- Risk says "single contributor, maintenance risk"
-
-Resolution: Tests are present and reasonable for the scope. Maintenance risk is real but low-impact — if git output format changes, the fix is trivial. Not a blocker for adoption.
-
-Final weighting given `INTENDED_USE` (integration with /catchup): ecosystem fit is the most important dimension here.
-
-### Step 6: Final Report Written
-
-`docs/evaluations/last30days-eval.md` written with:
+Poll every 15 seconds, timeout after 5 minutes:
 
 ```
-VERDICT: Adopt
-
-SCORE: 78/100
-  Structural Quality:  72  (partial error handling, minor test gaps)
-  Ecosystem Fit:       88  (reduces duplication in /catchup, compatible interface)
-  Risk:                74  (single contributor, but low-impact maintenance surface)
-
-EXECUTIVE SUMMARY:
-The last30days-skill is a clean, dependency-free utility that solves a real gap
-in the /catchup command — it abstracts git log parsing that currently lives
-inline. Structural quality is adequate but not excellent (add error handling for
-output parsing failures before adopting). Ecosystem fit is strong. Adoption risk
-is low given zero external dependencies.
-
-TOP RECOMMENDATION:
-Adopt with one pre-integration fix: wrap the output parser in try/except in
-git_summary.py:47. Estimated effort: 15 minutes.
+[~90s] docs/evaluations/last30days-structural.md appears
+[~2min] docs/evaluations/last30days-ecosystem.md appears
+[~2min] docs/evaluations/last30days-risk.md appears
 ```
 
-### Step 7: Presented to User
+All three complete within the timeout.
+
+## Step 6: Read Agent Reports (Executive Summaries First)
+
+**Structural (Codex) summary:**
+> "Well-structured Python script with clear separation between data fetching and summarization. No tests present. The `last30days.py` fetcher is tightly coupled to GitHub's API — hardcoded endpoint patterns make it difficult to adapt for GitLab or Bitbucket. The summarize.py module has a clean interface and could be extracted independently."
+
+**Ecosystem Fit (OpenCode) summary:**
+> "No overlap with existing skills. The summarization output format matches conventions used in docs/exploration/ (markdown with executive summary). Integration would require a new `activity-summary` skill directory. The GitHub API dependency conflicts with nothing in the current stack. Estimated integration effort: 2-3 hours to wrap in a SKILL.md and add error handling."
+
+**Risk (OpenCode) summary:**
+> "8 commits, last activity 3 months ago. License: MIT (compatible). No external Python dependencies beyond `requests` (already available). Single maintainer. The low commit frequency is not alarming given the tool's narrow scope — it does one thing."
+
+## Step 7: Synthesize
+
+Resolve contradictions: Structural says "no tests" and Risk says "single maintainer." These compound — if the maintainer becomes unavailable, untested code is harder to inherit. Flag this.
+
+Weight for intended use (summarizing recent activity): The summarize.py module is the core value. The GitHub-specific fetcher is secondary since the user can provide their own data. This shifts the verdict toward "Extract Components" over "Adopt."
+
+## Step 8: Write Final Report
+
+File: `docs/evaluations/last30days-eval.md`
+
+Key sections:
+- Verdict: **Extract Components** — take `summarize.py`, write own fetcher
+- Score: 68/100 (structural quality 70, ecosystem fit 80, risk 55)
+- Effort: 3-4 hours to extract and integrate
+- Main concern: No tests + single maintainer = medium maintenance risk if adapted wholesale
+
+## Step 9: Present to User
 
 ```
-VERDICT: Adopt
+Verdict: Extract Components (not adopt wholesale)
 
-last30days-skill fits cleanly into /catchup — reduces duplicated git log logic.
+The summarize.py module is well-designed and matches your docs/ output conventions.
+The GitHub fetcher is tightly coupled and harder to adapt.
 
-Score: 78/100
-  Structural: 72 | Ecosystem: 88 | Risk: 74
+Recommendation: Copy summarize.py into a new .claude/skills/activity-summary/
+skill and write your own fetcher for our repos. Estimated effort: 3-4 hours.
 
-One fix before adopting:
-  Add error handling to git_summary.py:47 output parser (15 min)
-
+Score: 68/100 — good summarization logic, no tests, single maintainer.
 Full report: docs/evaluations/last30days-eval.md
 ```
 
-## Output
+## Timeline
 
-**What the user gets:**
-- A clear adopt/skip verdict with reasoning in under 5 minutes
-- A weighted score across three independent dimensions
-- One specific action item before integration, with effort estimate
-- A permanent evaluation report in `docs/evaluations/` for team reference
-- Confidence that the decision is based on structural, ecosystem, AND risk analysis — not just a quick read-through
+| Phase | Duration |
+|-------|----------|
+| Parse input + gather inventory | ~1 min |
+| Fork 3 agents + wait | ~2-3 min |
+| Read summaries + synthesize | ~1 min |
+| Write report + present | ~1 min |
+| **Total** | **~5-6 min** |
