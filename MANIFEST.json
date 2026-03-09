@@ -336,11 +336,11 @@
         "description": "Delegate tasks to Codex CLI with monitoring, sandbox validation, and result summarization"
       },
       {
-        "name": "gemini-delegator",
-        "path": ".claude/agents/gemini-delegator.md",
+        "name": "opencode-delegator",
+        "path": ".claude/agents/opencode-delegator.md",
         "deployment": "global",
         "status": "beta",
-        "description": "Delegate exploration/analysis tasks to Gemini CLI with monitoring and structured JSON result parsing"
+        "description": "Delegate exploration/analysis tasks to OpenCode CLI with monitoring and structured JSON result parsing"
       }
     ],
     "commands": [
@@ -660,11 +660,11 @@
         "description": "Delegate tasks to Codex CLI with monitoring and result summary"
       },
       {
-        "name": "workflow/gemini",
-        "path": ".claude/commands/workflow/gemini.md",
+        "name": "workflow/opencode",
+        "path": ".claude/commands/workflow/opencode.md",
         "deployment": "global",
         "status": "beta",
-        "description": "Delegate exploration/analysis tasks to Gemini CLI with monitoring and result summary"
+        "description": "Delegate exploration/analysis tasks to OpenCode CLI with monitoring and result summary"
       }
     ],
     "workflows": [

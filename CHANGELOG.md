@@ -6,6 +6,7 @@ Format: `[YYYY-MM-DD] Category: Description (commit)`
 
 ## Log
 
+[2026-03-09] fix: Fix MANIFEST.json: update gemini-delegator → opencode-delegator references (ce0c204)
 [2026-03-07] M2: Rewrite referenc: M2: Rewrite references/overview.md and examples/walkthrough.md for 5 complex skills (5c94a1f)
 [2026-03-07] update: Update references/claude-code to v2.1.71 (53a5f3e) (309d286)
 [2026-03-05] merge: Merge memory branch: align agent-os with claude-code reference patterns (393725d)
