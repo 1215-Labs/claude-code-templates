@@ -17,11 +17,11 @@ Shared logic for the `/repo-audit` command. This skill defines scoring rubrics, 
 
 | Fork | Model | Layer | Rationale |
 |------|-------|-------|-----------|
-| A | Gemini (`gemini-2.5-flash`) | Docs-to-Code | 1M context reads ALL docs + ALL code, cross-references every claim |
+| A | OpenCode oracle (`openai/gpt-5.2 via oracle agent`) | Docs-to-Code | 1M context reads ALL docs + ALL code, cross-references every claim |
 | B | Codex (`gpt-5.2-codex`) | Internal Consistency | SWE-bench leader — best at finding dead code, broken imports, unused deps |
-| C | Gemini (`gemini-2.5-flash`) | Code-to-Deploy | Broad context to cross-reference deploy configs with codebase (conditional) |
+| C | OpenCode oracle (`openai/gpt-5.2 via oracle agent`) | Code-to-Deploy | Broad context to cross-reference deploy configs with codebase (conditional) |
 
-**Concurrency**: Launch A + B concurrently (different providers, no rate conflict). Launch C after A completes (max 2 concurrent Gemini). Stagger if needed.
+**Concurrency**: Launch A + B concurrently (different providers, no rate conflict). Launch C after A completes (max 2 concurrent OpenCode). Stagger if needed.
 
 **Fallback chain**: Fork timeout (5 min) -> check error_type in done.json -> dispatch Sonnet subagent with identical prompt.
 
@@ -31,11 +31,11 @@ All fork output goes to an isolated run directory:
 
 ```
 /tmp/repo-audit/{REPO_NAME}/{RUN_ID}/
-  fork-a.response.json    # Gemini docs-to-code
+  fork-a.response.json    # OpenCode docs-to-code
   fork-a.done.json         # Completion status
   fork-b.response.json    # Codex internal consistency
   fork-b.done.json
-  fork-c.response.json    # Gemini code-to-deploy (if applicable)
+  fork-c.response.json    # OpenCode code-to-deploy (if applicable)
   fork-c.done.json
 ```
 

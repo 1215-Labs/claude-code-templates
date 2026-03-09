@@ -1,103 +1,61 @@
 #!/usr/bin/env -S uv run
 """Fork a new terminal window with a command.
 
-Enhanced version with:
-- Explicit API key propagation to forked terminals
-- Output logging support
-- Timestamp-based log files
+Supports --log, --tool, and --delay flags for agent orchestration.
+
+Usage:
+    python3 fork_terminal.py "echo hello"
+    python3 fork_terminal.py --log --tool codex-task "uv run executor.py ..."
+    python3 fork_terminal.py --log --tool opencode-task --delay 30 "uv run executor.py ..."
 """
 
+import json
 import os
 import platform
+import shlex
 import shutil
 import subprocess
 import sys
 import time
-from datetime import datetime
-from pathlib import Path
-
-# Add .claude directory to path for utils import
-_claude_dir = Path(__file__).parent.parent.parent.parent
-sys.path.insert(0, str(_claude_dir))
-try:
-    from utils.logging import audit
-except ImportError:
-    # Fallback if utils not available (e.g., in test environment)
-    def audit(event: str, **kwargs):
-        pass
-
-# API keys to propagate to forked terminals
-API_KEYS_TO_PROPAGATE = [
-    "GEMINI_API_KEY",
-    "OPENAI_API_KEY",
-    "ANTHROPIC_API_KEY",
-    "GOOGLE_API_KEY",
-    "NVIDIA_API_KEY",
-    "FEATHERLESS_API_KEY",
-]
+from datetime import datetime, timezone
 
 
-def _build_env_exports() -> str:
-    """Build shell export commands for API keys that are set in the environment."""
-    exports = []
-    for key in API_KEYS_TO_PROPAGATE:
-        value = os.environ.get(key)
-        if value:
-            # Escape any special characters in the value
-            escaped_value = value.replace("'", "'\"'\"'")
-            exports.append(f"export {key}='{escaped_value}'")
-    return "; ".join(exports) + "; " if exports else ""
-
-
-def _generate_log_filename(tool: str = "fork") -> str:
-    """Generate a timestamp-based log filename."""
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return f"/tmp/fork_{tool}_{timestamp}.log"
-
-
-def fork_terminal(command: str, log_output: bool = False, tool_name: str = "fork", auto_close: bool = False, delay: int = 0) -> str:
+def fork_terminal(command: str, tool_label: str | None = None,
+                  log: bool = False, delay: int = 0,
+                  keep_open: bool = False) -> str:
     """Open a new Terminal window and run the specified command.
 
     Args:
-        command: The command to execute in the new terminal
-        log_output: If True, tee output to a log file
-        tool_name: Name of the tool for log file naming (e.g., 'codex', 'gemini')
-        auto_close: If True, close the terminal window when the command finishes.
-                    If False (default), keep an interactive shell open after completion.
-        delay: Seconds to wait before launching (for staggered parallel forks)
-
-    Returns:
-        Status message indicating the terminal was launched
+        command: Shell command to run in the new terminal.
+        tool_label: Optional label for log entries (e.g., 'codex-task').
+        log: If True, write launch info to /tmp/fork-terminal.log.
+        delay: Seconds to sleep before launching (for staggered forks).
+        keep_open: If True, keep terminal open after command exits (for debugging).
+                   Default False — terminal closes when command finishes.
     """
-    if delay > 0:
-        print(f"Waiting {delay}s before launching fork...")
-        time.sleep(delay)
-
     system = platform.system()
     cwd = os.getcwd()
 
-    # Build environment export prefix for API keys
-    env_prefix = _build_env_exports()
+    # Log the launch as JSON audit entry
+    if log:
+        entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "tool": tool_label or "unknown",
+            "command": command[:200],
+            "cwd": cwd,
+            "delay": delay,
+        }
+        log_path = os.path.join(os.environ.get("TEMP", "/tmp"), "fork-terminal.log")
+        with open(log_path, "a") as f:
+            f.write(json.dumps(entry) + "\n")
 
-    # Build log suffix if logging is enabled
-    log_file = None
-    log_suffix = ""
-    if log_output:
-        log_file = _generate_log_filename(tool_name)
-        log_suffix = f" 2>&1 | tee '{log_file}'"
-
-    # Audit log the fork attempt
-    audit("fork_terminal",
-          command=command,
-          cwd=cwd,
-          platform=system,
-          env_vars_propagated=bool(env_prefix),
-          log_file=log_file)
+    # Stagger delay for quota management
+    if delay > 0:
+        print(f"[fork-terminal] Delaying {delay}s before launch...")
+        time.sleep(delay)
 
     if system == "Darwin":  # macOS
-        # Build shell command with env exports and optional logging
-        shell_command = f"{env_prefix}cd '{cwd}' && {command}{log_suffix}"
-        # Escape for AppleScript: backslashes first, then quotes
+        shell_command = f"cd {shlex.quote(cwd)} && {command}"
         escaped_shell_command = shell_command.replace("\\", "\\\\").replace('"', '\\"')
 
         try:
@@ -107,51 +65,31 @@ def fork_terminal(command: str, log_output: bool = False, tool_name: str = "fork
                 text=True,
             )
             output = f"stdout: {result.stdout.strip()}\nstderr: {result.stderr.strip()}\nreturn_code: {result.returncode}"
-            if log_file:
-                output += f"\nlog_file: {log_file}"
             return output
         except Exception as e:
             return f"Error: {str(e)}"
 
     elif system == "Windows":
-        # Build command with env exports (Windows uses 'set' instead of 'export')
-        env_sets = []
-        for key in API_KEYS_TO_PROPAGATE:
-            value = os.environ.get(key)
-            if value:
-                env_sets.append(f"set {key}={value}")
-        env_prefix_win = " && ".join(env_sets) + " && " if env_sets else ""
-
-        full_command = f'{env_prefix_win}cd /d "{cwd}" && {command}'
+        full_command = f'cd /d "{cwd}" && {command}'
         subprocess.Popen(["cmd", "/c", "start", "cmd", "/k", full_command], shell=True)
         return "Windows terminal launched"
 
-    else:  # Linux
-        # Build full command with env exports and optional logging
-        full_command = f"{env_prefix}cd '{cwd}' && {command}{log_suffix}"
-
-        # When auto_close is False, keep an interactive shell after the command finishes.
-        # When True, the terminal closes automatically when the command exits.
-        shell_suffix = "" if auto_close else "; exec bash"
-        bash_cmd = f"{full_command}{shell_suffix}"
-
-        # Supported terminal emulators in priority order
+    else:  # Linux / WSL2
+        safe_cwd = shlex.quote(cwd)
+        suffix = "; exec bash" if keep_open else ""
         terminals = [
-            ("gnome-terminal", ["gnome-terminal", "--", "bash", "-c", bash_cmd]),
-            ("konsole", ["konsole", "-e", "bash", "-c", bash_cmd]),
-            ("xfce4-terminal", ["xfce4-terminal", "-e", f"bash -c \"{bash_cmd}\""]),
-            ("alacritty", ["alacritty", "-e", "bash", "-c", bash_cmd]),
-            ("kitty", ["kitty", "bash", "-c", bash_cmd]),
-            ("xterm", ["xterm", "-e", "bash", "-c", bash_cmd]),
+            ("gnome-terminal", ["gnome-terminal", "--", "bash", "-c", f"cd {safe_cwd} && {command}{suffix}"]),
+            ("konsole", ["konsole", "-e", "bash", "-c", f"cd {safe_cwd} && {command}{suffix}"]),
+            ("xfce4-terminal", ["xfce4-terminal", "-e", f"bash -c \"cd {safe_cwd} && {command}{suffix}\""]),
+            ("alacritty", ["alacritty", "-e", "bash", "-c", f"cd {safe_cwd} && {command}{suffix}"]),
+            ("kitty", ["kitty", "bash", "-c", f"cd {safe_cwd} && {command}{suffix}"]),
+            ("xterm", ["xterm", "-e", "bash", "-c", f"cd {safe_cwd} && {command}{suffix}"]),
         ]
 
         for terminal_name, cmd_array in terminals:
             if shutil.which(terminal_name):
                 subprocess.Popen(cmd_array)
-                result = f"Linux terminal launched ({terminal_name})"
-                if log_file:
-                    result += f"\nlog_file: {log_file}"
-                return result
+                return f"Linux terminal launched ({terminal_name})"
 
         raise NotImplementedError(
             "No supported terminal emulator found. Install one of: gnome-terminal, konsole, xfce4-terminal, alacritty, kitty, xterm"
@@ -161,23 +99,14 @@ def fork_terminal(command: str, log_output: bool = False, tool_name: str = "fork
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Fork a new terminal with a command")
-    parser.add_argument("command", nargs="*", help="Command to execute")
-    parser.add_argument("--log", "-l", action="store_true", help="Log output to file")
-    parser.add_argument("--tool", "-t", default="fork", help="Tool name for log file")
-    parser.add_argument("--auto-close", action="store_true", help="Close terminal when command finishes")
-    parser.add_argument("--delay", "-d", type=int, default=0, help="Seconds to wait before launching (for staggered forks)")
-
+    parser = argparse.ArgumentParser(description="Fork a terminal window with a command")
+    parser.add_argument("command", help="Command to run in the new terminal")
+    parser.add_argument("--log", action="store_true", help="Log launch to fork-terminal.log")
+    parser.add_argument("--tool", default=None, help="Tool label for log entries")
+    parser.add_argument("--delay", type=int, default=0, help="Seconds to delay before launching")
+    parser.add_argument("--keep-open", action="store_true", help="Keep terminal open after command exits (for debugging)")
     args = parser.parse_args()
 
-    if args.command:
-        output = fork_terminal(
-            " ".join(args.command),
-            log_output=args.log,
-            tool_name=args.tool,
-            auto_close=args.auto_close,
-            delay=args.delay,
-        )
-        print(output)
-    else:
-        parser.print_help()
+    output = fork_terminal(args.command, tool_label=args.tool, log=args.log,
+                           delay=args.delay, keep_open=args.keep_open)
+    print(output)

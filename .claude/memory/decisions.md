@@ -1,16 +1,7 @@
 # Decisions
 
-### DEC-006: Default Gemini model to `auto` (2026-02-11)
-Preview models (`gemini-3-pro-preview`, `gemini-3-flash-preview`) return 429/RESOURCE_EXHAUSTED frequently. Use `--model auto` as safe default; use `gemini-2.5-flash` for reliability in parallel tasks. Only use specific models when user explicitly requests it.
-
-### DEC-009: Cap parallel Gemini at 2 concurrent (2026-02-11)
-5 parallel Gemini forks caused 100% failure rate due to `cloudcode-pa.googleapis.com` concurrency constraints (not RPM). Max 2 concurrent forks, staggered by 30-60s. Prefer `gemini-2.5-flash` for parallel tasks.
-
-### DEC-010: OAuth takes precedence over API key (2026-02-11)
-Gemini CLI ignores `GEMINI_API_KEY` when cached OAuth tokens exist in `~/.gemini/oauth_creds.json`. To force API key routing: clear OAuth cache or use E2B sandbox. `GOOGLE_GENAI_USE_VERTEXAI=true` overrides both.
-
-### DEC-011: Executor retry/fallback chain with error classification (2026-02-11)
-`gemini_task_executor.py` upgraded with `classify_error()` (QUOTA_EXHAUSTED, MODEL_CAPACITY, AUTH_FAILED, TIMEOUT, CLI_NOT_FOUND, PERMISSION_DENIED), `build_auth_env()` for `--auth-mode oauth|api-key|vertex-ai`, model fallback chain via `--fallback-models`, and `--retry-delay`/`--max-retries` flags. `done.json` now includes `error_type`, `auth_mode`, `retries_used`.
+### DEC-012: Retire Gemini fork terminals, adopt OpenCode delegator (2026-03-09)
+Gemini fork terminals never worked reliably (429 rate limits, auth routing complexity, concurrency constraints). Replaced with OpenCode CLI delegator which provides multi-provider model access (OpenAI flat-rate via ChatGPT Pro, GLM-5 free, Kimi K2.5 cheap, Antigravity free Gemini proxy) and oh-my-opencode agent harness. Synced from agent-os. Anthropic models blocked in OpenCode to avoid API costs — use Claude Code (Max Plan) for Claude tasks.
 
 ## Archived
 
@@ -22,3 +13,7 @@ _Completed implementation decisions moved here to save context budget. See git h
 - **DEC-005** (2026-02-10): Removed false API key gates from Codex/Gemini delegators (use OAuth)
 - **DEC-007** (2026-02-11): Added `set -o pipefail` to executor shell pipes
 - **DEC-008** (2026-02-11): Clean stale done.json/result files before executor retry
+- **DEC-006** (2026-02-11): Default Gemini model to `auto` — _Retired: Gemini fork terminals removed (DEC-012)_
+- **DEC-009** (2026-02-11): Cap parallel Gemini at 2 concurrent — _Retired: Gemini fork terminals removed (DEC-012)_
+- **DEC-010** (2026-02-11): OAuth takes precedence over API key — _Retired: Gemini fork terminals removed (DEC-012)_
+- **DEC-011** (2026-02-11): Executor retry/fallback chain with error classification — _Retired: Gemini fork terminals removed (DEC-012)_

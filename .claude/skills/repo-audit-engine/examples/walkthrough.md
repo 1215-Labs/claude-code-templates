@@ -27,14 +27,14 @@ The engine sets up an isolated run directory:
 
 Two forks launch concurrently (different providers, no rate conflict):
 
-- **Fork A** — Gemini (`gemini-2.5-flash`): Docs-to-Code layer
-  - Reads ALL docs (README, CLAUDE.md, .claude/INDEX.md) and ALL code
+- **Fork A** — OpenCode oracle (`openai/gpt-5.2 via oracle agent`): Docs-to-Code layer
+  - Reads ALL docs (README, CLAUDE.md, .claude/INDEX.md) and ALL code via OpenCode's multi-provider model access
   - Cross-references every claim: "Does CLAUDE.md say `npm run dev` works? Does package.json have that script?"
 
 - **Fork B** — Codex (`gpt-5.2-codex`): Internal Consistency layer
   - Scans for dead exports, broken imports, stale .claude/ references, unused dependencies
 
-Fork C (Gemini, Code-to-Deploy) is queued to launch after Fork A completes (max 2 concurrent Gemini).
+Fork C (OpenCode, Code-to-Deploy) is queued to launch after Fork A completes (max 2 concurrent OpenCode).
 
 ### Step 3: Fork A Completes — Docs-to-Code Results
 

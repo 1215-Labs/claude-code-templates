@@ -24,7 +24,7 @@ Bridge between evaluation (skill-evaluator) and integration (repo-equip/repo-opt
 ## Multi-Model Architecture
 
 ```
-                      +-- Gemini Pro: Extraction Planner --> extraction-plan.json
+                      +-- OpenCode oracle: Extraction Planner --> extraction-plan.json
                       |     (reads eval + source repo + MANIFEST/REGISTRY)
 User Request --> Opus |
                       +-- Codex: Adaptation Specialist --> adapted files
@@ -33,7 +33,7 @@ User Request --> Opus |
                  Then: Opus validates, writes, registers, remembers
 ```
 
-Fallback: Gemini/Codex unavailable -> Sonnet subagent via Task tool.
+Fallback: OpenCode/Codex unavailable -> Sonnet subagent via Task tool.
 
 ## Variables
 
@@ -42,7 +42,7 @@ ADOPTIONS_FILE: .claude/memory/adoptions.md
 DECISIONS_FILE: .claude/memory/decisions.md
 TASKS_FILE: .claude/memory/tasks.md
 PRP_OUTPUT_DIR: PRPs
-EXTRACTION_MODEL: gemini-3-pro-preview
+EXTRACTION_MODEL: openai/gpt-5.2 via oracle agent
 ADAPTATION_MODEL: gpt-5.2-codex
 
 ---
@@ -304,16 +304,16 @@ This requires no code changes to `/repo-equip` or `/repo-optimize` for v1 — th
 
 ## Section 7: Multi-Model Orchestration
 
-### Fork A: Extraction Planner (Gemini Pro)
+### Fork A: Extraction Planner (OpenCode oracle)
 
-**Why Gemini Pro**: 1M context window can ingest the full eval report + source reference submodule + MANIFEST/REGISTRY simultaneously.
+**Why OpenCode oracle**: Multi-provider model access can ingest the full eval report + source reference submodule + MANIFEST/REGISTRY simultaneously.
 
 **Prompt template**: `.claude/skills/reference-distill/prompts/extraction-planner-agent.md`
 
 **Fork command**:
 ```bash
-python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini \
-  "gemini -p '{FILLED_PROMPT}' --model gemini-3-pro-preview --approval-mode yolo"
+py -3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool opencode \
+  "opencode --agent oracle '{FILLED_PROMPT}'"
 ```
 
 **Output**: JSON extraction plan at `/tmp/distill-{name}-plan.json`
@@ -326,7 +326,7 @@ python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemin
 
 **Fork command**:
 ```bash
-python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex \
+py -3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex \
   "codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex '{FILLED_PROMPT}'"
 ```
 
@@ -335,8 +335,8 @@ python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex
 ### Fallback Chain
 
 ```
-Gemini Pro fails  --> retry with Gemini Flash
-Gemini Flash fails --> Sonnet subagent via Task tool
+OpenCode oracle fails --> retry with OpenCode momus
+OpenCode momus fails  --> Sonnet subagent via Task tool
 Codex fails       --> Sonnet subagent via Task tool
 ```
 
@@ -357,7 +357,7 @@ Wait 30s between retries. Note which model was used in the final report.
 |-------|----------|
 | Eval report not found | Check `docs/evaluations/` for `-eval.md` files; re-run `/skill-evaluator` |
 | Source submodule empty | Run `git submodule update --init references/{name}` |
-| Gemini/Codex unavailable | Automatic fallback to Sonnet subagent; check API keys |
+| OpenCode/Codex unavailable | Automatic fallback to Sonnet subagent; check API keys |
 | MANIFEST validation fails | Check for duplicate names or missing paths; run `validate-docs.py` for details |
 | Frontmatter validation fails | Compare against schema in `validate-docs.py`; check required fields |
 | ADO numbering conflict | Parser finds highest existing number; delete stale records if needed |

@@ -22,7 +22,6 @@ from typing import List, Optional, Tuple
 
 # Known error patterns to detect
 ERROR_PATTERNS = [
-    r"GEMINI_API_KEY\s+not\s+set",
     r"OPENAI_API_KEY\s+not\s+set",
     r"not inside trusted directory",
     r"Authentication failed",

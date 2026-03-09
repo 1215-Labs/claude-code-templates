@@ -2,9 +2,9 @@
 
 ## Key Concepts
 
-- **Parallel three-agent architecture**: Codex evaluates structural quality, Gemini Pro assesses ecosystem fit (using 1M context to ingest the entire ecosystem snapshot), and Gemini Flash analyzes risk and adoption. Opus synthesizes all three into a coherent verdict.
+- **Parallel three-agent architecture**: Codex evaluates structural quality, OpenCode oracle assesses ecosystem fit (using multi-provider model access to ingest the entire ecosystem snapshot), and OpenCode momus analyzes risk and adoption. Opus synthesizes all three into a coherent verdict.
 - **Synthesis is not merging**: The final report must resolve contradictions between agents and produce a coherent narrative — not a summary of summaries. Weight the recommendation based on the user's intended use case.
-- **Evaluation depth controls cost**: Full mode runs all three agents (target: < 5 min). Quick mode skips risk analysis and uses Gemini Flash instead of Pro for ecosystem (target: < 2 min).
+- **Evaluation depth controls cost**: Full mode runs all three agents (target: < 5 min). Quick mode skips risk analysis and uses OpenCode momus instead of oracle for ecosystem (target: < 2 min).
 - **Creator video context enriches analysis**: If the component has associated videos (VIDEOS.md or user-provided URLs), transcripts are downloaded and appended to the ecosystem snapshot to capture author intent and maintenance signals.
 
 ## Decision Criteria
@@ -25,16 +25,16 @@
 
 | Mode | Agents | Model for Ecosystem | When to Use |
 |------|--------|---------------------|-------------|
-| full | 3 (structural + ecosystem + risk) | Gemini Pro | Default for any real adoption decision |
-| quick | 2 (structural + ecosystem) | Gemini Flash | Time-constrained, low-stakes components |
+| full | 3 (structural + ecosystem + risk) | OpenCode oracle | Default for any real adoption decision |
+| quick | 2 (structural + ecosystem) | OpenCode momus | Time-constrained, low-stakes components |
 
 ### Model Assignment Rationale
 
 | Agent | Model | Why |
 |-------|-------|-----|
 | Structural Quality | gpt-5.2-codex | SWE-bench leader — best at judging code architecture and testing patterns |
-| Ecosystem Fit | gemini-3-pro-preview | 1M context ingests entire ecosystem snapshot alongside target |
-| Risk & Adoption | gemini-3-flash-preview | Lighter analysis (git log, dep count) doesn't need Pro-level reasoning |
+| Ecosystem Fit | openai/gpt-5.2 via oracle agent | Multi-provider model access ingests entire ecosystem snapshot alongside target |
+| Risk & Adoption | openai/gpt-5.2 via momus agent | Code review agent well-suited for lighter analysis (git log, dep count) |
 
 ## Quick Reference
 
@@ -52,16 +52,16 @@
 ```
 docs/evaluations/
   {name}-structural.md   # Codex raw output
-  {name}-ecosystem.md    # Gemini Pro raw output
-  {name}-risk.md         # Gemini Flash raw output (skipped in quick mode)
+  {name}-ecosystem.md    # OpenCode oracle raw output
+  {name}-risk.md         # OpenCode momus raw output (skipped in quick mode)
   {name}-eval.md         # Final synthesized report (Opus)
 ```
 
 ### Fallback Chain
 
 ```
-Gemini Flash fails (429/capacity) → retry with Gemini Pro
-Gemini Pro fails (429/capacity)   → Sonnet subagent via Task tool
+OpenCode momus fails (429/capacity) → retry with OpenCode oracle
+OpenCode oracle fails (429/capacity) → Sonnet subagent via Task tool
 Codex fails                       → Sonnet subagent via Task tool
 ```
 

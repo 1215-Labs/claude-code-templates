@@ -328,7 +328,7 @@ This memory system is based on patterns from [OpenClaw](https://github.com/openc
 | Capability | OpenClaw | Gap |
 |---|---|---|
 | **Vector search** | sqlite-vec embeddings, hybrid BM25+vector (0.7/0.3 weighting) | `memory-search-hybrid.py` provides pgvector + FTS5 hybrid (alpha) |
-| **Embedding cascade** | Auto-selects: local GGUF → OpenAI → Gemini → Voyage with caching | Single provider (OpenAI text-embedding-3-small) |
+| **Embedding cascade** | Auto-selects: local GGUF → OpenAI → OpenCode → Voyage with caching | Single provider (OpenAI text-embedding-3-small) |
 | **Plugin system** | Slot-based memory plugins (core, LanceDB), hot-swappable backends | Single implementation, no plugin API |
 | **Session transcript indexing** | Full conversations chunked (400 tokens, 80 overlap) into SQLite | Session summaries only |
 | **File watching** | Real-time inotify with 1500ms debounce | Reindex on each search call |

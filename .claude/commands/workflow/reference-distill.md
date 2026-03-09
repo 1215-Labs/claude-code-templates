@@ -106,10 +106,10 @@ For each eval report, use the parser rules from the `reference-distill` skill (S
 
 **Try multi-model first** (reference `reference-distill` skill Section 7):
 
-1. **Fork A — Extraction Planner (Gemini Pro)**:
+1. **Fork A — Extraction Planner (OpenCode oracle)**:
    - Fill the prompt template at `.claude/skills/reference-distill/prompts/extraction-planner-agent.md`
    - Substitute: `{EVAL_REPORT}`, `{SOURCE_REPO_PATH}`, `{MANIFEST_JSON}`, `{REGISTRY_MD}`, `{EXISTING_ADOPTIONS}`, `{OUTPUT_FILE}`
-   - Fork via `fork-terminal` skill with `--tool gemini`
+   - Fork via `fork-terminal` skill with `--tool opencode-task` using `--agent oracle`
    - Output: `/tmp/distill-{name}-plan.json`
 
 2. **Fork B — Adaptation Specialist (Codex)**:
@@ -121,7 +121,7 @@ For each eval report, use the parser rules from the `reference-distill` skill (S
 3. **Polling**: Check every 15 seconds, 5-minute timeout per agent
 
 4. **Fallback chain**:
-   - Gemini Pro fails → retry with Gemini Flash → Sonnet subagent via Task tool
+   - OpenCode oracle fails → retry with OpenCode librarian → Sonnet subagent via Task tool
    - Codex fails → Sonnet subagent via Task tool
 
 **If multi-model unavailable** (WSL2, no fork-terminal):

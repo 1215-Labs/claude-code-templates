@@ -10,7 +10,7 @@ LOG_DIR="/tmp"
 
 # Fallback chains
 CODEX_MODELS=("gpt-5.2-codex" "gpt-5.1-codex-max" "gpt-4o")
-GEMINI_MODELS=("gemini-3-pro-preview" "gemini-3-flash-preview" "gemini-2.5-flash")
+OPENCODE_MODELS=("openai/gpt-5.3-codex" "openai/gpt-5.2" "opencode/glm-5-free")
 CLAUDE_MODELS=("opus" "sonnet" "haiku")
 
 # Colors
@@ -42,23 +42,23 @@ Resilient Fork - Run CLI agents with automatic model fallback
 Usage: $(basename "$0") <cli> "<prompt>" [timeout_seconds]
 
 Arguments:
-  cli             Target CLI: codex, gemini, or claude
+  cli             Target CLI: codex, opencode, or claude
   prompt          The prompt/task to execute
   timeout         Timeout in seconds (default: $DEFAULT_TIMEOUT)
 
 Fallback Chains:
   codex:  ${CODEX_MODELS[*]}
-  gemini: ${GEMINI_MODELS[*]}
+  opencode: ${OPENCODE_MODELS[*]}
   claude: ${CLAUDE_MODELS[*]}
 
 Examples:
   $(basename "$0") codex "Analyze this codebase" 600
-  $(basename "$0") gemini "Generate test cases" 300
+  $(basename "$0") opencode "Generate test cases" 300
   $(basename "$0") claude "Fix the bug in auth.py"
 
 Environment:
   OPENAI_API_KEY     Required for Codex
-  GEMINI_API_KEY     Required for Gemini (or OAuth)
+  (OpenCode uses its own auth via ~/.local/share/opencode/auth.json)
   ANTHROPIC_API_KEY  Required for Claude
 EOF
 }
@@ -74,14 +74,14 @@ run_codex() {
     return ${PIPESTATUS[0]}
 }
 
-run_gemini() {
+run_opencode() {
     local model="$1"
     local prompt="$2"
     local timeout="$3"
-    local log_file="${LOG_DIR}/fork_gemini_$(date +%Y%m%d_%H%M%S).log"
+    local log_file="${LOG_DIR}/fork_opencode_$(date +%Y%m%d_%H%M%S).log"
 
-    log "Running Gemini with model: $model"
-    timeout "$timeout" gemini -p "$prompt" --model "$model" --approval-mode yolo 2>&1 | tee "$log_file"
+    log "Running OpenCode with model: $model"
+    timeout "$timeout" opencode run -m "$model" "$prompt" 2>&1 | tee "$log_file"
     return ${PIPESTATUS[0]}
 }
 
@@ -106,8 +106,8 @@ run_with_fallback() {
         codex)
             models=("${CODEX_MODELS[@]}")
             ;;
-        gemini)
-            models=("${GEMINI_MODELS[@]}")
+        opencode)
+            models=("${OPENCODE_MODELS[@]}")
             ;;
         claude)
             models=("${CLAUDE_MODELS[@]}")
@@ -127,7 +127,7 @@ run_with_fallback() {
         local exit_code
         case "$cli" in
             codex) run_codex "$model" "$prompt" "$timeout"; exit_code=$? ;;
-            gemini) run_gemini "$model" "$prompt" "$timeout"; exit_code=$? ;;
+            opencode) run_opencode "$model" "$prompt" "$timeout"; exit_code=$? ;;
             claude) run_claude "$model" "$prompt" "$timeout"; exit_code=$? ;;
         esac
 
@@ -164,9 +164,9 @@ main() {
     local timeout="${3:-$DEFAULT_TIMEOUT}"
 
     # Validate CLI
-    if [[ ! "$cli" =~ ^(codex|gemini|claude)$ ]]; then
+    if [[ ! "$cli" =~ ^(codex|opencode|claude)$ ]]; then
         log_fail "Invalid CLI: $cli"
-        echo "Supported: codex, gemini, claude"
+        echo "Supported: codex, opencode, claude"
         exit 1
     fi
 

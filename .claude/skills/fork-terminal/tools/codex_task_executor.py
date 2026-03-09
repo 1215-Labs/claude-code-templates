@@ -28,6 +28,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -58,7 +59,7 @@ def build_codex_command(
         "--skip-git-repo-check",
         "-m", model,
         "-C", repo_dir,
-        "--add-dir", "/tmp",
+        "--add-dir", tempfile.gettempdir(),
     ]
 
 
@@ -105,8 +106,9 @@ def main():
         print(f"ERROR: Prompt file not found: {prompt_path}", file=sys.stderr)
         sys.exit(1)
 
-    # Set up output file paths
-    prefix = f"/tmp/codex-task-{slug}"
+    # Set up output file paths (cross-platform temp directory)
+    tmp_dir = tempfile.gettempdir()
+    prefix = os.path.join(tmp_dir, f"codex-task-{slug}")
     log_file = f"{prefix}-output.log"
     summary_file = f"{prefix}-summary.md"
     done_file = f"{prefix}-done.json"

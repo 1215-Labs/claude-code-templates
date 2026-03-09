@@ -24,8 +24,8 @@ Validation passes: path exists, is not claude-code-templates itself, has a `.git
 
 Two forks launch concurrently:
 
-**Fork A — Gemini Pro (Needs Analysis):**
-Reads the entire `mac-manage` codebase (1M context) alongside the current templates. Produces `docs/optimization/mac-manage-needs.md`:
+**Fork A — OpenCode oracle (Needs Analysis):**
+Reads the entire `mac-manage` codebase via OpenCode's multi-provider model access alongside the current templates. Produces `docs/optimization/mac-manage-needs.md`:
 
 > "mac-manage has no workflow commands — only slash commands. Users frequently run multi-step sequences (discover → diff → restore) that would benefit from a workflow chain. The context skill is missing and the 4 existing commands don't cross-reference each other."
 
@@ -46,8 +46,8 @@ Key scores:
 
 Opus applies cross-reference priority rules:
 
-| Gemini Says | Codex Says | Priority |
-|-------------|-----------|----------|
+| OpenCode Says | Codex Says | Priority |
+|---------------|-----------|----------|
 | "Needs workflow commands" | "Commands lack cross-references" | HIGH — both confirm workflow gap |
 | "Context skill needs improvement" | "Context skill: Grade D" | HIGH — both confirm |
 | (no mention) | "hooks.json: Grade F" | MEDIUM — quality fix |

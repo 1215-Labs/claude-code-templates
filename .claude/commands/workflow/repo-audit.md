@@ -1,7 +1,7 @@
 ---
 name: repo-audit
 description: |
-  Multi-layer repo alignment audit using forked Gemini + Codex analysis and Opus synthesis.
+  Multi-layer repo alignment audit using forked OpenCode + Codex analysis and Opus synthesis.
   Checks docs-to-code accuracy, internal consistency, and deploy alignment.
 
   Usage: /repo-audit "<path to repo>" ["layer filter"]
@@ -87,9 +87,9 @@ Collect list of detected deploy config files for the prompt template.
 ### Apply Layer Filter
 
 If `LAYER_FILTER` is not `all` or `dry-run`, only run the specified layer:
-- `docs` → only Fork A (Gemini docs-to-code)
+- `docs` → only Fork A (OpenCode docs-to-code)
 - `internal` → only Fork B (Codex internal consistency)
-- `deploy` → only Fork C (Gemini code-to-deploy, if applicable)
+- `deploy` → only Fork C (OpenCode code-to-deploy, if applicable)
 
 ### Check for Known Drift
 
@@ -118,7 +118,7 @@ If `LAYER_FILTER` is `dry-run`:
 
 ---
 
-## Phase 1: Fork Gemini + Codex
+## Phase 1: Fork OpenCode + Codex
 
 ### Setup Run Directory
 
@@ -134,7 +134,7 @@ Read the fork-terminal skill: `.claude/skills/fork-terminal/SKILL.md`
 
 For each applicable layer, read the prompt template and fill variables:
 
-1. **Fork A** (docs-to-code): Read `.claude/skills/repo-audit-engine/prompts/gemini-docs-to-code.md`
+1. **Fork A** (docs-to-code): Read `.claude/skills/repo-audit-engine/prompts/opencode-docs-to-code.md`
    - Fill: `{REPO_PATH}`, `{REPO_NAME}`, `{RUN_DIR}`, `{KNOWN_DRIFT}`
    - Write filled prompt to temp file: `DOCS_PROMPT=$(mktemp /tmp/repo-audit-docs-XXXXXX.md)`
 
@@ -142,7 +142,7 @@ For each applicable layer, read the prompt template and fill variables:
    - Fill: `{REPO_PATH}`, `{REPO_NAME}`, `{RUN_DIR}`
    - Write filled prompt to temp file: `INTERNAL_PROMPT=$(mktemp /tmp/repo-audit-internal-XXXXXX.md)`
 
-3. **Fork C** (code-to-deploy, if applicable): Read `.claude/skills/repo-audit-engine/prompts/gemini-code-to-deploy.md`
+3. **Fork C** (code-to-deploy, if applicable): Read `.claude/skills/repo-audit-engine/prompts/opencode-code-to-deploy.md`
    - Fill: `{REPO_PATH}`, `{REPO_NAME}`, `{RUN_DIR}`, `{DEPLOY_CONFIGS}`
    - Write filled prompt to temp file: `DEPLOY_PROMPT=$(mktemp /tmp/repo-audit-deploy-XXXXXX.md)`
 
@@ -152,49 +152,52 @@ For each applicable layer, read the prompt template and fill variables:
 
 | Fork | Model | Layer | Why |
 |------|-------|-------|-----|
-| A | Gemini (`gemini-2.5-flash`) | Docs-to-Code | 1M context for cross-referencing all docs against all code |
+| A | OpenCode oracle (`openai/gpt-5.2`) | Docs-to-Code | Deep reasoning for cross-referencing all docs against all code |
 | B | Codex (`gpt-5.2-codex`) | Internal Consistency | SWE-bench leader for finding dead code, broken imports |
-| C | Gemini (`gemini-2.5-flash`) | Code-to-Deploy | Broad context for deploy config cross-referencing |
+| C | OpenCode oracle (`openai/gpt-5.2`) | Code-to-Deploy | Broad context for deploy config cross-referencing |
 
 **Launch Fork A + Fork B concurrently** (different providers, no rate conflict):
 
 Read the fork-terminal cookbook for the appropriate tools, then:
 
-**Fork A** (Gemini):
+**Fork A** (OpenCode oracle):
 ```bash
-python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini \
-  "gemini -p \"$(cat $DOCS_PROMPT)\" --model gemini-2.5-flash --approval-mode yolo"
+DOCS_SLUG="repo-audit-docs-${REPO_NAME}"
+py -3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool opencode-task \
+  "uv run .claude/skills/fork-terminal/tools/opencode_task_executor.py $DOCS_PROMPT -n $DOCS_SLUG --agent oracle"
 ```
 
 **Fork B** (Codex):
 ```bash
-python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex \
+py -3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex \
   "codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex \"$(cat $INTERNAL_PROMPT)\""
 ```
 
-Report to user: "Launched Fork A (Gemini → docs-to-code) and Fork B (Codex → internal consistency)"
+Report to user: "Launched Fork A (OpenCode oracle -> docs-to-code) and Fork B (Codex -> internal consistency)"
 
 ### Poll for Results
 
-Monitor fork output files. For Gemini, check the task executor output. For Codex, check its output files.
+Monitor fork output files. For OpenCode, poll for the done.json file. For Codex, check its output files.
 
 ```bash
 # Poll loop — 15s intervals, 20 iterations (5 min timeout)
 for i in $(seq 1 20); do
   FOUND=0
-  # Check Gemini fork A (look for output in /tmp/fork_gemini_*.log or task executor done files)
+  # Check OpenCode fork A (poll for /tmp/opencode-task-${DOCS_SLUG}-done.json)
+  [ -f "/tmp/opencode-task-${DOCS_SLUG}-done.json" ] && FOUND=$((FOUND+1))
   # Check Codex fork B
   # Report progress: "Waiting for audit results... ($i/20)"
+  [ "$FOUND" -ge 1 ] && break
   sleep 15
 done
 ```
 
-**After Fork A completes**: If Fork C is applicable, launch it now (stays under 2 concurrent Gemini limit).
+**After Fork A completes**: If Fork C is applicable, launch it now.
 
 ### Read Fork Results
 
 For each completed fork, read the response:
-- Gemini: Check `/tmp/fork_gemini_*.log` for JSON output
+- OpenCode: Check `/tmp/opencode-task-{slug}-done.json` for JSON output
 - Codex: Check `/tmp/fork_codex_*.log` or output summary
 - Parse JSON response from each fork
 
@@ -278,7 +281,6 @@ Keep the run directory (`/tmp/repo-audit/${REPO_NAME}/${RUN_ID}/`) for debugging
 ## Important Notes
 
 - **This command is read-only** — it never modifies the target repo's source code. The only file it creates is the audit report in `docs/audit/`.
-- **Fork-terminal first** — use Gemini/Codex forks for all heavy analysis. Only use Opus for synthesis from result files.
+- **Fork-terminal first** — use OpenCode/Codex forks for all heavy analysis. Only use Opus for synthesis from result files.
 - **Context discipline** — read executive summaries first, only deep-dive when cross-referencing requires it.
-- **Stagger Gemini forks** — max 2 concurrent Gemini forks. Launch Fork C only after Fork A completes.
 - **Fallback is Sonnet** — not Opus. If a fork fails, dispatch a Sonnet subagent with the same prompt.

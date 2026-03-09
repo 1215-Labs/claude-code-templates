@@ -1,6 +1,6 @@
 # Docs-to-Code Alignment Audit
 
-Use this template when forking Gemini for docs-to-code verification during `/repo-audit` Phase 1.
+Use this template when forking OpenCode for docs-to-code verification during `/repo-audit` Phase 1.
 
 ## Variables
 

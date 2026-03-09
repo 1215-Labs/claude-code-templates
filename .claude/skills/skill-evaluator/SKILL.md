@@ -6,7 +6,7 @@ version: 1.0.0
 
 # Skill Evaluator
 
-Evaluate external skills/plugins before adoption by dispatching parallel agents (Codex for structural quality, Gemini Pro for ecosystem fit, Gemini Flash for risk analysis), then synthesizing a decision-ready report with adoption strategies.
+Evaluate external skills/plugins before adoption by dispatching parallel agents (Codex for structural quality, OpenCode oracle for ecosystem fit, OpenCode momus for risk analysis), then synthesizing a decision-ready report with adoption strategies.
 
 ## When to Use
 
@@ -26,25 +26,25 @@ Evaluate external skills/plugins before adoption by dispatching parallel agents 
 EVALUATION_DEPTH: full | quick
 OUTPUT_DIR: docs/evaluations
 STRUCTURAL_MODEL: gpt-5.2-codex
-ECOSYSTEM_MODEL: gemini-3-pro-preview
-RISK_MODEL: gemini-3-flash-preview
+ECOSYSTEM_MODEL: openai/gpt-5.2 via oracle agent
+RISK_MODEL: openai/gpt-5.2 via momus agent
 
 ## Architecture
 
 ```
                       +-- Codex 5.2: Structural Quality --> {name}-structural.md
                       |
-User Request --> Opus +-- Gemini Pro: Ecosystem Fit ------> {name}-ecosystem.md
+User Request --> Opus +-- OpenCode oracle: Ecosystem Fit -> {name}-ecosystem.md
                       |
-                      +-- Gemini Flash: Risk & Adoption --> {name}-risk.md
+                      +-- OpenCode momus: Risk & Adoption > {name}-risk.md
 
                 Then: Opus reads all reports -> synthesizes -> {name}-eval.md
 ```
 
 **Model rationale:**
 - **Codex** for structural quality: SWE-bench leader, best at judging code architecture and testing patterns
-- **Gemini Pro** for ecosystem fit: 1M context ingests entire ecosystem snapshot alongside target
-- **Gemini Flash** for risk: Lighter analysis (git log, dependency counting) doesn't need Pro-level reasoning
+- **OpenCode oracle** for ecosystem fit: multi-provider model access ingests entire ecosystem snapshot alongside target
+- **OpenCode momus** for risk: code review agent well-suited for lighter analysis (git log, dependency counting)
 
 ## Workflow
 
@@ -152,11 +152,11 @@ Fill variables:
 
 Fork:
 ```bash
-python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex \
+py -3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex \
   "codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex '{FILLED_PROMPT}'"
 ```
 
-#### Agent 2: Ecosystem Fit (Gemini Pro)
+#### Agent 2: Ecosystem Fit (OpenCode oracle)
 
 Read prompt template: `.claude/skills/skill-evaluator/prompts/ecosystem-fit-agent.md`
 
@@ -168,11 +168,11 @@ Fill variables:
 
 Fork:
 ```bash
-python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini \
-  "gemini -p '{FILLED_PROMPT}' --model gemini-3-pro-preview --approval-mode yolo"
+py -3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool opencode \
+  "opencode --agent oracle '{FILLED_PROMPT}'"
 ```
 
-#### Agent 3: Risk & Adoption (Gemini Flash)
+#### Agent 3: Risk & Adoption (OpenCode momus)
 
 *Skip this agent if `EVALUATION_DEPTH` is "quick".*
 
@@ -185,8 +185,8 @@ Fill variables:
 
 Fork:
 ```bash
-python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini \
-  "gemini -p '{FILLED_PROMPT}' --model gemini-3-flash-preview --approval-mode yolo"
+py -3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool opencode \
+  "opencode --agent momus '{FILLED_PROMPT}'"
 ```
 
 ### Step 5: Poll for Completion
@@ -209,7 +209,7 @@ done
 
 Check logs on timeout:
 ```bash
-tail -20 /tmp/fork_codex_*.log /tmp/fork_gemini_*.log 2>/dev/null
+tail -20 /tmp/fork_codex_*.log /tmp/fork_opencode_*.log 2>/dev/null
 ```
 
 ### Step 5b: Fallback for Failed Agents
@@ -217,24 +217,24 @@ tail -20 /tmp/fork_codex_*.log /tmp/fork_gemini_*.log 2>/dev/null
 If any agent fails (output file missing after timeout), check logs for the cause and apply the fallback chain:
 
 ```
-Gemini Flash fails (429/capacity) → retry with Gemini Pro
-Gemini Pro fails (429/capacity)   → fall back to Sonnet subagent
-Codex fails                       → fall back to Sonnet subagent
+OpenCode momus fails (429/capacity) → retry with OpenCode oracle
+OpenCode oracle fails (429/capacity) → fall back to Sonnet subagent
+Codex fails                          → fall back to Sonnet subagent
 ```
 
-**Fallback: Gemini Flash → Gemini Pro**
+**Fallback: OpenCode momus → OpenCode oracle**
 
-Re-fork the failed agent's prompt using Pro instead of Flash:
+Re-fork the failed agent's prompt using oracle instead of momus:
 ```bash
-python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini \
-  "gemini -p '{FILLED_PROMPT}' --model gemini-3-pro-preview --approval-mode yolo"
+py -3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool opencode \
+  "opencode --agent oracle '{FILLED_PROMPT}'"
 ```
 
 Wait 30s before retrying to allow rate limits to clear. Poll again for the output file.
 
 **Fallback: Sonnet Subagent (last resort)**
 
-If Gemini is fully unavailable, dispatch a Claude Sonnet subagent via the Task tool. This uses the Max plan allocation (not API credits):
+If OpenCode is fully unavailable, dispatch a Claude Sonnet subagent via the Task tool. This uses the Max plan allocation (not API credits):
 
 ```
 Use the Task tool with:
@@ -276,7 +276,7 @@ Show:
 
 When `EVALUATION_DEPTH` is "quick":
 - Fork only 2 agents (structural + ecosystem)
-- Use Gemini Flash instead of Pro for ecosystem
+- Use OpenCode momus instead of oracle for ecosystem
 - Skip risk analysis entirely
 - Produce abbreviated report (no risk section)
 - Target: < 2 minutes wall-clock
@@ -293,26 +293,25 @@ When evaluating multiple targets:
 | Issue | Solution |
 |-------|----------|
 | Agent output missing | Check `/tmp/fork_*.log` for errors |
-| Gemini 429 / capacity error | Apply fallback chain: Flash → Pro → Sonnet subagent (Step 5b) |
+| OpenCode 429 / capacity error | Apply fallback chain: momus → oracle → Sonnet subagent (Step 5b) |
 | Git clone fails | Verify URL, check network, try SSH vs HTTPS |
 | Codex API key missing | Set `OPENAI_API_KEY` in environment |
-| Gemini API key missing | Set `GEMINI_API_KEY` in environment |
 | Timeout waiting for agents | Check agent logs, apply fallback chain if needed |
 | Ecosystem snapshot empty | Run from project root with MANIFEST.json present |
 
 ## Dependencies
 
 Requires the `fork-terminal` skill and its dependencies:
-- `python3`, `xterm` (or other terminal emulator)
+- `py -3`, `xterm` (or other terminal emulator)
 - `codex` CLI (`npm install -g @openai/codex`)
-- `gemini` CLI (`npm install -g @google/gemini-cli`)
+- `opencode` CLI (`go install github.com/opencode-ai/opencode@latest`)
 
 ## Output Conventions
 
 ```
 docs/evaluations/
   {name}-structural.md   # Codex agent output (raw)
-  {name}-ecosystem.md    # Gemini Pro agent output (raw)
-  {name}-risk.md         # Gemini Flash agent output (raw)
+  {name}-ecosystem.md    # OpenCode oracle agent output (raw)
+  {name}-risk.md         # OpenCode momus agent output (raw)
   {name}-eval.md         # Final synthesized report (Opus)
 ```

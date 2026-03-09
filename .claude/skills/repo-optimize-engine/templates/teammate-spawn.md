@@ -27,7 +27,7 @@ Create/update the context skill, hooks, MANIFEST.json, and REGISTRY.md for {REPO
 
 ## Context
 Read these files first to understand what needs to be done:
-1. {NEEDS_DOC} — Gemini Pro's analysis of what {REPO_NAME} needs
+1. {NEEDS_DOC} — OpenCode oracle's analysis of what {REPO_NAME} needs
 2. {AUDIT_DOC} — Codex's quality audit of existing components
 3. {PLAN_DOC} — The approved optimization plan with your assigned tasks
 
@@ -84,7 +84,7 @@ Create new commands, update workflows, and generate PRPs for complex gaps.
 
 ## Context
 Read these files first:
-1. {NEEDS_DOC} — Gemini Pro's analysis of what {REPO_NAME} needs
+1. {NEEDS_DOC} — OpenCode oracle's analysis of what {REPO_NAME} needs
 2. {AUDIT_DOC} — Codex's quality audit of existing components
 3. {PLAN_DOC} — The approved optimization plan with your assigned tasks
 
@@ -142,7 +142,7 @@ Update CLAUDE.md in the target repo, generate skill-priorities.md, and run valid
 
 ## Context
 Read these files first:
-1. {NEEDS_DOC} — Gemini Pro's analysis
+1. {NEEDS_DOC} — OpenCode oracle's analysis
 2. {AUDIT_DOC} — Codex's quality audit
 3. {PLAN_DOC} — The approved optimization plan
 

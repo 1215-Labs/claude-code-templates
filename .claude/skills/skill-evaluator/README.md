@@ -17,8 +17,8 @@ Evaluate external skills/plugins before adoption using parallel agents.
 Dispatches 3 specialized agents in parallel to analyze a target skill/plugin:
 
 1. **Codex** (gpt-5.2-codex) - Structural quality: code architecture, docs, tests, metadata
-2. **Gemini Pro** (gemini-3-pro-preview) - Ecosystem fit: novelty, gaps, overlap, combinations
-3. **Gemini Flash** (gemini-3-flash-preview) - Risk & adoption: security, maintenance, dependencies, cost
+2. **OpenCode oracle** (openai/gpt-5.2 via oracle agent) - Ecosystem fit: novelty, gaps, overlap, combinations
+3. **OpenCode momus** (openai/gpt-5.2 via momus agent) - Risk & adoption: security, maintenance, dependencies, cost
 
 Opus then synthesizes all reports into a single decision-ready evaluation with 3 adoption strategies.
 
@@ -37,8 +37,8 @@ skill-evaluator/
   README.md                             # This file
   prompts/
     structural-quality-agent.md         # Codex prompt template
-    ecosystem-fit-agent.md              # Gemini Pro prompt template
-    risk-adoption-agent.md              # Gemini Flash prompt template
+    ecosystem-fit-agent.md              # OpenCode oracle prompt template
+    risk-adoption-agent.md              # OpenCode momus prompt template
   templates/
     evaluation-report.md                # Final report template
 ```
@@ -60,8 +60,8 @@ Reports are written to `docs/evaluations/`:
 
 - `fork-terminal` skill (for agent dispatch)
 - `codex` CLI (`npm install -g @openai/codex`)
-- `gemini` CLI (`npm install -g @google/gemini-cli`)
-- `OPENAI_API_KEY` and `GEMINI_API_KEY` environment variables
+- `opencode` CLI (`go install github.com/opencode-ai/opencode@latest`)
+- `OPENAI_API_KEY` environment variable (OpenCode handles its own auth)
 
 ## Related Components
 

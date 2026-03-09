@@ -1,13 +1,13 @@
 # Multi-Model Orchestration
 
-Quick reference for delegating tasks across Gemini, Codex, and Opus.
+Quick reference for delegating tasks across OpenCode, Codex, and Opus.
 
 ## Model Selection
 
 | I need to... | Use | Why |
 |--------------|-----|-----|
-| Explore large codebase | Gemini Flash | 1M context, fast |
-| Understand architecture | Gemini Pro | Deep reasoning |
+| Explore large codebase | OpenCode oracle | Analysis, deep reasoning (flat rate) |
+| Understand architecture | OpenCode oracle | Deep reasoning |
 | Implement feature | Codex | SWE-bench leader |
 | Write/refactor code | Codex | Best at code changes |
 | Coordinate & decide | Opus (self) | User interaction |
@@ -16,7 +16,7 @@ Quick reference for delegating tasks across Gemini, Codex, and Opus.
 
 ```
 docs/
-├── exploration/           # Gemini outputs
+├── exploration/           # OpenCode outputs
 │   └── {task-name}.md
 └── implementation/        # Codex outputs
     └── {task-name}-log.md
@@ -24,7 +24,7 @@ docs/
 
 ## Quick Workflow
 
-1. **Explore**: Fork Gemini to analyze codebase area
+1. **Explore**: Fork OpenCode to analyze codebase area
 2. **Read**: Check `docs/exploration/{topic}.md` (summary first)
 3. **Decide**: Discuss with user, plan implementation
 4. **Implement**: Fork Codex with exploration context
@@ -40,5 +40,5 @@ docs/
 ## Files
 
 - `SKILL.md` - Full orchestration patterns and guidelines
-- `prompts/exploration-task.md` - Gemini prompt template
+- `prompts/exploration-task.md` - OpenCode prompt template
 - `prompts/implementation-task.md` - Codex prompt template

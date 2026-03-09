@@ -189,7 +189,7 @@ READ:  Everything (needs to see what the other teammates built)
 
 | Fork | Model | CLI Tool | Purpose |
 |------|-------|----------|---------|
-| A | gemini-3-pro-preview | gemini | Needs analysis (1M context) |
+| A | openai/gpt-5.2 via oracle agent | opencode | Needs analysis (multi-provider model access) |
 | B | gpt-5.2-codex | codex | Quality audit (SWE-bench leader) |
 
 ### Polling
@@ -201,8 +201,8 @@ READ:  Everything (needs to see what the other teammates built)
 ### Fallback Chain
 
 ```
-Gemini fails (429/capacity/timeout) → Sonnet subagent via Task tool
-Codex fails (API error/timeout)     → Sonnet subagent via Task tool
+OpenCode fails (429/capacity/timeout) → Sonnet subagent via Task tool
+Codex fails (API error/timeout)       → Sonnet subagent via Task tool
 ```
 
 Note which fallback was used in the final report so the user knows which models contributed.
@@ -211,8 +211,8 @@ Note which fallback was used in the final report so the user knows which models 
 
 Used during Phase 2 synthesis to prioritize upgrade tasks:
 
-| Gemini Says | Codex Says | Priority |
-|-------------|-----------|----------|
+| OpenCode Says | Codex Says | Priority |
+|---------------|-----------|----------|
 | "Repo needs X" | "X is stale/missing/weak" | **High** — both perspectives agree |
 | "Repo needs Y" | (no mention) | **Medium** — new addition |
 | (no mention) | "Z has quality issues" | **Medium** — quality fix |

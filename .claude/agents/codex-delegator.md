@@ -146,14 +146,14 @@ PROMPT_EOF
 
 **For PRP tasks:**
 ```bash
-python3 .claude/skills/fork-terminal/tools/fork_terminal.py \
+py -3 .claude/skills/fork-terminal/tools/fork_terminal.py \
   --log --tool codex-prp \
   "uv run .claude/skills/fork-terminal/tools/codex_prp_executor.py {prp_path} -m {model}"
 ```
 
 **For non-PRP tasks:**
 ```bash
-python3 .claude/skills/fork-terminal/tools/fork_terminal.py \
+py -3 .claude/skills/fork-terminal/tools/fork_terminal.py \
   --log --tool codex-task \
   "uv run .claude/skills/fork-terminal/tools/codex_task_executor.py /tmp/codex-task-{slug}-prompt.txt -n {slug} -m {model}"
 ```

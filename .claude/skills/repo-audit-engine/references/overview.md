@@ -3,7 +3,7 @@
 ## Key Concepts
 
 - **Three-layer architecture**: Every audit covers Docs-to-Code (always), Internal Consistency (always), and Code-to-Deploy (only when deploy configuration is detected). Each layer scores independently on a 100-point scale.
-- **Complementary model strengths**: Gemini (1M context) cross-references docs against all code; Codex (SWE-bench leader) finds dead code, broken imports, unused deps. They run concurrently (different providers, no rate conflict).
+- **Complementary model strengths**: OpenCode oracle (multi-provider model access) cross-references docs against all code; Codex (SWE-bench leader) finds dead code, broken imports, unused deps. They run concurrently (different providers, no rate conflict).
 - **Gating issues override scores**: Certain findings (hardcoded secrets, broken imports, nonexistent deploy targets) cap the grade at C regardless of point total. Report these prominently in a "Fix First" section.
 - **Cross-layer promotion**: Findings that appear in multiple layers are promoted one severity level (LOW → MEDIUM, MEDIUM → HIGH).
 
@@ -21,9 +21,9 @@
 
 | Fork | Model | Layer | Launch Timing |
 |------|-------|-------|---------------|
-| A | gemini-2.5-flash | Docs-to-Code | Immediately |
+| A | openai/gpt-5.2 via oracle agent | Docs-to-Code | Immediately |
 | B | gpt-5.2-codex | Internal Consistency | Immediately (concurrent with A) |
-| C | gemini-2.5-flash | Code-to-Deploy | After A completes (max 2 concurrent Gemini) |
+| C | openai/gpt-5.2 via oracle agent | Code-to-Deploy | After A completes (max 2 concurrent OpenCode) |
 
 ### Gating Issues (cap grade at C)
 

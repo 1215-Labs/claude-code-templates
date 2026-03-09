@@ -23,8 +23,8 @@ Opus fills this template after reading all agent reports. Variables in `{BRACES}
 | Dimension | Score | Agent |
 |-----------|-------|-------|
 | Structural Quality | {STRUCTURAL_SCORE}/5 | Codex |
-| Ecosystem Fit | {ECOSYSTEM_SCORE}/5 | Gemini Pro |
-| Risk Profile | {RISK_SCORE}/5 | Gemini Flash |
+| Ecosystem Fit | {ECOSYSTEM_SCORE}/5 | OpenCode oracle |
+| Risk Profile | {RISK_SCORE}/5 | OpenCode momus |
 | **Overall** | **{OVERALL_SCORE}/5** | **Opus (weighted)** |
 
 **Verdict:** {VERDICT}

@@ -1,6 +1,6 @@
 # Repo Needs Analysis
 
-Use this template when forking Gemini Pro for repo needs analysis during `/repo-optimize` Phase 1.
+Use this template when forking OpenCode via openai/gpt-5.2 via oracle agent for repo needs analysis during `/repo-optimize` Phase 1.
 
 ## Variables
 

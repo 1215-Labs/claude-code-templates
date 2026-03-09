@@ -1,18 +1,16 @@
 ---
-name: codex
+name: opencode
 description: |
-  Delegate tasks to OpenAI Codex CLI with monitoring and result summary.
+  Delegate tasks to OpenCode CLI (multi-provider model access) with monitoring and result summary.
 
-  Usage: /codex <task description>
+  Usage: /opencode <task description>
 
   Examples:
-  /codex implement user profiles API
-  /codex fix the failing GitHub Actions workflow
-  /codex execute PRPs/distill-auth-middleware.md
-  /codex security audit src/auth/
-  /codex document the REST API
-  /codex address review feedback on PR #42
-  /codex write E2E tests for checkout
+  /opencode implement pagination for the users API
+  /opencode review the auth module for security issues
+  /opencode analyze the database schema
+  /opencode document the REST API
+  /opencode research caching strategies
 argument-hint: <task description>
 user-invocable: true
 thinking: auto
@@ -25,18 +23,18 @@ allowed-tools:
   - Skill
 ---
 
-# Codex Delegator
+# OpenCode Delegator
 
 **Task**: $ARGUMENTS
 
 ## Instructions
 
-Read the agent definition at `.claude/agents/codex-delegator.md` and follow its complete instructions to:
+Read the agent definition at `.claude/agents/opencode-delegator.md` and follow its complete instructions to:
 
 1. **Classify** the task type from the user's request above
-2. **Check prerequisites** (Codex CLI installed)
-3. **Gather context** relevant to the task (files, PR info, CI status)
-4. **Construct** a structured Codex prompt
+2. **Check prerequisites** (OpenCode CLI installed)
+3. **Gather context** relevant to the task (files, conventions)
+4. **Construct** a structured OpenCode prompt
 5. **Fork** execution to a new terminal via `fork_terminal.py`
 6. **Monitor** for completion (poll done.json every 15 seconds)
 7. **Summarize** results back to the user
@@ -51,13 +49,12 @@ Since this is a slash command invocation, enable interactive behaviors:
 - **Clarification**: If the task description is ambiguous, ask the user before forking
 - **Follow-up offers**: After reporting results, suggest next actions:
   - "Run `/code-review` on the changes?"
-  - "Validate in E2B sandbox?"
   - "Commit the changes?"
-  - "View the full Codex output log?"
+  - "View the full OpenCode output log?"
 
 ## Related
 
-- `codex-delegator` agent — Full orchestration logic (read this first)
+- `opencode-delegator` agent — Full orchestration logic (read this first)
 - `fork-terminal` skill — Terminal forking mechanics
-- `agent-sandboxes` skill — E2B sandbox for test validation
 - `/orchestrate` — Alternative for OpenCode exploration + Codex implementation
+- `/codex` — Delegate implementation tasks to Codex CLI

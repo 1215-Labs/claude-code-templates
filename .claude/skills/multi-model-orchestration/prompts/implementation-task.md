@@ -5,7 +5,7 @@ Use this template when forking Codex for code implementation.
 ## Variables
 
 - `{FEATURE}` - What to implement/change
-- `{EXPLORATION_DOC}` - Path to Gemini exploration output (if available)
+- `{EXPLORATION_DOC}` - Path to OpenCode exploration output (if available)
 - `{REQUIREMENTS}` - Specific requirements list
 - `{TEST_COMMAND}` - Command to validate implementation
 - `{OUTPUT_FILE}` - Log location (default: `docs/implementation/{feature}-log.md`)

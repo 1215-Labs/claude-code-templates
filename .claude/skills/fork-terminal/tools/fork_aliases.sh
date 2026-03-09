@@ -19,16 +19,16 @@ alias codex-4o='codex exec --full-auto --skip-git-repo-check -m gpt-4o'
 alias codex-review='codex exec review --full-auto'
 
 # =============================================================================
-# Gemini Aliases - Prompt mode with yolo
+# OpenCode Aliases - Multi-provider model access
 # =============================================================================
 
-# Basic gemini with optimal settings
-alias gemini-auto='gemini -p --approval-mode yolo'
+# Basic opencode with optimal settings
+alias opencode-auto='opencode run'
 
-# Gemini with specific models
-alias gemini-pro='gemini -p --model gemini-3-pro-preview --approval-mode yolo'
-alias gemini-flash='gemini -p --model gemini-2.5-flash --approval-mode yolo'
-alias gemini-exp='gemini -p --model gemini-2.0-flash-exp --approval-mode yolo'
+# OpenCode with oh-my-opencode agents
+alias opencode-oracle='opencode run --agent oracle'
+alias opencode-momus='opencode run --agent momus'
+alias opencode-hephaestus='opencode run --agent hephaestus'
 
 # =============================================================================
 # Claude Code Aliases - Skip permissions
@@ -54,7 +54,7 @@ fork-agent() {
     local timeout_secs="${3:-300}"
 
     if [[ -z "$cli" || -z "$prompt" ]]; then
-        echo "Usage: fork-agent <codex|gemini|claude> \"<prompt>\" [timeout_seconds]"
+        echo "Usage: fork-agent <codex|opencode|claude> \"<prompt>\" [timeout_seconds]"
         echo "Example: fork-agent codex \"Analyze this codebase\" 600"
         return 1
     fi
@@ -62,11 +62,11 @@ fork-agent() {
     case "$cli" in
         codex)
             echo "[$(date)] Starting Codex with ${timeout_secs}s timeout..."
-            timeout "$timeout_secs" codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex "$prompt"
+            timeout "$timeout_secs" codex exec --full-auto --skip-git-repo-check -m gpt-5.3-codex "$prompt"
             ;;
-        gemini)
-            echo "[$(date)] Starting Gemini with ${timeout_secs}s timeout..."
-            timeout "$timeout_secs" gemini -p "$prompt" --model gemini-3-pro-preview --approval-mode yolo
+        opencode)
+            echo "[$(date)] Starting OpenCode with ${timeout_secs}s timeout..."
+            timeout "$timeout_secs" opencode run "$prompt"
             ;;
         claude)
             echo "[$(date)] Starting Claude Code with ${timeout_secs}s timeout..."
@@ -74,7 +74,7 @@ fork-agent() {
             ;;
         *)
             echo "Unknown CLI: $cli"
-            echo "Supported: codex, gemini, claude"
+            echo "Supported: codex, opencode, claude"
             return 1
             ;;
     esac
@@ -98,17 +98,17 @@ fork-agent-fallback() {
     local timeout_secs="${3:-300}"
 
     if [[ -z "$cli" || -z "$prompt" ]]; then
-        echo "Usage: fork-agent-fallback <codex|gemini|claude> \"<prompt>\" [timeout_seconds]"
+        echo "Usage: fork-agent-fallback <codex|opencode|claude> \"<prompt>\" [timeout_seconds]"
         return 1
     fi
 
     local models
     case "$cli" in
         codex)
-            models=("gpt-5.2-codex" "gpt-5.1-codex-max" "gpt-4o")
+            models=("gpt-5.3-codex" "gpt-5.2-codex" "gpt-5.1-codex-max")
             ;;
-        gemini)
-            models=("gemini-3-pro-preview" "gemini-2.5-flash" "gemini-2.0-flash-exp")
+        opencode)
+            models=("openai/gpt-5.3-codex" "openai/gpt-5.2" "opencode/glm-5-free")
             ;;
         claude)
             models=("opus" "sonnet" "haiku")
@@ -126,8 +126,8 @@ fork-agent-fallback() {
             codex)
                 timeout "$timeout_secs" codex exec --full-auto --skip-git-repo-check -m "$model" "$prompt"
                 ;;
-            gemini)
-                timeout "$timeout_secs" gemini -p "$prompt" --model "$model" --approval-mode yolo
+            opencode)
+                timeout "$timeout_secs" opencode run -m "$model" "$prompt"
                 ;;
             claude)
                 timeout "$timeout_secs" claude --dangerously-skip-permissions --model "$model" "$prompt"
@@ -160,16 +160,11 @@ fork-check() {
         echo "Codex: NOT FOUND"
     fi
 
-    # Check Gemini
-    if command -v gemini &>/dev/null; then
-        echo "Gemini: INSTALLED"
-        if [[ -n "$GEMINI_API_KEY" ]]; then
-            echo "  GEMINI_API_KEY: SET"
-        else
-            echo "  GEMINI_API_KEY: NOT SET (may use OAuth)"
-        fi
+    # Check OpenCode
+    if command -v opencode &>/dev/null; then
+        echo "OpenCode: INSTALLED"
     else
-        echo "Gemini: NOT FOUND"
+        echo "OpenCode: NOT FOUND"
     fi
 
     # Check Claude
@@ -194,7 +189,7 @@ fork-check() {
     echo ""
     echo "=== Available Aliases ==="
     echo "codex-auto, codex-52, codex-51, codex-4o, codex-review"
-    echo "gemini-auto, gemini-pro, gemini-flash, gemini-exp"
+    echo "opencode-auto, opencode-oracle, opencode-momus, opencode-hephaestus"
     echo "claude-auto, claude-opus, claude-sonnet, claude-haiku"
     echo ""
     echo "=== Functions ==="

@@ -10,7 +10,7 @@ description: |
   /prp-any-cli-execute "PRPs/logging-system.md"
   /prp-any-cli-execute "PRPs/feature-flags.md"
 
-  Use for: Running PRPs with Codex, Gemini CLI, or any agentic tool
+  Use for: Running PRPs with Codex, OpenCode CLI, or any agentic tool
   See also: /prp-claude-code-execute (optimized for Claude Code)
 argument-hint: <prp-file>
 user-invocable: true

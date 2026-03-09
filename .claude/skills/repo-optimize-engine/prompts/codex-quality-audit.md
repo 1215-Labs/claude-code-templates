@@ -25,7 +25,7 @@ Audit the Claude Code configuration for the repository at {REPO_PATH}.
 
 ## Your Task
 
-Perform a comprehensive quality audit of the existing .claude/ directory (or determine what should exist for a greenfield repo). Score every existing component using the freshness rubric. Your audit will be used alongside a Gemini needs analysis to build an optimization plan.
+Perform a comprehensive quality audit of the existing .claude/ directory (or determine what should exist for a greenfield repo). Score every existing component using the freshness rubric. Your audit will be used alongside an OpenCode needs analysis to build an optimization plan.
 
 ## Audit Areas
 

@@ -6,9 +6,9 @@ Template used by `/repo-optimize` Phase 2 to present the synthesized plan to the
 
 - `{REPO_NAME}` - Repository basename
 - `{MODE}` - greenfield, upgrade, or audit
-- `{MODELS_USED}` - Which models contributed (e.g., "Gemini Pro + Codex" or "Gemini Pro + Sonnet (Codex fallback)")
-- `{GEMINI_NEED_COUNT}` - Number of needs identified by Gemini
-- `{GEMINI_CATEGORIES}` - Categories of needs (e.g., "architecture, CLI, testing")
+- `{MODELS_USED}` - Which models contributed (e.g., "OpenCode oracle + Codex" or "OpenCode oracle + Sonnet (Codex fallback)")
+- `{OPENCODE_NEED_COUNT}` - Number of needs identified by OpenCode
+- `{OPENCODE_CATEGORIES}` - Categories of needs (e.g., "architecture, CLI, testing")
 - `{CODEX_ISSUE_COUNT}` - Number of issues found by Codex
 - `{AVG_FRESHNESS}` - Average freshness score of existing components (N/A for greenfield)
 - `{TOTAL_TASK_COUNT}` - Total number of upgrade tasks
@@ -27,7 +27,7 @@ Template used by `/repo-optimize` Phase 2 to present the synthesized plan to the
 ## Mode: {MODE}
 
 ## Analysis Summary
-- **Gemini Pro** found: {GEMINI_NEED_COUNT} needs across {GEMINI_CATEGORIES}
+- **OpenCode oracle** found: {OPENCODE_NEED_COUNT} needs across {OPENCODE_CATEGORIES}
 - **Codex** found: {CODEX_ISSUE_COUNT} issues, avg freshness score: {AVG_FRESHNESS}/100
 - **Models used**: {MODELS_USED}
 

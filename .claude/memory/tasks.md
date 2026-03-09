@@ -4,7 +4,7 @@
 
 - [2026-02-09] Run `/repo-equip` on target repos to propagate adopted patterns
 - [2026-02-09] Add pytest suite for agent-sandboxes extracted modules (use E2B mocks)
-- [2026-02-11] Debug & master Gemini forked terminal — resolve 429 rate limits, auth routing (OAuth vs API key), parallel execution quota, model selection. Working dir: ~/projects/gemini/. See docs/gemini-forked-terminal-issues.md for full issue catalog and debugging checklist.
+- [2026-03-09] Removed stale Gemini tasks; synced OpenCode tooling from agent-os
 
 ## Completed
 

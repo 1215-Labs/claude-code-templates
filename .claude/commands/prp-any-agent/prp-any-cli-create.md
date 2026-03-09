@@ -10,7 +10,7 @@ description: |
   /prp-any-cli-create "features/caching-layer.md"
   /prp-any-cli-create "features/logging-system.md"
 
-  Use for: PRPs targeting Codex, Gemini CLI, or other agentic tools
+  Use for: PRPs targeting Codex, OpenCode CLI, or other agentic tools
   See also: /prp-claude-code-create (optimized for Claude Code)
 argument-hint: <feature-file>
 user-invocable: true

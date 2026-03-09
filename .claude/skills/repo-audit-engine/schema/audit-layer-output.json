@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Repo Audit Layer Output",
-  "description": "Unified output schema for all repo-audit fork results. All forks (Gemini, Codex, Sonnet fallback) must emit this format.",
+  "description": "Unified output schema for all repo-audit fork results. All forks (OpenCode, Codex, Sonnet fallback) must emit this format.",
   "type": "object",
   "required": ["layer", "executive_summary", "score", "grade", "total_issues", "by_severity", "findings"],
   "properties": {

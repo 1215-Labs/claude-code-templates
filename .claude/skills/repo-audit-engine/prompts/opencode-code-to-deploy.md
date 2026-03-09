@@ -1,6 +1,6 @@
 # Code-to-Deploy Alignment Audit
 
-Use this template when forking Gemini for code-to-deploy verification during `/repo-audit` Phase 1. This fork only launches when deploy configuration is detected.
+Use this template when forking OpenCode for code-to-deploy verification during `/repo-audit` Phase 1. This fork only launches when deploy configuration is detected.
 
 ## Variables
 

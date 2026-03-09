@@ -6,7 +6,7 @@ Fork terminal sessions to new windows with various CLI agents or raw commands.
 
 ## Purpose
 
-Enables spawning new terminal windows with Claude Code, Codex CLI, Gemini CLI, or raw CLI commands, optionally including conversation context summaries.
+Enables spawning new terminal windows with Claude Code, Codex CLI, OpenCode CLI, or raw CLI commands, optionally including conversation context summaries.
 
 ## Activates On
 
@@ -15,7 +15,7 @@ Enables spawning new terminal windows with Claude Code, Codex CLI, Gemini CLI, o
 - Spawn CLI agent
 - Claude Code in new terminal
 - Codex CLI
-- Gemini CLI
+- OpenCode CLI
 
 ## File Count
 
@@ -29,7 +29,7 @@ Each agentic tool supports both modes, detected from user keywords:
 - **Interactive**: Agent opens for user collaboration, omitting prompt flags
 
 ### Agent Forking
-Launch Claude Code, Codex CLI, or Gemini CLI in a new terminal with optional context.
+Launch Claude Code, Codex CLI, or OpenCode CLI in a new terminal with optional context.
 
 ### Raw Command Execution
 Fork a terminal with any CLI command (ffmpeg, curl, python, etc.). Always runs in foreground.
@@ -38,7 +38,7 @@ Fork a terminal with any CLI command (ffmpeg, curl, python, etc.). Always runs i
 Optionally pass conversation summary to the new agent for continuity.
 
 ### Multi-Model Orchestration
-Pairs with the `multi-model-orchestration` skill for explore-then-implement workflows across Gemini and Codex.
+Pairs with the `multi-model-orchestration` skill for explore-then-implement workflows across OpenCode and Codex.
 
 ## Supported Agents
 
@@ -46,7 +46,7 @@ Pairs with the `multi-model-orchestration` skill for explore-then-implement work
 |-------|------|-------------|
 | Claude Code | ENABLE_CLAUDE_CODE | Anthropic's CLI |
 | Codex CLI | ENABLE_CODEX_CLI | OpenAI's Codex |
-| Gemini CLI | ENABLE_GEMINI_CLI | Google's Gemini |
+| OpenCode CLI | ENABLE_OPENCODE_CLI | Multi-provider AI |
 | Raw Commands | ENABLE_RAW_CLI_COMMANDS | Any CLI tool |
 
 ## Platform Support
@@ -64,7 +64,7 @@ fork-terminal/
 ├── cookbook/          # Agent-specific instructions
 │   ├── claude-code.md
 │   ├── codex-cli.md
-│   ├── gemini-cli.md
+│   ├── opencode-cli.md
 │   └── cli-command.md
 ├── prompts/           # Prompt templates
 │   └── fork_summary_user_prompt.md

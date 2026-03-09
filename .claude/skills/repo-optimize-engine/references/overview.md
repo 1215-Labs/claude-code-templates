@@ -3,8 +3,8 @@
 ## Key Concepts
 
 - **Three optimization modes**: Mode is auto-detected from repo state — `greenfield` (no `.claude/` directory, build from scratch), `upgrade` (repo is registered in MANIFEST, diff and patch stale components), `audit` (has `.claude/` but not registered, quality check and best practices).
-- **Two-phase execution**: Phase 1 uses multi-model forks (Gemini for needs analysis, Codex for quality audit) to produce analysis docs. Phase 2 spawns a three-teammate agent team (config-upgrader, command-builder, docs-finalizer) to execute the upgrade task graph.
-- **Freshness scoring drives prioritization**: Each existing `.claude/` component scores 0-100 on a rubric. Cross-referencing Gemini's needs analysis with Codex's quality audit determines task priority (both agree = High, one mentions = Medium, neither = skip).
+- **Two-phase execution**: Phase 1 uses multi-model forks (OpenCode oracle for needs analysis, Codex for quality audit) to produce analysis docs. Phase 2 spawns a three-teammate agent team (config-upgrader, command-builder, docs-finalizer) to execute the upgrade task graph.
+- **Freshness scoring drives prioritization**: Each existing `.claude/` component scores 0-100 on a rubric. Cross-referencing OpenCode's needs analysis with Codex's quality audit determines task priority (both agree = High, one mentions = Medium, neither = skip).
 - **Task graph has fixed dependency wiring**: T1 (context skill) unblocks T4/T5 (commands/workflows); T4+T5 unblock T7/T8 (CLAUDE.md, skill-priorities); T7+T8 unblock T9 (validation). The graph is dynamic — skip tasks for gaps that don't exist.
 
 ## Decision Criteria
@@ -20,8 +20,8 @@
 
 ### Cross-Reference Priority Rules
 
-| Gemini Says | Codex Says | Task Priority |
-|-------------|-----------|---------------|
+| OpenCode Says | Codex Says | Task Priority |
+|---------------|-----------|---------------|
 | "Repo needs X" | "X is stale/missing/weak" | High — both agree |
 | "Repo needs Y" | (no mention) | Medium — new addition |
 | (no mention) | "Z has quality issues" | Medium — quality fix |
@@ -90,7 +90,7 @@ Simple tasks (complexity 1-3): build inline. Complex tasks (4+): generate a PRP 
 
 | Fork | Model | Purpose | Fallback |
 |------|-------|---------|---------|
-| A | gemini-3-pro-preview | Needs analysis (1M context) | Sonnet subagent |
+| A | openai/gpt-5.2 via oracle agent | Needs analysis (multi-provider model access) | Sonnet subagent |
 | B | gpt-5.2-codex | Quality audit (SWE-bench leader) | Sonnet subagent |
 
 Polling: every 15s, timeout 5 min. Both forks launch concurrently.

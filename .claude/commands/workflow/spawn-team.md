@@ -12,7 +12,7 @@ description: |
   /spawn-team "Research caching strategies: Redis vs Memcached vs in-memory"
 
   Best for: Parallel review, multi-angle investigation, cross-layer features
-  Use instead: /orchestrate for delegating to Gemini/Codex
+  Use instead: /orchestrate for delegating to OpenCode/Codex
   Use instead: /rca for focused debugging (single session)
 argument-hint: "<task description>"
 user-invocable: true
@@ -183,6 +183,6 @@ Quality gates active:
 
 ## Related Commands
 
-- `/orchestrate` — Delegate to Gemini/Codex via forked terminals
+- `/orchestrate` — Delegate to OpenCode/Codex via forked terminals
 - `/code-review` — Run after team finishes for final validation
 - `/rca` — Use instead for focused single-session debugging

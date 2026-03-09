@@ -1,6 +1,6 @@
 # Exploration Task Template
 
-Use this template when forking Gemini for codebase exploration.
+Use this template when forking OpenCode for codebase exploration.
 
 ## Variables
 
@@ -105,4 +105,4 @@ Write your findings to docs/exploration/auth-system.md using this exact format:
 1. **Be specific in questions** - "How does X work?" is better than "Tell me about X"
 2. **Request critical files with line numbers** - Helps orchestrator reference specific code
 3. **Ask about edge cases** - Implementation often fails on edge cases
-4. **Request recommendations** - Gemini's insights guide implementation
+4. **Request recommendations** - OpenCode's insights guide implementation

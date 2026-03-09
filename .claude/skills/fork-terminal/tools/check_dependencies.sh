@@ -76,11 +76,11 @@ else
     echo -e "${YELLOW}[NOT INSTALLED]${NC} codex - Install: npm install -g @openai/codex"
 fi
 
-# Gemini CLI
-if command -v gemini &>/dev/null; then
-    echo -e "${GREEN}[OK]${NC} gemini"
+# OpenCode CLI
+if command -v opencode &>/dev/null; then
+    echo -e "${GREEN}[OK]${NC} opencode"
 else
-    echo -e "${YELLOW}[NOT INSTALLED]${NC} gemini - Install: npm install -g @anthropic-ai/gemini-cli"
+    echo -e "${YELLOW}[NOT INSTALLED]${NC} opencode - Install: npm install -g opencode-ai"
 fi
 
 # Claude Code
@@ -164,7 +164,7 @@ check_key() {
 }
 
 check_key "OPENAI_API_KEY" "Codex"
-check_key "GEMINI_API_KEY" "Gemini"
+# OpenCode uses its own auth (no API key needed)
 check_key "ANTHROPIC_API_KEY" "Claude"
 check_key "GOOGLE_API_KEY" "Google services"
 

@@ -1,6 +1,6 @@
 ---
 name: multi-model-orchestration
-description: "This skill should be used when the user asks to \"use Gemini\", \"delegate to Codex\", \"explore with a large context model\", or faces tasks that benefit from delegating to Gemini (1M context) or Codex (SWE-bench leader)."
+description: "This skill should be used when the user asks to \"use OpenCode\", \"delegate to Codex\", \"explore with a large context model\", or faces tasks that benefit from delegating to OpenCode (multi-provider) or Codex (SWE-bench leader)."
 version: 1.0.0
 category: orchestration
 user-invocable: true
@@ -22,13 +22,13 @@ digraph when_to_orchestrate {
     "Implementation task?" [shape=diamond];
     "Context getting full?" [shape=diamond];
     "Handle directly" [shape=box];
-    "Fork Gemini" [shape=box, style=filled, fillcolor=lightblue];
+    "Fork OpenCode" [shape=box, style=filled, fillcolor=lightblue];
     "Fork Codex" [shape=box, style=filled, fillcolor=lightgreen];
     "Consider forking" [shape=box];
 
     "Large task?" -> "Codebase exploration?" [label="yes"];
     "Large task?" -> "Handle directly" [label="no - simple"];
-    "Codebase exploration?" -> "Fork Gemini" [label="yes - 1M context"];
+    "Codebase exploration?" -> "Fork OpenCode" [label="yes - multi-provider"];
     "Codebase exploration?" -> "Implementation task?" [label="no"];
     "Implementation task?" -> "Fork Codex" [label="yes - SWE-bench leader"];
     "Implementation task?" -> "Context getting full?" [label="no"];
@@ -38,7 +38,7 @@ digraph when_to_orchestrate {
 ```
 
 **Use orchestration when:**
-- Exploring unfamiliar or large codebase (Gemini's 1M context excels here)
+- Exploring unfamiliar or large codebase (OpenCode's multi-provider model access excels here)
 - Implementing features after exploration phase (Codex is SWE-bench leader)
 - Your context is filling up and you need to preserve it for synthesis
 - Task spans multiple subsystems needing parallel investigation
@@ -53,8 +53,8 @@ digraph when_to_orchestrate {
 
 | Model | Context | Strengths | Use For |
 |-------|---------|-----------|---------|
-| **Gemini Flash** | 1M tokens | Fast, massive context | Quick exploration, file discovery |
-| **Gemini Pro** | 1M tokens | Deep reasoning | Architecture analysis, complex patterns |
+| **OpenCode oracle** | Multi-provider | Analysis, deep reasoning (flat rate) | Architecture analysis, complex patterns |
+| **OpenCode hephaestus** | Multi-provider | Implementation (flat rate) | Code generation, refactoring |
 | **Codex** | Large + compaction | SWE-bench leader | Implementation, refactoring, bug fixes |
 | **Opus** (self) | Session context | User interaction, synthesis | Orchestration, decisions, coordination |
 
@@ -62,9 +62,9 @@ digraph when_to_orchestrate {
 
 | I need to... | Fork to | Model | Output Location |
 |--------------|---------|-------|-----------------|
-| Explore large codebase | Gemini | gemini-2.5-flash | docs/exploration/ |
-| Understand architecture | Gemini | gemini-3-pro-preview | docs/exploration/ |
-| Find patterns & conventions | Gemini | gemini-2.5-flash | docs/exploration/ |
+| Explore large codebase | OpenCode | openai/gpt-5.2 via oracle agent | docs/exploration/ |
+| Understand architecture | OpenCode | openai/gpt-5.2 via oracle agent | docs/exploration/ |
+| Find patterns & conventions | OpenCode | openai/gpt-5.2 via oracle agent | docs/exploration/ |
 | Implement feature | Codex | gpt-5.2-codex | docs/implementation/ |
 | Refactor code | Codex | gpt-5.2-codex | docs/implementation/ |
 | Fix bugs | Codex | gpt-5.2-codex | docs/implementation/ |
@@ -79,11 +79,11 @@ digraph when_to_orchestrate {
 
 ### Pattern 1: Explore-Then-Implement
 
-The most common pattern. Gemini explores, Opus synthesizes, Codex implements.
+The most common pattern. OpenCode explores, Opus synthesizes, Codex implements.
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Gemini    │───▶│    Opus     │───▶│    Codex    │
+│  OpenCode   │───▶│    Opus     │───▶│    Codex    │
 │  Explore    │    │  Synthesize │    │  Implement  │
 └─────────────┘    └─────────────┘    └─────────────┘
       │                  │                   │
@@ -93,22 +93,22 @@ docs/exploration/   User decisions   docs/implementation/
 ```
 
 **Steps:**
-1. Fork Gemini to explore codebase area
-2. Read Gemini's exploration output (executive summary first)
+1. Fork OpenCode to explore codebase area
+2. Read OpenCode's exploration output (executive summary first)
 3. Discuss findings with user, make decisions
 4. Fork Codex with exploration context + implementation task
 5. Monitor implementation, review results
 
 ### Pattern 2: Parallel Exploration
 
-Multiple Gemini forks explore different aspects simultaneously.
+Multiple OpenCode forks explore different aspects simultaneously.
 
 ```
-                    ┌── Gemini: Auth ──▶ docs/exploration/auth.md
+                    ┌── OpenCode: Auth ──▶ docs/exploration/auth.md
                     │
-User Request ──▶ Opus ├── Gemini: DB ───▶ docs/exploration/db.md
+User Request ──▶ Opus ├── OpenCode: DB ───▶ docs/exploration/db.md
                     │
-                    └── Gemini: API ──▶ docs/exploration/api.md
+                    └── OpenCode: API ──▶ docs/exploration/api.md
 
               Then: Opus synthesizes all findings
 ```
@@ -134,7 +134,7 @@ Codex implements, Opus reviews, Codex refines.
 
 ## Task Structuring Guidelines
 
-### For Gemini Exploration Tasks
+### For OpenCode Exploration Tasks
 
 Always include in the prompt:
 1. **Clear scope** - What area/topic to explore
@@ -179,9 +179,9 @@ After implementation:
 
 ## Result Handoff Patterns
 
-### Gemini Output Format (Progressive Disclosure)
+### OpenCode Output Format (Progressive Disclosure)
 
-Gemini exploration outputs follow this structure:
+OpenCode exploration outputs follow this structure:
 
 ```markdown
 # {Topic} Exploration
@@ -227,7 +227,7 @@ Gemini exploration outputs follow this structure:
 [Verbose details, code snippets, full context - the "deep dive"]
 ```
 
-**Rationale**: Gemini's 1M context can capture everything. Opus reads summary/TOC first, drills into details only as needed.
+**Rationale**: OpenCode's multi-provider model access can capture everything. Opus reads summary/TOC first, drills into details only as needed.
 
 ### Codex Output Format
 
@@ -270,20 +270,22 @@ This preserves Opus context while getting necessary information.
 
 ## Quota Management
 
-### Rate Limits by Auth Method
+### Oh-My-OpenCode Agent Routing
 
-| Auth Method | RPM | RPD | Endpoint |
-|---|---|---|---|
-| OAuth (free) | 60 | 1,000 | `cloudcode-pa.googleapis.com` |
-| API Key (free) | 10 | 250 | `generativelanguage.googleapis.com` |
-| Vertex AI (express) | dynamic | dynamic | `{region}-aiplatform.googleapis.com` |
+| Agent | Model | Rate | Best For |
+|-------|-------|------|----------|
+| oracle | openai/gpt-5.2 | Flat rate (ChatGPT Pro) | Analysis, reasoning |
+| momus | openai/gpt-5.2 | Flat rate (ChatGPT Pro) | Code review |
+| hephaestus | openai/gpt-5.3-codex | Flat rate (ChatGPT Pro) | Implementation |
+| librarian | opencode/glm-4.7-free | Free | Docs, search |
+| atlas | opencode/kimi-k2.5-free | Free | General tasks |
 
 ### Concurrency Guidelines
 
-- **Max 2 concurrent Gemini forks** with free OAuth
+- **OpenAI models via ChatGPT Pro are flat rate** — no per-request cost concerns
+- **GLM and Kimi models are free** — use liberally for docs and general tasks
 - **Stagger parallel launches by 30-60s** to avoid thundering herd
-- The `cloudcode-pa` endpoint has concurrency constraints beyond RPM
-- Prefer `gemini-2.5-flash` for parallel tasks (preview models are more capacity-constrained)
+- Prefer oracle agent for parallel exploration tasks
 
 ### Error Recovery
 
@@ -294,17 +296,13 @@ The executor has built-in retry with model fallback:
 
 The orchestrator should:
 - Read `error_type` from `done.json` to decide next action
-- On `QUOTA_EXHAUSTED`: wait 60s, then retry with a different auth mode or model
-- On `MODEL_CAPACITY`: the specific model is overloaded, switch to `gemini-2.5-flash`
+- On `QUOTA_EXHAUSTED`: wait 60s, then retry with a different agent or model
+- On `MODEL_CAPACITY`: the specific model is overloaded, switch to a free-tier agent (librarian or atlas)
 - Never retry more than 3 times total from the orchestrator level
 
-### Auth Mode Selection
+### Auth
 
-| Scenario | Auth Mode | Flag |
-|---|---|---|
-| Default (has OAuth tokens) | oauth | `--auth-mode oauth` |
-| Sandbox / no OAuth | api-key | `--auth-mode api-key` |
-| High throughput needed | vertex-ai | `--auth-mode vertex-ai` |
+OpenCode uses its own authentication configuration. No additional auth setup is needed — agents are pre-configured with their respective provider credentials via oh-my-opencode.
 
 ## Anti-Patterns
 

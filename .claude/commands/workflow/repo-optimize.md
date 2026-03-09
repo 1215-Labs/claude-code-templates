@@ -1,7 +1,7 @@
 ---
 name: repo-optimize
 description: |
-  Multi-model repo optimization with Gemini Pro + Codex analysis and 3-agent team execution.
+  Multi-model repo optimization with OpenCode + Codex analysis and 3-agent team execution.
   Analyzes a target repo, identifies gaps and stale components, and executes an upgrade plan.
 
   Usage: /repo-optimize "<path to repo>" ["optional focus hint"]
@@ -100,19 +100,20 @@ Report to user:
    - List all files in `REPO_PATH/.claude/agents/`, `REPO_PATH/.claude/commands/`, `REPO_PATH/.claude/skills/`, `REPO_PATH/.claude/hooks/`, `REPO_PATH/.claude/workflows/`
    - Format as a simple list of relative paths
 
-### Fork Gemini Pro — Needs Analysis
+### Fork OpenCode Oracle — Needs Analysis
 
-1. Read the prompt template: `.claude/skills/repo-optimize-engine/prompts/gemini-needs-analysis.md`
+1. Read the prompt template: `.claude/skills/repo-optimize-engine/prompts/opencode-needs-analysis.md`
 2. Extract the prompt template section (between the ``` fences under "Prompt Template")
 3. Fill variables: `{REPO_PATH}`, `{REPO_NAME}`, `{FOCUS_HINT}`, `{MODE}`
 4. Write the filled prompt to a temp file:
    ```bash
-   GEMINI_PROMPT_FILE=$(mktemp /tmp/repo-optimize-gemini-XXXXXX.md)
+   OPENCODE_PROMPT_FILE=$(mktemp /tmp/repo-optimize-opencode-XXXXXX.md)
+   OPENCODE_SLUG="repo-optimize-needs-${REPO_NAME}"
    ```
-5. Fork Gemini:
+5. Fork OpenCode:
    ```bash
-   python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini \
-     "gemini -p \"$(cat $GEMINI_PROMPT_FILE)\" --model gemini-3-pro-preview --approval-mode yolo"
+   py -3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool opencode-task \
+     "uv run .claude/skills/fork-terminal/tools/opencode_task_executor.py $OPENCODE_PROMPT_FILE -n $OPENCODE_SLUG --agent oracle"
    ```
 
 ### Fork Codex — Quality Audit
@@ -125,7 +126,7 @@ Report to user:
    ```
 4. Fork Codex:
    ```bash
-   python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex \
+   py -3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool codex \
      "codex exec --full-auto --skip-git-repo-check -m gpt-5.2-codex \"$(cat $CODEX_PROMPT_FILE)\""
    ```
 
@@ -136,10 +137,12 @@ Both forks should produce output files. Poll every 15 seconds, timeout after 5 m
 ```bash
 NEEDS_FILE="docs/optimization/${REPO_NAME}-needs.md"
 AUDIT_FILE="docs/optimization/${REPO_NAME}-audit.md"
+OPENCODE_DONE="/tmp/opencode-task-${OPENCODE_SLUG}-done.json"
 
 for i in $(seq 1 20); do
   FOUND=0
-  [ -f "$NEEDS_FILE" ] && FOUND=$((FOUND+1))
+  # Check OpenCode oracle done.json for needs analysis
+  [ -f "$OPENCODE_DONE" ] && [ -f "$NEEDS_FILE" ] && FOUND=$((FOUND+1))
   [ -f "$AUDIT_FILE" ] && FOUND=$((FOUND+1))
   [ "$FOUND" -ge 2 ] && break
   echo "Waiting for analysis... ($i/20)"
@@ -153,7 +156,7 @@ Report progress to user as each file appears.
 
 If either output file is missing after timeout:
 
-**Gemini fallback**: Check logs at `/tmp/fork_gemini_*.log`. If Gemini failed, dispatch a Sonnet subagent via the Task tool with the same filled prompt. Note "Sonnet (Gemini fallback)" in models used.
+**OpenCode fallback**: Check `/tmp/opencode-task-${OPENCODE_SLUG}-done.json` for error status. If OpenCode failed, dispatch a Sonnet subagent via the Task tool with the same filled prompt. Note "Sonnet (OpenCode fallback)" in models used.
 
 **Codex fallback**: Check logs at `/tmp/fork_codex_*.log`. If Codex failed, dispatch a Sonnet subagent via the Task tool with the same filled prompt. Note "Sonnet (Codex fallback)" in models used.
 
@@ -173,8 +176,8 @@ Track which models actually contributed in a `MODELS_USED` variable.
 
 Apply the priority rules from `repo-optimize-engine`:
 
-| Gemini Says | Codex Says | Priority |
-|-------------|-----------|----------|
+| OpenCode Says | Codex Says | Priority |
+|---------------|-----------|----------|
 | "Repo needs X" | "X is stale/missing/weak" | **High** |
 | "Repo needs Y" | (no mention) | **Medium** — new addition |
 | (no mention) | "Z has quality issues" | **Medium** — quality fix |
@@ -203,7 +206,7 @@ Use dynamic task generation: skip task slots that aren't needed. If no context s
 
 Using the `repo-equip-engine` skill's Ecosystem MCP Server Signals and Plugin Signals tables, cross-reference findings from both analysis docs to identify ecosystem recommendations. These are NOT tasks for the agent team — they go in the plan as advisory items for the user to install manually.
 
-**MCP Servers**: Match detected external service integrations (from Gemini's needs analysis and Codex's coverage gaps) against the MCP Server Signals table.
+**MCP Servers**: Match detected external service integrations (from OpenCode's needs analysis and Codex's coverage gaps) against the MCP Server Signals table.
 
 **Plugins**: Match detected tech stack and workflow patterns against the Plugin Signals table.
 
@@ -315,7 +318,7 @@ As teammates complete tasks:
 
 After all tasks complete:
 ```bash
-python3 scripts/install-global.py
+py -3 scripts/install-global.py
 ```
 
 Verify output shows new components installed without errors.
@@ -383,7 +386,7 @@ Wait for shutdown confirmations before finishing.
 
 ### Cleanup
 
-- Remove temp prompt files: `/tmp/repo-optimize-gemini-*.md`, `/tmp/repo-optimize-codex-*.md`
+- Remove temp prompt files: `/tmp/repo-optimize-opencode-*.md`, `/tmp/repo-optimize-codex-*.md`
 - Analysis artifacts stay in `docs/optimization/` for future reference
 
 ---
@@ -394,7 +397,7 @@ If agent teams are unavailable, execute the plan sequentially as the lead agent:
 
 1. **Config tasks** (T1, T2, T3): Create context skill, hooks, update MANIFEST + REGISTRY
 2. **Command tasks** (T4, T5, T6): Create commands, workflows, PRPs
-3. **Run installer**: `python3 scripts/install-global.py`
+3. **Run installer**: `py -3 scripts/install-global.py`
 4. **Docs tasks** (T7, T8, T9): Update CLAUDE.md, generate skill-priorities, validate
 
 Follow the same templates and patterns as the team execution, just executed serially.
@@ -405,6 +408,6 @@ Follow the same templates and patterns as the team execution, just executed seri
 
 - `/repo-equip` — Quick single-agent initial setup (simpler, faster, less thorough)
 - `/spawn-team` — Generic agent team creation
-- `/orchestrate` — Single-model delegation (Gemini or Codex)
+- `/orchestrate` — Single-model delegation (OpenCode or Codex)
 - `/sync-reference` — Sync the templates repo itself against references
 - `/all_skills` — Verify installed components after optimization

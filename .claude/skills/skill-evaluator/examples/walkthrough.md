@@ -68,8 +68,8 @@ Codex reads `references/last30days-skill/` and the inventory. It evaluates:
 
 Output: `docs/evaluations/last30days-structural.md`
 
-**Agent 2 — Ecosystem Fit (Gemini Pro):**
-Gemini reads both the target skill and the full ecosystem snapshot. It assesses:
+**Agent 2 — Ecosystem Fit (OpenCode oracle):**
+OpenCode oracle reads both the target skill and the full ecosystem snapshot via multi-provider model access. It assesses:
 - Overlap with existing components: `/catchup` command already calls `git log` directly. This skill abstracts that logic — reduces duplication.
 - Interface compatibility: SKILL.md uses standard frontmatter schema. Consistent with existing skills.
 - Integration path: Could be called from `/catchup` as a Python subprocess or inlined. The tool output format (markdown) is compatible.
@@ -77,8 +77,8 @@ Gemini reads both the target skill and the full ecosystem snapshot. It assesses:
 
 Output: `docs/evaluations/last30days-ecosystem.md`
 
-**Agent 3 — Risk & Adoption (Gemini Flash):**
-Gemini Flash analyzes:
+**Agent 3 — Risk & Adoption (OpenCode momus):**
+OpenCode momus analyzes:
 - Dependency count: 0 external deps. No supply chain risk.
 - Git history health: 8 commits, 1 contributor. Single-author risk if skill needs changes.
 - Scope creep risk: Low — tool does one thing.

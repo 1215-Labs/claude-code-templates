@@ -12,13 +12,13 @@ A developer has a 500k-token monorepo containing a Django REST API, React fronte
 
 ### Step 1: Task Classification
 
-Opus recognizes this as a large-codebase exploration task — the user's 500k-token codebase exceeds what Opus can hold directly. Gemini with 1M context is the right tool. Opus will NOT attempt to grep or read files itself.
+Opus recognizes this as a large-codebase exploration task — the user's 500k-token codebase exceeds what Opus can hold directly. OpenCode with multi-provider model access is the right tool. Opus will NOT attempt to grep or read files itself.
 
 Decision path:
 - Large task? Yes
-- Codebase exploration? Yes → Fork Gemini (1M context)
+- Codebase exploration? Yes → Fork OpenCode (multi-provider)
 
-### Step 2: Structure the Gemini Prompt
+### Step 2: Structure the OpenCode Prompt
 
 Opus constructs a scoped exploration prompt:
 
@@ -40,18 +40,18 @@ Write findings to docs/exploration/api-endpoints.md using progressive disclosure
 - Raw Findings (full endpoint list with file:line references)
 ```
 
-### Step 3: Fork Gemini
+### Step 3: Fork OpenCode
 
-Opus invokes the fork-terminal skill to launch Gemini in a new terminal window with the constructed prompt. Gemini has access to the full codebase via 1M context and begins reading all relevant files.
+Opus invokes the fork-terminal skill to launch OpenCode in a new terminal window with the constructed prompt. OpenCode has access to the full codebase via its multi-provider model access and begins reading all relevant files.
 
 ```bash
-python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini \
-  "gemini -p '{FILLED_PROMPT}' --model gemini-2.5-flash --approval-mode yolo"
+python3 ~/.claude/skills/fork-terminal/tools/fork_terminal.py --log --tool opencode \
+  "opencode -p '{FILLED_PROMPT}' --agent oracle"
 ```
 
 Opus monitors for output at `docs/exploration/api-endpoints.md`. Poll interval: 30 seconds.
 
-### Step 4: Gemini Completes Exploration
+### Step 4: OpenCode Completes Exploration
 
 After ~3 minutes, `docs/exploration/api-endpoints.md` appears. Opus reads the Executive Summary first:
 
@@ -106,5 +106,5 @@ Document changes in docs/implementation/auth-fixes-log.md
 - Opus's context window remains clean (only the summary was read, not all 500k tokens)
 
 **Files created:**
-- `docs/exploration/api-endpoints.md` — Gemini's full exploration output
+- `docs/exploration/api-endpoints.md` — OpenCode's full exploration output
 - (Optional) `docs/implementation/auth-fixes-log.md` — Codex implementation log

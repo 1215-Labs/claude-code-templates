@@ -135,8 +135,8 @@ During skill evaluation (Step 2b — Ecosystem Snapshot):
 
 | Evaluation Agent | Benefit |
 |-----------------|---------|
-| Ecosystem Fit (Gemini Pro) | Richer novelty analysis — understands WHY the author built it, not just what |
-| Risk & Adoption (Gemini Flash) | Maintenance signals from author's statements about future plans, commitment |
+| Ecosystem Fit (OpenCode oracle) | Richer novelty analysis — understands WHY the author built it, not just what |
+| Risk & Adoption (OpenCode oracle) | Maintenance signals from author's statements about future plans, commitment |
 | Final Synthesis (Opus) | Creator intent context for resolving contradictions between agents |
 
 ## Troubleshooting

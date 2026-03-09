@@ -21,7 +21,7 @@ Central index of all .claude components for quick discovery.
 | Fork terminal | `fork-terminal` skill |
 | Orchestrate tasks | `/orchestrate "task"` |
 | Delegate to Codex | `/codex "task"` or `codex-delegator` agent |
-| Delegate to Gemini | `/gemini "task"` or `gemini-delegator` agent |
+| Delegate to OpenCode | `/opencode "task"` or `opencode-delegator` agent |
 | Spawn agent team | `/spawn-team "task"` |
 | Evaluate a skill/plugin | `skill-evaluator` skill |
 | Equip a repo with components | `/repo-equip "/path/to/repo"` |
@@ -165,12 +165,12 @@ Central index of all .claude components for quick discovery.
 |------|-----------|---------|
 | Skill | `agent-browser` | Vercel agent-browser CLI for headless automation |
 | Skill | `agent-sandboxes` | E2B sandbox CLI for isolated code execution in agent workflows |
-| Skill | `fork-terminal` | Fork terminal to new window with Claude/Codex/Gemini (dual-mode) |
+| Skill | `fork-terminal` | Fork terminal to new window with Claude/Codex/OpenCode (dual-mode) |
 
 ### Orchestration
 | Type | Component | Purpose |
 |------|-----------|---------|
-| Skill | `multi-model-orchestration` | Delegate tasks across Gemini/Codex via forked terminals |
+| Skill | `multi-model-orchestration` | Delegate tasks across OpenCode/Codex via forked terminals |
 | Skill | `skill-evaluator` | Evaluate external skills/plugins before adoption (parallel agents) |
 | Skill | `repo-equip-engine` | Matching heuristics and templates for automated repo equipment |
 | Skill | `reference-distill` | Evaluation-to-integration engine: parse evals, extract, adapt, track provenance |
@@ -181,11 +181,11 @@ Central index of all .claude components for quick discovery.
 | Command | `/reference-distill` | Extract and integrate high-ROI patterns from evaluated references |
 | Command | `/repo-equip` | Analyze a repo and equip it with matching Claude Code components |
 | Command | `/repo-optimize` | Multi-model repo optimization with agent team execution |
-| Command | `/repo-audit` | Multi-layer alignment audit (docs, code, deploy) via Gemini + Codex |
+| Command | `/repo-audit` | Multi-layer alignment audit (docs, code, deploy) via OpenCode + Codex |
 | Agent | `codex-delegator` | Delegate tasks to Codex CLI with monitoring, sandbox validation, and result summarization |
-| Agent | `gemini-delegator` | Delegate exploration/analysis tasks to Gemini CLI with structured JSON parsing |
+| Agent | `opencode-delegator` | Delegate exploration/analysis tasks to OpenCode CLI with structured output parsing |
 | Command | `/codex` | Delegate tasks to Codex CLI via slash command with monitoring |
-| Command | `/gemini` | Delegate exploration/analysis tasks to Gemini CLI with monitoring |
+| Command | `/opencode` | Delegate exploration/analysis tasks to OpenCode CLI with monitoring |
 
 ### Hook Development
 | Type | Component | Purpose |
@@ -331,7 +331,7 @@ Multi-step workflows for complex tasks:
 | `team-builder` | team-validator | /spawn-team | agent-teams |
 | `team-validator` | team-builder | /spawn-team | agent-teams |
 | `codex-delegator` | code-reviewer, debugger, test-automator | /codex, /orchestrate | fork-terminal, agent-sandboxes, multi-model-orchestration |
-| `gemini-delegator` | codebase-analyst, code-reviewer, codex-delegator | /gemini, /orchestrate | fork-terminal, multi-model-orchestration |
+| `opencode-delegator` | codebase-analyst, code-reviewer, codex-delegator | /opencode, /orchestrate | fork-terminal, multi-model-orchestration |
 | **Skills** |
 | `agent-browser` | — | — | fork-terminal, agent-sandboxes |
 | `agent-sandboxes` | test-automator, debugger, deployment-engineer | — | fork-terminal, agent-browser |
@@ -382,7 +382,7 @@ n8n-validation-expert ──→ Fix validation errors
          │  (Claude Code)           │
          ↓                          ↓
 /prp-any-cli-create ────→ /prp-any-cli-execute
-                    (Codex/Gemini/other)
+                    (Codex/OpenCode/other)
 ```
 
 ### Mac Management Command Relationships

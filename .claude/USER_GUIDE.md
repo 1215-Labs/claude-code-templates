@@ -28,8 +28,8 @@ Quick reference for using the `.claude` folder components.
 ### Orchestration
 
 ```
-/orchestrate "task"       # Delegate to Gemini/Codex via forked terminals
-/gemini "task"            # Delegate exploration/analysis to Gemini CLI
+/orchestrate "task"       # Delegate to OpenCode/Codex via forked terminals
+/opencode "task"          # Delegate exploration/analysis to OpenCode CLI
 /codex "task"             # Delegate implementation to Codex CLI
 ```
 
@@ -74,7 +74,7 @@ Invoke agents by name when you need specialized help:
 | `team-builder` | Single-task engineering execution in agent teams |
 | `team-validator` | Read-only task validation in agent teams |
 | `codex-delegator` | Delegate tasks to Codex CLI with monitoring |
-| `gemini-delegator` | Delegate exploration/analysis to Gemini CLI |
+| `opencode-delegator` | Delegate exploration/analysis to OpenCode CLI |
 
 **Example**: "Use the `debugger` agent to investigate this error..."
 
@@ -87,10 +87,10 @@ Skills provide reusable expertise. Key skills:
 | `lsp-symbol-navigation` | Go-to-definition, find-references |
 | `lsp-dependency-analysis` | Map module dependencies |
 | `lsp-type-safety-check` | Verify type safety |
-| `fork-terminal` | Fork terminal to new window with Claude/Codex/Gemini |
+| `fork-terminal` | Fork terminal to new window with Claude/Codex/OpenCode |
 | `agent-browser` | Headless browser automation with Playwright |
 | `agent-sandboxes` | E2B sandbox CLI for isolated code execution |
-| `multi-model-orchestration` | Delegate tasks across Gemini/Codex |
+| `multi-model-orchestration` | Delegate tasks across OpenCode/Codex |
 | `skill-evaluator` | Evaluate external skills/plugins before adoption |
 | `reference-distill` | Extract and integrate patterns from evaluated references |
 | `uv-hook-template` | UV single-file script hook templates with PEP 723 metadata |
@@ -116,7 +116,7 @@ Skills provide reusable expertise. Key skills:
 | `/code-review` | Comprehensive code review |
 | `/ui-review` | UI consistency check |
 | `/rca` | Root cause analysis |
-| `/orchestrate` | Delegate to Gemini/Codex |
+| `/orchestrate` | Delegate to OpenCode/Codex |
 | `/spawn-team` | Create agent team for parallel work |
 | `/sync-reference` | Compare against claude-code reference |
 | `/reference-distill` | Extract high-ROI patterns from evaluated references |
@@ -125,7 +125,7 @@ Skills provide reusable expertise. Key skills:
 | `/repo-audit` | Multi-layer alignment audit (docs, code, deploy) |
 | `/all_skills` | List available skills |
 | `/codex` | Delegate tasks to Codex CLI with monitoring |
-| `/gemini` | Delegate exploration/analysis to Gemini CLI |
+| `/opencode` | Delegate exploration/analysis to OpenCode CLI |
 | `/coderabbit-helper` | Analyze CodeRabbit suggestions |
 
 ### PRP Commands
@@ -194,7 +194,7 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  /onboarding  /quick-prime  /deep-prime  /repo-equip     │
 │  /code-review  /ui-review  /rca  /orchestrate            │
 │  /spawn-team  /repo-optimize  /repo-audit                 │
-│  /codex  /gemini                                         │
+│  /codex  /opencode                                       │
 │  /sync-reference  /coderabbit-helper  /all_skills        │
 │  /remember  /forget  /memory                             │
 │  /mac-health  /mac-diff  /mac-status  /mac-discover      │
@@ -207,7 +207,7 @@ These are Claude Code hooks that run automatically during tool use and session e
 │  technical-researcher  deployment-engineer               │
 │  mcp-backend-engineer  n8n-mcp-tester                    │
 │  meta-agent  team-builder  team-validator                │
-│  codex-delegator  gemini-delegator                       │
+│  codex-delegator  opencode-delegator                     │
 ├──────────────────────────────────────────────────────────┤
 │  SKILLS (reference for patterns)                         │
 │  lsp-symbol-navigation  lsp-dependency-analysis          │

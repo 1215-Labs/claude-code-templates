@@ -1,6 +1,6 @@
 ---
 name: fork-terminal
-description: "This skill should be used when the user asks to \"fork a terminal\", \"open a new Claude Code window\", \"split terminal\", or needs to launch Claude Code, Codex CLI, or Gemini CLI in a new terminal window."
+description: "This skill should be used when the user asks to \"fork a terminal\", \"open a new Claude Code window\", \"split terminal\", or needs to launch Claude Code, Codex CLI, or OpenCode CLI in a new terminal window."
 version: 2.0.0
 category: terminal
 context: fork
@@ -21,7 +21,7 @@ Fork a terminal session to a new terminal window using agentic coding tools or r
 
 - **Independent parallel tasks** - run a separate agent on a different task
 - **Long-running operations** - start a process without blocking current session
-- **Multi-model work** - use Gemini or Codex for specific tasks
+- **Multi-model work** - use OpenCode or Codex for specific tasks
 - **Isolated environments** - fresh terminal for specific work
 
 ## When NOT to Use
@@ -36,10 +36,10 @@ Follow the `Instructions`, execute the `Workflow`, based on the `Cookbook`.
 ## Variables
 
 ENABLE_RAW_CLI_COMMANDS: true
-ENABLE_GEMINI_CLI: true
+ENABLE_OPENCODE_CLI: true
 ENABLE_CODEX_CLI: true
 ENABLE_CLAUDE_CODE: true
-AGENTIC_CODING_TOOLS: claude-code, codex-cli, gemini-cli
+AGENTIC_CODING_TOOLS: claude-code, codex-cli, opencode-cli
 DEFAULT_MODE: non-interactive
 PRP_EXECUTOR: .claude/skills/fork-terminal/tools/codex_prp_executor.py
 PRP_VALIDATOR: .claude/skills/fork-terminal/tools/codex_prp_validator.py
@@ -49,13 +49,8 @@ PRP_PROMPT_TEMPLATE: .claude/skills/fork-terminal/templates/codex-prp-prompt.md
 ## Features (v2.0.0)
 
 ### Environment Variable Propagation
-API keys are automatically propagated to forked terminals:
-- GEMINI_API_KEY
-- OPENAI_API_KEY
-- ANTHROPIC_API_KEY
-- GOOGLE_API_KEY
-- NVIDIA_API_KEY
-- FEATHERLESS_API_KEY
+API keys are automatically propagated to forked terminals via environment inheritance.
+The forked terminal inherits the parent process environment.
 
 ### Output Logging
 Enable output logging to capture terminal output for debugging:
@@ -79,13 +74,13 @@ Detect the execution mode from the user's request:
 #### Mode: Non-Interactive (Default)
 Forked agent runs autonomously without user input:
 - **Codex**: `codex exec --full-auto --skip-git-repo-check -m MODEL "PROMPT"`
-- **Gemini**: `gemini -p "PROMPT" --model MODEL --approval-mode yolo`
+- **OpenCode**: `opencode run "PROMPT" -m MODEL --format default`
 - **Claude Code**: `claude -p "PROMPT" --model MODEL --dangerously-skip-permissions`
 
 #### Mode: Interactive
 Forked agent opens for user collaboration:
 - **Codex**: `codex --full-auto --skip-git-repo-check -m MODEL "PROMPT"` (omit `exec`)
-- **Gemini**: `gemini -i --model MODEL --approval-mode yolo` (use `-i` instead of `-p`)
+- **OpenCode**: `opencode` (interactive TUI)
 - **Claude Code**: `claude --model MODEL --dangerously-skip-permissions` (omit `-p`)
 
 ## Instructions
@@ -152,14 +147,14 @@ Forked agent opens for user collaboration:
   - "spin up a new terminal request <xyz> using codex"
   - "create a new terminal to <xyz> with codex"
 
-### Gemini CLI
+### OpenCode CLI
 
-- IF: The user requests a gemini CLI agent to execute the command AND `ENABLE_GEMINI_CLI` is true.
-- THEN: Read and execute: `.claude/skills/fork-terminal/cookbook/gemini-cli.md`
+- IF: The user requests an opencode CLI agent to execute the command AND `ENABLE_OPENCODE_CLI` is true.
+- THEN: Read and execute: `.claude/skills/fork-terminal/cookbook/opencode-cli.md`
 - EXAMPLES:
-  - "fork terminal use gemini to <xyz>"
-  - "spin up a new terminal request <xyz> with gemini"
-  - "create a new terminal to <xyz> using gemini"
+  - "fork terminal use opencode to <xyz>"
+  - "spin up a new terminal request <xyz> with opencode"
+  - "create a new terminal to <xyz> using opencode"
 
 ## Output Conventions for Orchestration
 
@@ -170,7 +165,7 @@ When forking agentic tools for multi-model orchestration:
 Forked agents write results to predictable locations:
 ```
 docs/
-├── exploration/           # Gemini outputs
+├── exploration/           # OpenCode/analysis outputs
 │   └── {task-name}.md     # Comprehensive analysis (progressive disclosure format)
 └── implementation/        # Codex outputs
     └── {task-name}-log.md # Implementation notes, files changed
@@ -267,40 +262,40 @@ cat /tmp/codex-task-{name}-summary.md 2>/dev/null   # Read summary
 tail -f /tmp/codex-task-{name}-output.log            # Live output
 ```
 
-### Generic Task Execution via Gemini
+### Generic Task Execution via OpenCode
 
-Execute exploration/analysis tasks using Gemini with structured JSON output (used by the `gemini-delegator` agent):
+Execute tasks using OpenCode CLI with oh-my-opencode agent support (used by the `opencode-delegator` agent):
 
 ```bash
 # Execute a task with prompt file
-uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/gemini-task-foo-prompt.txt -n foo
+uv run .claude/skills/fork-terminal/tools/opencode_task_executor.py /tmp/opencode-task-foo-prompt.txt -n foo
 
 # With specific model
-uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/prompt.txt -n foo -m gemini-3-pro-preview
+uv run .claude/skills/fork-terminal/tools/opencode_task_executor.py /tmp/prompt.txt -n foo -m openai/gpt-5.3-codex
 
-# With additional directories for multi-directory exploration
-uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/prompt.txt -n foo -I src/ -I lib/
+# With oh-my-opencode agent
+uv run .claude/skills/fork-terminal/tools/opencode_task_executor.py /tmp/prompt.txt -n foo --agent hephaestus
 
-# Dry run (show command without executing)
-uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/prompt.txt -n foo --dry-run
+# With fallback models
+uv run .claude/skills/fork-terminal/tools/opencode_task_executor.py /tmp/prompt.txt -n foo -m openai/gpt-5.3-codex --fallback-models opencode/glm-5-free
 
-# Via fork terminal (user watches in new window, auto-closes when done)
-python3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool gemini-task --auto-close \
-  "uv run .claude/skills/fork-terminal/tools/gemini_task_executor.py /tmp/prompt.txt -n foo"
+# Via fork terminal (user watches in new window)
+python3 .claude/skills/fork-terminal/tools/fork_terminal.py --log --tool opencode-task \
+  "uv run .claude/skills/fork-terminal/tools/opencode_task_executor.py /tmp/prompt.txt -n foo"
 ```
 
-**Output files** (under `/tmp/gemini-task-{name}-*`):
+**Output files** (under `/tmp/opencode-task-{name}-*`):
 | File | Purpose |
 |------|---------|
-| `-output.log` | Full terminal output via tee |
-| `-response.json` | Parsed structured JSON (response, stats, error) |
-| `-done.json` | Completion flag with exit code, model, duration, tokens |
+| `-output.log` | Full terminal output |
+| `-summary.md` | OpenCode's self-reported summary (written by OpenCode) |
+| `-done.json` | Completion flag with status, exit code, model, duration |
 
 **Monitoring:**
 ```bash
-cat /tmp/gemini-task-{name}-done.json 2>/dev/null       # Check completion
-cat /tmp/gemini-task-{name}-response.json 2>/dev/null    # Read structured response
-tail -f /tmp/gemini-task-{name}-output.log                # Live output
+cat /tmp/opencode-task-{name}-done.json 2>/dev/null    # Check completion
+cat /tmp/opencode-task-{name}-summary.md 2>/dev/null    # Read summary
+tail -f /tmp/opencode-task-{name}-output.log             # Live output
 ```
 
 ## Dependencies
@@ -342,7 +337,7 @@ bash ~/.claude/skills/fork-terminal/tools/install_dependencies.sh --brew
 | Tool | Purpose | Install |
 |------|---------|---------|
 | codex | OpenAI Codex CLI | `npm install -g @openai/codex` |
-| gemini | Google Gemini CLI | `npm install -g @google/gemini-cli` |
+| opencode | OpenCode CLI (multi-provider) | `npm install -g opencode-ai` |
 | claude | Claude Code CLI | `npm install -g @anthropic-ai/claude-code` |
 
 ### Installed Codex Skills
@@ -359,7 +354,7 @@ Codex has these skills available. Reference them in forked prompts for specializ
 | Terminal stalls on prompt | Ensure using non-interactive mode (see cookbooks) |
 | API key not found | Check that key is set in parent environment |
 | "Not inside trusted directory" | Use `--skip-git-repo-check` for Codex |
-| IDE integration nudge | Use `-p` instead of `-i` for Gemini |
+| Anthropic model blocked | Use Toad (Claude Code) for Claude models, not OpenCode |
 | Can't see terminal output | Use `--log` flag, check `/tmp/fork_*.log` |
 
 ### Checking Logs
